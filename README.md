@@ -41,7 +41,7 @@
  
 **Tutorials:**    http://www.mathcancer.org/blog/physicell-tutorials/
 
-**Latest info:**  follow [@PhysiCell](https://twitter.com/PhysiCell) [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
+**Latest info:**  follow [@PhysiCell](https://twitter.com/PhysiCell) and [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
 
 See changes.md for the full change log. 
 
