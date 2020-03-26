@@ -53,28 +53,32 @@ See changes.md for the full change log.
 
 ## Release summary: 
 
-This release fixes minor bugs and improves the documentation. It also adds some minor new capabilities, such as setting time step sizes in the XML configuration file. 
+This is the initial release, based on rapid prototyping on March 25, 2020.
 
 **NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
  
 ### Major new features and changes:
 
-+ List here. 
- 
++ This initial release includes RNA virus replication in a single layer of (lung) epithelium. 
+
++ More information on the model assumptions will be updated and refined at https://github.com/MathCancer/COVID19/wiki/About 
+
 ### Minor new features and changes: 
  
-+ List here. 
-  
++ First release. 
+
 ### Bugfixes: 
 
-+ List here. 
++ None. 
  
 ### Notices for intended changes that may affect backwards compatibility:
  
-+ List here. 
++ None.  
 
 ### Planned future improvements: 
  
-+ List here. 
++ Improved parameter estimates. 
+
++ Vet model biology with collaborators. 
 
 * * * 
