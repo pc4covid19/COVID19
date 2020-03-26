@@ -174,12 +174,16 @@
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		<!-- example parameters from the template --> 
 		
-		<!-- motile cell type parameters --> 
-		<motile_cell_persistence_time type="double" units="min">15</motile_cell_persistence_time>
-		<motile_cell_migration_speed type="double" units="micron/min">0.5</motile_cell_migration_speed> 
-		<motile_cell_relative_adhesion type="double" units="dimensionless">0.05</motile_cell_relative_adhesion>
-		<motile_cell_apoptosis_rate type="double" units="1/min">0.0</motile_cell_apoptosis_rate> 
-		<motile_cell_relative_cycle_entry_rate type="double" units="dimensionless">0.1</motile_cell_relative_cycle_entry_rate>
+		<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.05</virion_uncoating_rate>
+		<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.05</uncoated_to_RNA_rate> 
+		<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.0167</protein_synthesis_rate>
+		<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.05</virion_assembly_rate>
+		<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.05</virion_export_rate> 
+		
+		<max_infected_apoptosis_rate type="double" units="1/min" description="maximum rate of cell apoptosis due to viral infection">0.05</max_infected_apoptosis_rate>
+		<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">1000</max_apoptosis_half_max>
+		<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
+		
 	</user_parameters>
 	
 </PhysiCell_settings>

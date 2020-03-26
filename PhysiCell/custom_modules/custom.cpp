@@ -69,7 +69,7 @@
 
 // declare cell definitions here 
 
-Cell_Definition motile_cell; 
+Cell_Definition lung_epithelium; 
 
 void create_cell_types( void )
 {
@@ -84,19 +84,20 @@ void create_cell_types( void )
 	
 	initialize_default_cell_definition();
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
+	cell_defaults.phenotype.molecular.sync_to_microenvironment( &microenvironment ); 
 	
 	// Name the default cell type 
 	
 	cell_defaults.type = 0; 
-	cell_defaults.name = "tumor cell"; 
+	cell_defaults.name = "default"; 
 	
 	// set default cell cycle model 
 
-	cell_defaults.functions.cycle_model = flow_cytometry_separated_cycle_model; 
+	cell_defaults.functions.cycle_model = live; 
 	
 	// set default_cell_functions; 
 	
-	cell_defaults.functions.update_phenotype = update_cell_and_death_parameters_O2_based; 
+	cell_defaults.functions.update_phenotype = NULL; 
 	
 	// needed for a 2-D simulation: 
 	
@@ -116,21 +117,59 @@ void create_cell_types( void )
 	// first find index for a few key variables. 
 	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
 	int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
-	int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
 
-	int G0G1_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::G0G1_phase );
-	int S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase );
+	int live_phase_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::live );
 
-	// initially no necrosis 
+	// initially no necrosis or apoptosis 
+	cell_defaults.phenotype.death.rates[apoptosis_model_index] = 0.0; 
 	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
+	
+	// set cycle rate to zero 
+	cell_defaults.phenotype.cycle.data.transition_rate(live_phase_index,live_phase_index) = 0.0; 
 
-	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10; 
-	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0; 
-	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 38; 
+	// set all secretion, uptake, and export rates to zero 
 	
-	// add custom data here, if any 
+	// set all to be fully released by apoptotic cells 
+	for( int n = 0; n < microenvironment.number_of_densities(); n++ )
+	{
+		cell_defaults.phenotype.secretion.uptake_rates[n] = 0; 
+		cell_defaults.phenotype.secretion.secretion_rates[n] = 0; 
+		cell_defaults.phenotype.secretion.saturation_densities[n] = 0; 
+		cell_defaults.phenotype.secretion.net_export_rates[n] = 0; 
+		
+//		cell_defaults.phenotype.molecular.fraction_released_at_death[n] = 1.0; 
+	}
 	
+	// disable motility 
+	cell_defaults.phenotype.motility.is_motile = false; 	
+	
+	// add custom data here
+
+	Parameter<double> paramD; 	
+	paramD = parameters.doubles["virion_uncoating_rate"]; 
+	cell_defaults.custom_data.add_variable( "virion_uncoating_rate" , paramD.units, paramD.value ); 
+	
+	paramD = parameters.doubles["uncoated_to_RNA_rate"]; 
+	cell_defaults.custom_data.add_variable( "uncoated_to_RNA_rate" , paramD.units, paramD.value ); 
+	
+	paramD = parameters.doubles["protein_synthesis_rate"]; 
+	cell_defaults.custom_data.add_variable( "protein_synthesis_rate" , paramD.units, paramD.value ); 
+	
+	paramD = parameters.doubles["virion_assembly_rate"]; 
+	cell_defaults.custom_data.add_variable( "virion_assembly_rate" , paramD.units, paramD.value ); 
+	
+	paramD = parameters.doubles["virion_export_rate"]; 
+	cell_defaults.custom_data.add_variable( "virion_export_rate" , paramD.units, paramD.value ); 
+
+
+	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
+	cell_defaults.custom_data.add_variable( "max_infected_apoptosis_rate" , paramD.units, paramD.value ); 
+
+	paramD = parameters.doubles["max_apoptosis_half_max"]; 
+	cell_defaults.custom_data.add_variable( "max_apoptosis_half_max" , paramD.units, paramD.value ); 
+
+	paramD = parameters.doubles["apoptosis_hill_power"]; 
+	cell_defaults.custom_data.add_variable( "apoptosis_hill_power" , paramD.units, paramD.value ); 
 
 	// Now, let's define another cell type. 
 	// It's best to just copy the default and modify it. 
@@ -138,30 +177,14 @@ void create_cell_types( void )
 	// make this cell type randomly motile, less adhesive, greater survival, 
 	// and less proliferative 
 	
-	motile_cell = cell_defaults; 
-	motile_cell.type = 1; 
-	motile_cell.name = "motile tumor cell"; 
+	lung_epithelium = cell_defaults; 
+	lung_epithelium.type = 1; 
+	lung_epithelium.name = "lung epithelium"; 
 	
 	// make sure the new cell type has its own reference phenotype
 	
-	motile_cell.parameters.pReference_live_phenotype = &( motile_cell.phenotype ); 
+	lung_epithelium.parameters.pReference_live_phenotype = &( lung_epithelium.phenotype ); 
 	
-	// enable random motility 
-	motile_cell.phenotype.motility.is_motile = true; 
-	motile_cell.phenotype.motility.persistence_time = parameters.doubles( "motile_cell_persistence_time" ); // 15.0; 
-	motile_cell.phenotype.motility.migration_speed = parameters.doubles( "motile_cell_migration_speed" ); // 0.25 micron/minute 
-	motile_cell.phenotype.motility.migration_bias = 0.0;// completely random 
-	
-	// Set cell-cell adhesion to 5% of other cells 
-	motile_cell.phenotype.mechanics.cell_cell_adhesion_strength *= parameters.doubles( "motile_cell_relative_adhesion" ); // 0.05; 
-	
-	// Set apoptosis to zero 
-	motile_cell.phenotype.death.rates[apoptosis_model_index] = parameters.doubles( "motile_cell_apoptosis_rate" ); // 0.0; 
-	
-	// Set proliferation to 10% of other cells. 
-	// Alter the transition rate from G0G1 state to S state
-	motile_cell.phenotype.cycle.data.transition_rate(G0G1_index,S_index) *= 
-		parameters.doubles( "motile_cell_relative_cycle_entry_rate" ); // 0.1; 
 		
 	build_cell_definitions_maps(); 
 	display_cell_definitions( std::cout ); 
@@ -218,20 +241,43 @@ void setup_tissue( void )
 	// create some cells near the origin
 	
 	Cell* pC;
+	
+	// hexagonal cell packing 
+	
+	double cell_radius = lung_epithelium.phenotype.geometry.radius; 
+	double spacing = 0.95 * cell_radius * 2.0; 
+	
+	double x_min = microenvironment.mesh.bounding_box[0] + cell_radius; 
+	double x_max = microenvironment.mesh.bounding_box[3] - cell_radius; 
 
-	pC = create_cell(); 
-	pC->assign_position( 0.0, 0.0, 0.0 );
+	double y_min = microenvironment.mesh.bounding_box[1] + cell_radius; 
+	double y_max = microenvironment.mesh.bounding_box[4] - cell_radius; 
+	
+	double x = x_min; 
+	double y = y_min; 
+	
+	double triangle_stagger = sqrt(3.0) * spacing * 0.5; 
 
-	pC = create_cell(); 
-	pC->assign_position( -100, 0, 0.0 );
-	
-	pC = create_cell(); 
-	pC->assign_position( 0, 100, 0.0 );
-	
-	// now create a motile cell 
-	
-	pC = create_cell( motile_cell ); 
-	pC->assign_position( 15.0, -18.0, 0.0 );
+	int n = 0; 
+	while( y < y_max )
+	{
+		while( x < x_max )
+		{
+			pC = create_cell( lung_epithelium ); 
+			pC->assign_position( x,y, 0.0 );
+			
+			x += spacing; 
+		}
+		x = x_min; 
+		
+		n++; 
+		y += triangle_stagger; 
+		// in odd rows, shift 
+		if( n % 2 == 1 )
+		{
+			x += 0.5 * spacing; 
+		}
+	}
 	
 	return; 
 }
@@ -241,8 +287,17 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	// start with flow cytometry coloring 
 	
 	std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
+	
+	static int virion_index = microenvironment.find_density_index( "virion" ); 
+	
+	// color by assembled virion 
+	
+	static double max_virion = 2.0 * pCell->custom_data[ "max_apoptosis_half_max" ]; 
+	
+//	double interpolation = pCell->phenotype.molecular
+	
 		
-	if( pCell->phenotype.death.dead == false && pCell->type == 1 )
+	if( pCell->phenotype.death.dead == true )
 	{
 		 output[0] = "black"; 
 		 output[2] = "black"; 
