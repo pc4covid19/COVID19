@@ -192,7 +192,7 @@
 		<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max>
 		<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
 		
-		<virion_uptake_rate type="double" units="1/min" description="rate coefficient for virion endocytosis">.001</virion_uptake_rate>
+		<virion_uptake_rate type="double" units="1/min" description="rate coefficient for virion endocytosis">1</virion_uptake_rate>
 		
 		<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 		
