@@ -24,16 +24,12 @@
     cancer-immune-sample 
     virus-macrophage-sample
  
-**make list-projects** : list all available sample projects 
-
 **make clean**         : removes all .o files and the executable, so that the next "make" recompiles the entire project 
 
 **make data-cleanup**  : clears out all simulation data 
 
-**make reset**         : de-populates the sample project and returns to the original PhysiCell state. Use this when switching to a new PhysiCell sample project. 
 
-
-**Homepage:**     http://PhysiCell.MathCancer.org
+**Homepage:**     http://PhysiCell.org
 
 **Downloads:**    http://PhysiCell.sf.net
 
@@ -45,7 +41,7 @@
  
 **Tutorials:**    http://www.mathcancer.org/blog/physicell-tutorials/
 
-**Latest info:**  follow [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
+**Latest info:**  follow [@PhysiCell](https://twitter.com/PhysiCell) [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
 
 See changes.md for the full change log. 
 
