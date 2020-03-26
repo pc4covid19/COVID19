@@ -4,11 +4,88 @@
 
 \begin{document}
 
+\section{Diffusion}
+We model external virus as a concentration that diffuses and can be uptake or exported. We use the standard PhysiCell equations: 
+
+\begin{eqnarray}
+\frac{partial \rho }{\partial t} & = & 
+D \nabla^2 \rho - \lambda \rho + 
+\sum_{\textrm{cells }i} 
+\delta( \vec{x} - \vec{x}_i ) \left[ 
+V_i U_i \rho + E_i 
+\right]
+\end{eqnarray}
+where $D$ is the diffusion coefficient, $\lambda$ is the decay rate, $U$ is the cell's uptake rate, and $E$ is the net export rate (see more below). 
+
+We use a PDE like this for viral particles $V$, uncoated virus $U$ (which might be released by dead cells), viral RNA $R$ (might be released by dead cells), viral protein $P$ (might be released by dead cells), and also 
+release assembled virus (used as a technical assist on viral internalization and export dynamics--all virions in this last equation are immediately transferred to the viral concentration. See below). 
+
 \section{Internal virus model}
-Let's define the following variables 
+Let's define the following variables: 
+\begin{enumerate}
+\item 
+$V$ are viruses that are bound to the cell surface and in the process of endocytosis / adsorption. 
 
+\item 
+$U$ are viruses that have been fully endocytoses and coated. 
 
+\item 
+$R$ is RNA that has been delivered from uncoated virus $U$
 
+\item 
+$P$ are (full sets) of viral proteins that have been synthesized from RNA $R$
 
+\item 
+$A$ are assembled virions that are ready for export. 
+
+\end{enumerate}
+Let's model just the internal processes, noting that PhysiCell automatically takes care of virus intake (source for $V$) and export (sink for $A$). 
+
+Our first model of this will be a system of ODEs: 
+\begin{eqnarray}
+\frac{dV}{dt} & = & -r_U V \\
+\frac{dU}{dt} & = & r_U V - r_P U \\
+\frac{dR}{dt} & = & r_P R - \lambda_R R \\
+\frac{dP}{dt} & = & r_S R - \lambda_P P - r_A P \\
+\frac{dA}{dt} & = & r_A P
+\end{eqnarray}
+
+Next, we need to figure out net virus export. We use PhysiCell's standard form. If $\rho_A$ is the external concentration of exported (and assembled) viral particles, then: 
+\begin{eqnarray}
+\frac{d\rho_A}{dt} = ... \sum_{\textrm{cells } i} \delta( \vec{x}-\vec{x}_i ) E_{A,i}
+\end{eqnarray}
+where $\delta$ is the Dirac delta function centered at the cell's position
+$\vec{x}_i$, and $E_{A,i}$ is the net export rate (in assembled virions per time). 
+
+We use the following constitutive relation: 
+\begin{eqnarray}
+E_A & = & r_E A. 
+\end{eqnarray}
+
+As one final note: we want exported $A$ diffuse and be able to infect other cells. We do this with a ``cleanup'' step at each PhysiCell diffuison time step: in each voxel, we move all of $\rho_A$ to $\rho_V$ (the concentration 
+of viral particles). 
+
+\section{Cell apoptotic response (PD)}
+We use a fairly standard Hill function: let $e$ be the effect, which we model as increasing with assembled viral particles: 
+\begin{eqnarray}
+e & - & \frac{ A^n  }{ A^n + A_{\frac{1}{2}}^n  }
+\end{eqnarray}
+where $A_{\frac{1}{2}}$ is the half max, and $n$ is the Hill coefficient. 
+
+Then, the cell's apoptosis rate is 
+\begin{eqnarray}
+r_{\textrm{apoptosis}} = \overline{r}_\textrm{max} e. 
+\end{eqnarray}
+
+At death, some fraction $f$ of the cell's $V$, $U$, $R$, $P$, and $A$ are released into the microenvironment. These can potentially be individually specified. 
+
+\section{Later}
+Use a molecular-scale model of ACE2 to model how the uptake rate changes. 
+
+Use a receptor trafficking model to also modulate virion uptake. 
+
+Better parameter estimates of viral replication.
+
+Add immune response with more cell types. Cell death can release immunostimulatory factors that bring in macrophages. Those cause more damage and feedback. Connect that to ARDS. 
 
 \end{document}
