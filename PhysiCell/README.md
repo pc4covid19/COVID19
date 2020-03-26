@@ -23,7 +23,7 @@
     heterogeneity-sample
     cancer-immune-sample 
     virus-macrophage-sample
-
+ 
 **make list-projects** : list all available sample projects 
 
 **make clean**         : removes all .o files and the executable, so that the next "make" recompiles the entire project 
