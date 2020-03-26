@@ -7,27 +7,15 @@
 
 ### Key makefile rules:
 
-**make**               : compiles the current project. If no 
-                     project has been defined, it first 
-                     populates the cancer heterogeneity 2D 
-                     sample project and compiles it 
-   
-**make \[project-name\]**: populates the indicated sample project. 
-                     Use "make" to compile it. 
-
-  \[project-name\] choices:
-    template2D 
-    template3D
-    biorobots-sample
-    cancer-biorobots-sample
-    heterogeneity-sample
-    cancer-immune-sample 
-    virus-macrophage-sample
+**make**               : compiles the project.
  
 **make clean**         : removes all .o files and the executable, so that the next "make" recompiles the entire project 
 
 **make data-cleanup**  : clears out all simulation data 
 
+### More referneces 
+
+**Model details:** https://github.com/MathCancer/COVID19/wiki/About 
 
 **Homepage:**     http://PhysiCell.org
 
