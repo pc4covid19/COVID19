@@ -209,6 +209,8 @@ int main( int argc, char* argv[] )
 			  Custom add-ons could potentially go here. 
 			*/
 			
+			move_exported_to_viral_field(); 
+			
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 		

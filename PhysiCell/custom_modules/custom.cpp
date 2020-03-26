@@ -97,7 +97,7 @@ void create_cell_types( void )
 	
 	// set default_cell_functions; 
 	
-	cell_defaults.functions.update_phenotype = NULL; 
+	cell_defaults.functions.update_phenotype = viral_dynamics; // NULL; 
 	
 	// needed for a 2-D simulation: 
 	
@@ -128,7 +128,6 @@ void create_cell_types( void )
 	cell_defaults.phenotype.cycle.data.transition_rate(live_phase_index,live_phase_index) = 0.0; 
 
 	// set all secretion, uptake, and export rates to zero 
-	
 	// set all to be fully released by apoptotic cells 
 	for( int n = 0; n < microenvironment.number_of_densities(); n++ )
 	{
@@ -137,8 +136,13 @@ void create_cell_types( void )
 		cell_defaults.phenotype.secretion.saturation_densities[n] = 0; 
 		cell_defaults.phenotype.secretion.net_export_rates[n] = 0; 
 		
-//		cell_defaults.phenotype.molecular.fraction_released_at_death[n] = 1.0; 
+		cell_defaults.phenotype.molecular.fraction_released_at_death[n] = 
+			parameters.doubles("virus_fraction_released_at_death"); 
 	}
+	
+	// set uptake rate of virions 
+	static int nV = microenvironment.find_density_index( "virion" ); 
+	cell_defaults.phenotype.secretion.uptake_rates[ nV] = parameters.doubles( "virion_uptake_rate" ); 
 	
 	// disable motility 
 	cell_defaults.phenotype.motility.is_motile = false; 	
@@ -170,6 +174,7 @@ void create_cell_types( void )
 
 	paramD = parameters.doubles["apoptosis_hill_power"]; 
 	cell_defaults.custom_data.add_variable( "apoptosis_hill_power" , paramD.units, paramD.value ); 
+	
 
 	// Now, let's define another cell type. 
 	// It's best to just copy the default and modify it. 
@@ -238,6 +243,9 @@ void setup_microenvironment( void )
 
 void setup_tissue( void )
 {
+	static int nV = microenvironment.find_density_index( "virion" ); 
+	
+	
 	// create some cells near the origin
 	
 	Cell* pC;
@@ -266,6 +274,14 @@ void setup_tissue( void )
 			pC = create_cell( lung_epithelium ); 
 			pC->assign_position( x,y, 0.0 );
 			
+			
+			// if this cell is at (0,0,0), insert one virion
+			
+			if( fabs( x-5 ) < 5 && fabs( y-5 ) < 5 )
+			{
+				pC->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
+			}
+			
 			x += spacing; 
 		}
 		x = x_min; 
@@ -286,22 +302,172 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 {
 	// start with flow cytometry coloring 
 	
-	std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
+	std::vector< std::string> output( 4, "black" ); 
+	// std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
 	
-	static int virion_index = microenvironment.find_density_index( "virion" ); 
+	static int color_index = microenvironment.find_density_index( "assembled virion" ); 
 	
 	// color by assembled virion 
 	
-	static double max_virion = 2.0 * pCell->custom_data[ "max_apoptosis_half_max" ]; 
+	static double max_virion = 1.0 * pCell->custom_data[ "max_apoptosis_half_max" ] + 1e-16; 
 	
-//	double interpolation = pCell->phenotype.molecular
 	
-		
-	if( pCell->phenotype.death.dead == true )
+	static bool log_plot = false;
+	static bool plot_style_set = false; 
+	if( plot_style_set == false )
 	{
-		 output[0] = "black"; 
-		 output[2] = "black"; 
+		if( std::strcmp( parameters.strings( "plot_scale" ).c_str() , "log" ) == 0 )
+		{ log_plot = true; }; 
+		
+		plot_style_set = true; 
+	}
+
+	if( pCell->phenotype.death.dead == false )
+	{
+		// find fraction of max viral load 
+		double interpolation = pCell->phenotype.molecular.internalized_total_substrates[ color_index ] ; 
+		interpolation /= max_virion; 
+		
+		if( log_plot )
+		{
+			interpolation = (10.0 + log10( log_plot ) )/10.0; 
+		}
+		if( interpolation < 0 ) 
+		{ interpolation = 0; } 
+		
+		if( interpolation > 1.0 )
+		{ interpolation = 1.0; } 
+
+		int red = (int) floor( 255.0 * interpolation ) ; 
+		int green = red; 
+		int blue = 255 - red; 
+
+		char color [1024]; 
+		sprintf( color, "rgb(%u,%u,%u)" , red,green,blue ); 
+
+		output[0] = color; 
+		output[2] = color; 
+		output[3] = color; 
 	}
 	
 	return output; 
 }
+
+
+void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	static int nE = microenvironment.find_density_index( "virion" ); 
+	static int nUV = microenvironment.find_density_index( "uncoated virion" ); 
+	static int nR = microenvironment.find_density_index( "viral RNA" ); 
+	static int nP = microenvironment.find_density_index( "viral protein" ); 
+	static int nA = microenvironment.find_density_index( "assembled virion" ); 
+	
+	// if dead, stop this business, 
+	if( phenotype.death.dead == true )
+	{
+		phenotype.secretion.set_all_uptake_to_zero();
+		pCell->functions.update_phenotype = NULL; 
+		return;
+	}
+	
+	// uncoat endocytosed virus
+	double dE = dt * pCell->custom_data["virion_uncoating_rate"] * phenotype.molecular.internalized_total_substrates[nE]; 
+	if( dE > phenotype.molecular.internalized_total_substrates[nE] )
+	{ dE = phenotype.molecular.internalized_total_substrates[nE]; } 
+	phenotype.molecular.internalized_total_substrates[nE] -= dE; 
+	phenotype.molecular.internalized_total_substrates[nUV] += dE; 
+	
+	// convert uncoated virus to usable mRNA 
+	double dR = dt * pCell->custom_data["uncoated_to_RNA_rate"] * phenotype.molecular.internalized_total_substrates[nUV]; 
+	if( dR > phenotype.molecular.internalized_total_substrates[nUV] )
+	{ dR = phenotype.molecular.internalized_total_substrates[nUV]; } 
+	phenotype.molecular.internalized_total_substrates[nUV] -= dR; 
+	phenotype.molecular.internalized_total_substrates[nR] += dR; 
+	
+	// use mRNA to create viral protein 
+	double dP = dt * pCell->custom_data["protein_synthesis_rate"] * phenotype.molecular.internalized_total_substrates[nR]; 
+	phenotype.molecular.internalized_total_substrates[nP] += dP; 
+	
+	// degrade mRNA 
+
+
+	// degrade protein 
+	
+	
+	// assemble virus 
+	double dA = dt * pCell->custom_data["virion_assembly_rate"] * phenotype.molecular.internalized_total_substrates[nP]; 
+	if( dA > phenotype.molecular.internalized_total_substrates[nP] )
+	{ dA = phenotype.molecular.internalized_total_substrates[nP]; } 
+	phenotype.molecular.internalized_total_substrates[nP] -= dA; 
+	phenotype.molecular.internalized_total_substrates[nA] += dA; 
+	
+	
+	// set export rate 
+	
+	phenotype.secretion.net_export_rates[nA] = pCell->custom_data["virion_export_rate" ] * phenotype.molecular.internalized_total_substrates[nA] ; 
+	
+
+	// now, set apoptosis rate 
+	
+	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
+	phenotype.death.rates[apoptosis_model_index] = pCell->custom_data["max_infected_apoptosis_rate"] ; 
+	
+	double v = phenotype.molecular.internalized_total_substrates[nA] /
+		pCell->custom_data["max_apoptosis_half_max"] ; 
+	v = pow( v, pCell->custom_data["apoptosis_hill_power"] ); 
+	
+	double effect = v / (1.0+v); 
+	phenotype.death.rates[apoptosis_model_index] *= effect; 
+	
+/*
+	if( fabs( pCell->position[0]-5 ) < 5 && fabs( pCell->position[1]-5 ) < 5 )
+	{
+		std::cout << phenotype.molecular.internalized_total_substrates << std::endl; 
+		std::cout << phenotype.secretion.net_export_rates << std::endl; 
+		std::cout << v << " : " << effect << " :: " << phenotype.death.rates[apoptosis_model_index] << std::endl; 
+	}
+*/	
+	
+	/*
+	
+		cell_defaults.custom_data.add_variable( "assembled_virion" , "virion" , 0.0 ); 
+
+	
+	
+	// add custom data here
+
+ 
+
+	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
+	cell_defaults.custom_data.add_variable( "max_infected_apoptosis_rate" , paramD.units, paramD.value ); 
+
+	paramD = parameters.doubles["max_apoptosis_half_max"]; 
+	cell_defaults.custom_data.add_variable( "max_apoptosis_half_max" , paramD.units, paramD.value ); 
+
+	paramD = parameters.doubles["apoptosis_hill_power"]; 
+	cell_defaults.custom_data.add_variable( "apoptosis_hill_power" , paramD.units, paramD.value ); 
+	
+*/
+
+	
+	
+	
+	return; 
+}
+
+
+void move_exported_to_viral_field( void )
+{
+	static int nV = microenvironment.find_density_index( "virion" ); 
+	static int nA = microenvironment.find_density_index( "assembled virion" ); 
+	
+	#pragma omp parallel for 
+	for( int n = 0 ; n < microenvironment.number_of_voxels() ; n++ )
+	{
+		microenvironment(n)[nV] += microenvironment(n)[nA]; 
+		microenvironment(n)[nA] = 0; 
+	}
+	
+	return;
+}
+
