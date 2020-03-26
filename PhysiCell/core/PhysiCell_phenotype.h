@@ -330,8 +330,6 @@ class Volume
 	
 	void divide( void ); // done 
 	void multiply_by_ratio(double); // done 
-	
-	void update( Cell* pCell, Phenotype& phenotype, double dt ); // done 
 };
 
 class Geometry
@@ -407,6 +405,7 @@ class Secretion
 	std::vector<double> secretion_rates; 
 	std::vector<double> uptake_rates; 
 	std::vector<double> saturation_densities;
+	std::vector<double> net_export_rates; 
 	
 	// in the default constructor, we'll size to the default microenvironment, if 
 	// specified. (This ties to BioFVM.) 

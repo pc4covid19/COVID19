@@ -74,6 +74,10 @@
 
 namespace PhysiCell{
 
+std::unordered_map<std::string,Cell_Definition*> cell_definitions_by_name; 
+std::unordered_map<int,Cell_Definition*> cell_definitions_by_type; 
+std::vector<Cell_Definition*> cell_definitions_by_index;
+
 Cell_Parameters::Cell_Parameters()
 {
 	o2_hypoxic_threshold = 15.0; // HIF-1alpha at half-max around 1.5-2%, and tumors often are below 2%
@@ -128,6 +132,8 @@ Cell_Definition::Cell_Definition()
 	
 	functions.set_orientation = NULL;
 	
+	cell_definitions_by_index.push_back( this ); 
+	
 	return; 
 }
 
@@ -150,6 +156,8 @@ Cell_Definition::Cell_Definition( Cell_Definition& cd )
 	// this is the whole reason we need ot make a copy constructor 
 	parameters.pReference_live_phenotype = &phenotype; 
 	
+	cell_definitions_by_index.push_back( this ); 
+	
 	return; 
 }
 
@@ -171,6 +179,8 @@ Cell_Definition& Cell_Definition::operator=( const Cell_Definition& cd )
 	
 	// this is the whole reason we need ot make a copy constructor 
 	parameters.pReference_live_phenotype = &phenotype; 
+	
+	cell_definitions_by_index.push_back( this ); 
 	
 	return *this; 
 }
@@ -325,6 +335,7 @@ Cell::Cell()
 	assign_orientation();
 	container = NULL;
 	
+	set_total_volume( phenotype.volume.total ); 
 	
 	return; 
 }
@@ -524,6 +535,59 @@ void Cell::set_total_volume(double volume)
 	return; 
 }
 
+
+void Cell::set_target_volume( double new_volume )
+{
+	
+	// this function will keep the prior ratios (from targets)
+	
+	// first compute the actual raw totals on all these things 
+	double old_target_solid = phenotype.volume.target_solid_nuclear + 
+		phenotype.volume.target_solid_cytoplasmic; 
+	double old_target_total = old_target_solid / ( 1.0 - phenotype.volume.target_fluid_fraction ); 
+	double old_target_fluid = phenotype.volume.target_fluid_fraction * old_target_total; 
+	
+	// next whats the relative new size? 
+	double ratio = new_volume / (1e-16 + old_target_total ); 
+	
+	// scale the target solid cyto and target solid nuclear by this ratio 
+	phenotype.volume.target_solid_cytoplasmic *= ratio; 
+	phenotype.volume.target_solid_nuclear *= ratio; 
+	
+	return; 
+}
+
+void Cell::set_target_radius(double new_radius )
+{
+	static double four_thirds_pi =  4.188790204786391;
+
+	// calculate the new target volume 
+	double new_volume = four_thirds_pi; 
+	new_volume *= new_radius; 
+	new_volume *= new_radius; 
+	new_volume *= new_radius; 
+	
+	// now call the set_target_volume funciton 
+	this->set_target_volume( new_volume ); 
+	return; 
+}
+
+void Cell::set_radius(double new_radius )
+{
+	static double four_thirds_pi =  4.188790204786391;
+
+	// calculate the new target volume 
+	double new_volume = four_thirds_pi; 
+	new_volume *= new_radius; 
+	new_volume *= new_radius; 
+	new_volume *= new_radius; 
+	
+	this->set_total_volume( new_volume ); 
+	return; 
+}
+
+
+
 double& Cell::get_total_volume(void)
 {
 	static bool I_warned_you = false; 
@@ -544,6 +608,7 @@ void Cell::turn_off_reactions(double dt)
 	{
 		phenotype.secretion.uptake_rates[i] = 0.0;  
 		phenotype.secretion.secretion_rates[i] = 0.0; 
+		phenotype.secretion.net_export_rates[i] = 0.0; 
 	}
 	set_internal_uptake_constants(dt);
 	
@@ -794,6 +859,8 @@ Cell* create_cell( void )
 	// All the phenotype and other data structures are already set 
 	// by virtue of the default Cell constructor. 
 	
+	pNew->set_total_volume( pNew->phenotype.volume.total ); 
+	
 	return pNew; 
 }
 
@@ -818,6 +885,8 @@ Cell* create_cell( Cell_Definition& cd )
 	
 	pNew->assign_orientation();
 	
+	pNew->set_total_volume( pNew->phenotype.volume.total ); 
+	
 	return pNew; 
 }
 
@@ -839,6 +908,8 @@ void Cell::convert_to_cell_definition( Cell_Definition& cd )
 	// displacement.resize(3,0.0); // state? 
 	
 	assign_orientation();	
+	
+	set_total_volume( phenotype.volume.total ); 
 	
 	return; 
 }
@@ -1032,6 +1103,141 @@ void Cell::lyse_cell( void )
 
 	return; 
 }
+
+bool cell_definitions_by_name_constructed = false; 
+
+void build_cell_definitions_maps( void )
+{
+//	cell_definitions_by_name.
+//	cell_definitions_by_index
+
+	for( int n=0; n < cell_definitions_by_index.size() ; n++ )
+	{
+		Cell_Definition* pCD = cell_definitions_by_index[n]; 
+		cell_definitions_by_name[ pCD->name ] = pCD; 
+		cell_definitions_by_type[ pCD->type ] = pCD; 
+	}
+
+/*
+	for( const auto& n : cell_definitions_by_name )
+	{
+		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	}	
+	std::cout << std::endl << std::endl;
+	for( const auto& n : cell_definitions_by_type )
+	{
+		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	}	
+	std::cout << std::endl << std::endl;
+*/
+	cell_definitions_by_name_constructed = true; 
+	
+	return;
+}
+
+void display_ptr_as_bool( void (*ptr)(Cell*,Phenotype&,double), std::ostream& os )
+{
+	if( ptr )
+	{ os << "true"; return; }
+	os << "false"; 
+	return;
+}
+
+void display_cell_definitions( std::ostream& os )
+{
+	for( int n=0; n < cell_definitions_by_index.size() ; n++ )
+	{
+		Cell_Definition* pCD = cell_definitions_by_index[n]; 
+		os << n << " :: type:" << pCD->type << " name: " << pCD->name << std::endl; 
+
+		if( pCD->phenotype.cycle.pCycle_Model != NULL )
+		{
+			os << "\t cycle model: " << pCD->phenotype.cycle.model().name  
+				<< " (code=" << pCD->phenotype.cycle.model().code << ")" << std::endl; 
+			os << "\t death models: " << std::endl; 
+		}
+		else
+		{ 	os << "\t cycle model not initialized" << std::endl; } 
+
+		for( int k=0 ; k < pCD->phenotype.death.models.size(); k++ )
+		{
+			os << "\t\t" << k << " : " << pCD->phenotype.death.models[k]->name 
+			<< " (code=" << pCD->phenotype.death.models[k]->code << ")" << std::endl; 
+		}
+		
+		Cell_Functions* pCF = &(pCD->functions); 
+		os << "\t key functions: " << std::endl; 
+		os << "\t\t migration: "; display_ptr_as_bool( pCF->update_migration_bias , std::cout ); 
+		os << std::endl; 
+		os << "\t\t custom rule: "; display_ptr_as_bool( pCF->custom_cell_rule , std::cout ); 
+		os << std::endl; 
+		os << "\t\t phenotype rule: "; display_ptr_as_bool( pCF->update_phenotype , std::cout ); 
+		os << std::endl; 
+		
+		Custom_Cell_Data* pCCD = &(pCD->custom_data); 
+		os << "\tcustom data: " << std::endl; 
+		for( int k=0; k < pCCD->variables.size(); k++)
+		{
+			os << "\t\t" << pCCD->variables[k].name << std::endl; 
+		}
+		os << "\tcustom vector data: " << std::endl; 
+		for( int k=0; k < pCCD->vector_variables.size(); k++)
+		{
+			os << "\t\t" << pCCD->vector_variables[k].name << std::endl; 
+		}
+		os << "\t\t\tNOTE: custom vector data will eventually be merged with custom data" << std::endl; 
+			
+	}
+	
+	return; 
+}
+
+Cell_Definition* find_cell_definition( std::string search_string )
+{
+	// if the registry isn't built yet, then do it! 
+	if( cell_definitions_by_name_constructed == false )
+	{
+		build_cell_definitions_maps(); 
+	}
+	
+	Cell_Definition* output = NULL;
+	if( cell_definitions_by_name.count( search_string ) > 0 )
+	{ 
+		output = cell_definitions_by_name.find( search_string )->second; 
+	} 
+	
+	if( output == NULL )
+	{
+		std::cout << "Warning! Cell_Definition for " << search_string << " not found!" << std::endl; 
+	}
+	
+	return output; 	
+}
+
+Cell_Definition* find_cell_definition( int search_type )
+{
+	// if the registry isn't built yet, then do it! 
+	if( cell_definitions_by_name_constructed == false )
+	{
+		build_cell_definitions_maps(); 
+	}
+	
+	Cell_Definition* output = NULL;
+	if( cell_definitions_by_type.count( search_type ) > 0 )
+	{ 
+		output = cell_definitions_by_type.find( search_type )->second; 
+	} 
+	
+	if( output == NULL )
+	{
+		std::cout << "Warning! Cell_Definition for " << search_type << " not found!" << std::endl; 
+	}
+	
+	return output; 	
+}
+
+
+
 
 };
 
