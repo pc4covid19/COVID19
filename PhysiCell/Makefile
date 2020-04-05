@@ -45,7 +45,7 @@ PhysiCell_pugixml.o PhysiCell_settings.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o
+PhysiCell_custom_module_OBJECTS := custom.o internal-viral-dynamics.o internal-viral-response.o 
 
 pugixml_OBJECTS := pugixml.o
 
@@ -139,6 +139,12 @@ PhysiCell_settings.o: ./modules/PhysiCell_settings.cpp
 
 custom.o: ./custom_modules/custom.cpp 
 	$(COMPILE_COMMAND) -c ./custom_modules/custom.cpp
+	
+internal-viral-dynamics.o: ./custom_modules/internal-viral-dynamics.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/internal-viral-dynamics.cpp
+
+internal-viral-response.o: ./custom_modules/internal-viral-response.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/internal-viral-response.cpp
 
 # cleanup
 

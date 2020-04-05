@@ -1,5 +1,23 @@
 # COVID19 tissue simulator 
-**Version:** 0.1.1
+**Version:** 0.2.0
+
+**Relesae date:** 5 April 2020
+
+### Major new features and changes:
+
++ Refactored into modular design based on v1 preprint feedback. 
+
++ Set default max time to 1440 minutes
+
++ Set default diffusion coefficient to 90 micron^2/min based on v1 feedback 
+
+
+
+
+
+
+# COVID19 tissue simulator 
+**Version:** 0.1.1, 0.1.2, 0.1.3 
 
 **Release date:** 26 March 2020 
 
@@ -9,6 +27,8 @@ This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) 
 In this model, SARS-CoV-2 (coronavirus / COVID19) infects a single cell. The virus is uncoated to explose viral RNA, which synthesizes viral proteins that are assembled into a virion. Assembled virions are exported to the environment. Virions diffuse and can infect other cells (including the original cell).
 
 The model includes a basic pharmacodynamic response (to assembled virions) to cause cell apoptosis. Apoptosed cells release some or all of their internal contents, notably including virions.
+
+Released 0.1.2 and 0.1.3 have no changes to 0.1.1, other than enabling Zenodo snapshots. 
 
 ### Caveats and disclaimers: 
 **This model is under active development using rapid prototyping:**

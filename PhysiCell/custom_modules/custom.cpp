@@ -346,6 +346,7 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+/*	
 	static int nE = microenvironment.find_density_index( "virion" ); 
 	static int nUV = microenvironment.find_density_index( "uncoated virion" ); 
 	static int nR = microenvironment.find_density_index( "viral RNA" ); 
@@ -396,7 +397,15 @@ void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	phenotype.secretion.net_export_rates[nA] = pCell->custom_data["virion_export_rate" ] *  ( phenotype.molecular.internalized_total_substrates[nA] ); 
 	
+*/	
+	// viral dynamics model 
+	internal_virus_model(pCell,phenotype,dt);
+	
+	// viral response model 
+	
+	internal_virus_response_model(pCell,phenotype,dt);
 
+/*
 	// now, set apoptosis rate 
 	
 	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
@@ -408,39 +417,7 @@ void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	double effect = v / (1.0+v); 
 	phenotype.death.rates[apoptosis_model_index] *= effect; 
-	
-/*
-	if( fabs( pCell->position[0]-5 ) < 5 && fabs( pCell->position[1]-5 ) < 5 )
-	{
-		std::cout << phenotype.molecular.internalized_total_substrates << std::endl; 
-		std::cout << phenotype.secretion.net_export_rates << std::endl; 
-		std::cout << v << " : " << effect << " :: " << phenotype.death.rates[apoptosis_model_index] << std::endl; 
-	}
-*/	
-	
-	/*
-	
-		cell_defaults.custom_data.add_variable( "assembled_virion" , "virion" , 0.0 ); 
-
-	
-	
-	// add custom data here
-
- 
-
-	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
-	cell_defaults.custom_data.add_variable( "max_infected_apoptosis_rate" , paramD.units, paramD.value ); 
-
-	paramD = parameters.doubles["max_apoptosis_half_max"]; 
-	cell_defaults.custom_data.add_variable( "max_apoptosis_half_max" , paramD.units, paramD.value ); 
-
-	paramD = parameters.doubles["apoptosis_hill_power"]; 
-	cell_defaults.custom_data.add_variable( "apoptosis_hill_power" , paramD.units, paramD.value ); 
-	
 */
-
-	
-	
 	
 	return; 
 }
