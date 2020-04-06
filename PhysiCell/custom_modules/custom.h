@@ -68,8 +68,9 @@
 #include "../core/PhysiCell.h"
 #include "../modules/PhysiCell_standard_modules.h" 
 
-#include "./internal-viral-dynamics.h"
-#include "./internal-viral-response.h" 
+#include "./submodel_data_structures.h" 
+#include "./internal_viral_dynamics.h"
+#include "./internal_viral_response.h" 
 
 using namespace BioFVM; 
 using namespace PhysiCell;

@@ -1,6 +1,19 @@
-#include "./internal-viral-response.h" 
+#include "./internal_viral_response.h" 
 
 using namespace PhysiCell; 
+
+Submodel_Information internal_virus_response_model_info; 
+
+void internal_virus_response_model_setup( void )
+{
+	internal_virus_response_model_info.name = "internal viral response"; 
+	internal_virus_response_model_info.version = "0.2.0";
+	internal_virus_response_model_info.main_function= internal_virus_response_model; 
+	
+	submodel_registry.register_model( internal_virus_response_model_info ); 	
+	
+	return; 
+}
 
 // inputs: 
 

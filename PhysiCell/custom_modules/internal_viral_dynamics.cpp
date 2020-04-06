@@ -1,7 +1,19 @@
-#include "./internal-viral-dynamics.h" 
+#include "./internal_viral_dynamics.h" 
 
 using namespace PhysiCell; 
 
+Submodel_Information internal_viral_dynamics_info; 
+
+void internal_virus_model_setup( void )
+{
+	internal_viral_dynamics_info.name = "internal viral dynamics"; 
+	internal_viral_dynamics_info.version = "0.2.0";
+	internal_viral_dynamics_info.main_function= internal_virus_model; 
+	
+	submodel_registry.register_model( internal_viral_dynamics_info ); 
+	
+	return; 
+}
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// bookkeeping -- find microenvironment variables we need

@@ -194,6 +194,13 @@ void create_cell_types( void )
 	build_cell_definitions_maps(); 
 	display_cell_definitions( std::cout ); 
 	
+	// register the submodels 
+	
+	internal_virus_model_setup();
+	internal_virus_response_model_setup();
+	
+	submodel_registry.display( std::cout ); 
+	
 	return; 
 }
 
@@ -264,7 +271,14 @@ void setup_tissue( void )
 	double x = x_min; 
 	double y = y_min; 
 	
+	double center_x = 0.5*( x_min + x_max ); 
+	double center_y = 0.5*( y_min + y_max ); 
+	
 	double triangle_stagger = sqrt(3.0) * spacing * 0.5; 
+	
+	// find hte cell nearest to the center 
+	double nearest_distance_squared = 9e99; 
+	Cell* pNearestCell = NULL; 
 
 	int n = 0; 
 	while( y < y_max )
@@ -274,13 +288,24 @@ void setup_tissue( void )
 			pC = create_cell( lung_epithelium ); 
 			pC->assign_position( x,y, 0.0 );
 			
+			double dx = x - center_x;
+			double dy = y - center_y; 
 			
+			double temp = dx*dx + dy*dy; 
+			if( temp < nearest_distance_squared )
+			{
+				nearest_distance_squared = temp;
+				pNearestCell = pC; 
+			}
+			
+/*			
 			// if this cell is at (0,0,0), insert one virion
 			
 			if( fabs( x-5 ) < 5 && fabs( y-5 ) < 5 )
 			{
 				pC->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
 			}
+*/			
 			
 			x += spacing; 
 		}
@@ -294,6 +319,10 @@ void setup_tissue( void )
 			x += 0.5 * spacing; 
 		}
 	}
+	
+	// infect the cell closest to the center  
+	
+	pNearestCell->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
 	
 	return; 
 }

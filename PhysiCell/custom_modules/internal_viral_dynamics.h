@@ -4,6 +4,8 @@
 using namespace BioFVM; 
 using namespace PhysiCell;
 
+#include "./submodel_data_structures.h" 
+
 #ifndef __internal_viral_dynamics__
 #define __internal_viral_dynamics__
 	
@@ -11,6 +13,7 @@ using namespace PhysiCell;
 
 // outputs: 
 
+void internal_virus_model_setup( void );
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt );
 
 #endif 
