@@ -140,6 +140,18 @@ void create_cell_types( void )
 			parameters.doubles("virus_fraction_released_at_death"); 
 	}
 	
+	// 
+	
+	// register the submodels (which ensures that the cells have all the internal variables they need) 
+	
+	internal_virus_model_setup();
+	internal_virus_response_model_setup();
+	submodel_registry.display( std::cout ); 
+	
+	std::cout << cell_defaults.custom_data << std::endl; 
+
+	system("pause");
+	
 	// set uptake rate of virions 
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	cell_defaults.phenotype.secretion.uptake_rates[ nV] = parameters.doubles( "virion_uptake_rate" ); 
@@ -194,12 +206,6 @@ void create_cell_types( void )
 	build_cell_definitions_maps(); 
 	display_cell_definitions( std::cout ); 
 	
-	// register the submodels 
-	
-	internal_virus_model_setup();
-	internal_virus_response_model_setup();
-	
-	submodel_registry.display( std::cout ); 
 	
 	return; 
 }
@@ -329,8 +335,6 @@ void setup_tissue( void )
 
 std::vector<std::string> my_coloring_function( Cell* pCell )
 {
-	// start with flow cytometry coloring 
-	
 	std::vector< std::string> output( 4, "black" ); 
 	// std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
 	

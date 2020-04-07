@@ -6,10 +6,10 @@ using namespace PhysiCell;
 
 #include "./submodel_data_structures.h" 
 
-#ifndef __internal_viral_dynamics__
-#define __internal_viral_dynamics__
+#ifndef __receptor_dynamics__
+#define __receptor_dynamics__
 	
-void internal_virus_model_setup( void );
-void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt );
+void receptor_dynamics_model_setup( void );
+void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt );
 
 #endif 

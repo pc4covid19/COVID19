@@ -193,6 +193,13 @@
 		
 		<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.005</virion_export_rate> 
 		<virion_uptake_rate type="double" units="1/min" description="rate coefficient for virion endocytosis">1</virion_uptake_rate>
+		
+
+<div_receptors type="divider" description="---ACE2 receptor dynamics with virus binding---"/>	
+
+	<ACE2_receptors_per_cell type="int" units="dimensionless" description="number of ACE2 receptors per cell">100</ACE2_receptors_per_cell>
+	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-SARS-CoV-2 binding rate">0.01</ACE2_binding_rate> 
+
 
 <div_apoptosis type="divider" description="---Apoptotic Response---"/>		
 

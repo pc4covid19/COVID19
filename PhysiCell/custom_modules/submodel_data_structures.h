@@ -15,7 +15,12 @@ class Submodel_Information
 	std::string version;
 	void(*main_function)(Cell*,Phenotype&,double); 
 	
+	std::vector< std::string > microenvironment_variables; 
+	std::vector< std::string > cell_variables; // custom data  
+	
 	Submodel_Information( void ); 
+	
+	void register_model( void ); 
 	
 	void display( std::ostream& os ); 
 }; 

@@ -1,29 +1,22 @@
-#include "./internal_viral_dynamics.h" 
+#include "./receptor_dynamics.h" 
 
 using namespace PhysiCell; 
 
-Submodel_Information internal_viral_dynamics_info; 
+Submodel_Information receptor_dynamics_info; 
 
-void internal_virus_model_setup( void )
+void receptor_dynamics_model_setup( void )
 {
-	internal_viral_dynamics_info.name = "internal viral dynamics"; 
-	internal_viral_dynamics_info.version = "0.2.0";
-	internal_viral_dynamics_info.main_function= internal_virus_model; 
-
-	// what custom data do I need? 
+	receptor_dynamics_info.name = "receptor dynamics"; 
+	receptor_dynamics_info.version = "0.2.0";
+	receptor_dynamics_info.main_function= receptor_dynamics_model; 
 	
-	internal_viral_dynamics_info.cell_variables.push_back( "virion" ); 
-	internal_viral_dynamics_info.cell_variables.push_back( "uncoated virion" ); 
-	internal_viral_dynamics_info.cell_variables.push_back( "viral RNA" ); 
-	internal_viral_dynamics_info.cell_variables.push_back( "viral protein" ); 
-	internal_viral_dynamics_info.cell_variables.push_back( "assembled virion" ); 
-
-	// submodel_registry.register_model( internal_viral_dynamics_info ); 
-	internal_viral_dynamics_info.register_model();
+	// submodel_registry.register_model( receptor_dynamics_info ); 
+	receptor_dynamics_info.register_model(); 
 	
 	return; 
 }
-void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
+
+void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// bookkeeping -- find microenvironment variables we need
 
