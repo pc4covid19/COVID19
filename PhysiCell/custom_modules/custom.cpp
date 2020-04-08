@@ -98,7 +98,7 @@ void create_cell_types( void )
 	// set default_cell_functions; 
 	
 	cell_defaults.functions.update_phenotype = viral_dynamics; // NULL; 
-	cell_defaults.functions.custom_cell_rule = receptor_dynamics_model; 
+	cell_defaults.functions.custom_cell_rule = NULL; // receptor_dynamics_model; 
 	
 	// needed for a 2-D simulation: 
 	
@@ -364,6 +364,9 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	{
 		// find fraction of max viral load 
 		double v = pCell->custom_data[ color_index ] ; 
+		
+		if( v < 0 )
+		{ std::cout << "aha!" << std::endl; exit(-2); } 
 		
 		double interpolation = 0; 
 		if( v < 1 )

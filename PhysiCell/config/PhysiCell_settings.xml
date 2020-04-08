@@ -185,7 +185,7 @@
 		
 <div_replication type="divider" description="---Virus Replication---"/>		
 		
-		<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
+		<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.001</virion_uncoating_rate>
 		<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
 		<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
 		<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
@@ -200,9 +200,9 @@
 
 	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell>
 	
-	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.2</ACE2_binding_rate> 
+	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.01</ACE2_binding_rate> 
 
-	<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.006</ACE2_endocytosis_rate> 
+	<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 	
 	<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.002</ACE2_cargo_release_rate> 
 
