@@ -28,6 +28,8 @@ void receptor_dynamics_model_setup( void )
 	return; 
 }
 
+extern Cell_Definition lung_epithelium; 
+
 void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// bookkeeping -- find microenvironment variables we need
@@ -52,6 +54,10 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	// do nothing if dead 
 	if( phenotype.death.dead == true )
+	{ return; } 
+
+	// if not lung epithelium, do nothing 
+	if( pCell->type != lung_epithelium.type )
 	{ return; } 
 	
 	// actual model goes here 

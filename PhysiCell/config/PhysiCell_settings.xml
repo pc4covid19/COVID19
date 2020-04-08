@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-250</x_min>
-		<x_max>250</x_max>
-		<y_min>-250</y_min>
-		<y_max>250</y_max>
+		<x_min>-500</x_min>
+		<x_max>500</x_max>
+		<y_min>-500</y_min>
+		<y_max>500</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">1440</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">2880</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -185,33 +185,29 @@
 		
 <div_replication type="divider" description="---Virus Replication---"/>		
 		
-		<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.05</virion_uncoating_rate>
-		<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.05</uncoated_to_RNA_rate> 
-		<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.05</protein_synthesis_rate>
-		<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.05</virion_assembly_rate>
+		<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
+		<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
+		<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
+		<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
 		
 <div_import_export type="divider" description="---Virus Adsorption and Export---"/>		
 		
-		<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.005</virion_export_rate> 
+		<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
 		<virion_uptake_rate type="double" units="1/min" description="rate coefficient for virion endocytosis">1</virion_uptake_rate>
 		
 
 <div_receptors type="divider" description="---ACE2 receptor dynamics with virus binding---"/>	
 
-	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">10</ACE2_receptors_per_cell>
+	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">100</ACE2_receptors_per_cell>
 	
-	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.01</ACE2_binding_rate> 
+	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.2</ACE2_binding_rate> 
 
-	<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
+	<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.006</ACE2_endocytosis_rate> 
 	
-	<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.01</ACE2_cargo_release_rate> 
+	<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.002</ACE2_cargo_release_rate> 
 
-	<ACE2_recycling_rate type="double" units="1/min" description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
+	<ACE2_recycling_rate type="double" units="1/min" description="ACE2 receptor recycling rate">0.02</ACE2_recycling_rate> 
 	
-	
-	
-	
-ACE2_endocytosis_rate
 
 <div_apoptosis type="divider" description="---Apoptotic Response---"/>		
 
@@ -219,7 +215,13 @@ ACE2_endocytosis_rate
 		<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max>
 		<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
 		<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
-		
+
+<div_visualization type="divider" description="---Visualization Options---"/>
+
+	<color_variable type="string" description="color cells based on this variable">assembled virion</color_variable>
+			
 	</user_parameters>
+	
+	
 	
 </PhysiCell_settings>

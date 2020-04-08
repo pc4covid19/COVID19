@@ -355,17 +355,21 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 {
 	std::vector< std::string> output( 4, "black" ); 
 	// std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
-	
-	static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
+
+	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
+	static int color_index = cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
 	
 	// color by assembled virion 
 	
-	static double max_virion = 1.0 * pCell->custom_data[ "max apoptosis half max" ] + 1e-16; 
+//	static double my_max = -9e9; 
 	
 	if( pCell->phenotype.death.dead == false )
 	{
 		// find fraction of max viral load 
 		double v = pCell->custom_data[ color_index ] ; 
+		
+//		if( v > my_max )
+//		{ my_max = v; std::cout << "max v: " << my_max << std::endl; } 
 		
 		double interpolation = 0; 
 		if( v < 1 )

@@ -1,6 +1,6 @@
 \documentclass[12point]{article}
 
-
+\usepackage{hyperref}
 
 \begin{document}
 
@@ -39,11 +39,11 @@ $A$ & assembled virions that are ready for export.
 
 Our placeholder model of this is a system of ODEs: 
 \begin{eqnarray}
-\frac{dV}{dt} & = & -r_U V  + \overbrace{ \textrm{Source}_V }^\textrm{from receptor submodel} \\
-\frac{dU}{dt} & = & r_U V - r_P U \\
-\frac{dR}{dt} & = & r_P U - \lambda_R R \\
-\frac{dP}{dt} & = & r_S R - \lambda_P P - r_A P \\
-\frac{dA}{dt} & = & r_A P \underbrace{- E_{A,i} }_{\textrm{automatically done by PhysiCell}}
+\frac{dV}{dt} & = & -r_\textrm{uncoat} V  + \overbrace{ \textrm{Source}_V }^\textrm{from receptor submodel} \\
+\frac{dU}{dt} & = & r_\textrm{uncoat} V - r_\textrm{prep} U \\
+\frac{dR}{dt} & = & r_\textrm{prep} U - \lambda_R R \\
+\frac{dP}{dt} & = & r_\textrm{synth} R - \lambda_P P - r_\textrm{assemble} P \\
+\frac{dA}{dt} & = & r_\textrm{assemble} P \underbrace{- E_{A,i} }_{\textrm{automatically done by PhysiCell}}
 \end{eqnarray}
 
 \subsubsection{Exocytosis} 
@@ -62,7 +62,7 @@ the rate change in exported assembled virions is
 
 We use the following constitutive relation: 
 \begin{eqnarray}
-E_A & = & r_E A. 
+E_A & = & r_\textrm{exo} A. 
 \end{eqnarray}
 
 As one final note: we want exported $A$ diffuse and be able to infect other cells. We do this with a ``cleanup'' step at each PhysiCell diffuison time step: in each voxel, we move all of $\rho_A$ to $\rho_V$ (the concentration 
@@ -124,6 +124,37 @@ dR_{EB} = \Delta t r_\textrm{bind} n_V R_{EU} = \Delta t U_i V_i \rho.
 Thus, we call that $dR_{EB}$, deduct it from $R_{EU}$, add it to $R_{EB}$, and then 
 set the ``internalized substrate'' quantity to zero. 
 
+\subsubsection{Very preliminary ballpark parameter estimates}
+\href{https://www.nature.com/articles/cr200815#MOESM255}{https://www.nature.com/articles/cr200815\#MOESM255} states about 3 hours to see endocytosed receptors, 13 hours (3 + 10 additional hours) to see few receptors in vessicles, and 14 hours to see recycled receptors. 
+
+Based on this, let's say it takes 3 hours to move from $R_{EU}$ to $R_{EB}$ to $R_{IB}$, so that
+\begin{equation}
+% \frac{ R_{EU}(0) }{ r_\textrm{bind}} + \frac{1}{r_\textrm{endo}} = 180 \textrm{ min}. 
+\frac{ 1 }{ r_\textrm{bind}} + \frac{1}{r_\textrm{endo}} = 180 \textrm{ min}. 
+\end{equation}
+% (We scale the first parameter by initial number of receptors to acount for the fact that this rate holds early when there are many free receptors.) 
+Supposing that binding is relatively fast compared to endocytosis, let's suppose binding take on the order of 5 minutes, and endocytosis requires on the order of 175 minutes. 
+
+Continuing, we need 13-3 = 10 hours = 600 min to transit from $R_{IB}$ to $R_{IU}$, so $r_\textrm{release} = \frac{1}{600}$. 
+
+Then, we need and additional 60 minutes to recycle the freed receptor (14 hours from start to finish), so $r_\textrm{recycle} = \frac{1}{60}.$ 
+
+Since these are rough estimates, let's use only one significant digits: 
+\begin{eqnarray}
+r_\textrm{bind} & = & \frac{1}{5} = 0.2 \textrm{ min}^{-1} \\ 
+r_\textrm{endo} & = & \frac{1}{175} \sim 0.006 \textrm{ min}^{-1} \\ 
+r_\textrm{release} & = & \frac{1}{600} \sim 0.002 \textrm{ min}^{-1} \\ 
+r_\textrm{recycle} & = & \frac{1}{60} \sim 0.02 \textrm{ min}^{-1} \\ 
+\end{eqnarray}
+
+
+The paper states that viral proteins were expressed by about 18 hours. So, this will help constrain teh viral dynamics parameters.  Supposing it takes about 13 hours to release virion, the process of uncoating, preparing RNA, and synthesizing proteins takes on the order of 18-13 = 5 hours. Let's divide the time evening among these points, so that takes 100 minutes in each step. Then we will for now set 
+\begin{eqnarray}
+r_\textrm{uncoat} & = & 0.01 \textrm{ min}^{-1} \\ 
+r_\textrm{prep} & = & 0.01 \textrm{ min}^{-1} \\ 
+r_\textrm{synth} & = & 0.01 \textrm{ min}^{-1} 
+\end{eqnarray}
+Let us suppose for now that $r_\textrm{assemble} = r_\textrm{exo} = 0.01 \textrm{ min}^{-1}$ 
  
 
 
@@ -243,5 +274,6 @@ Use a receptor trafficking model to also modulate virion uptake.
 Better parameter estimates of viral replication.
 
 Add immune response with more cell types. Cell death can release immunostimulatory factors that bring in macrophages. Those cause more damage and feedback. Connect that to ARDS. 
+
 
 \end{document}
