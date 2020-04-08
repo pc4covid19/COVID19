@@ -10,6 +10,8 @@ void receptor_dynamics_model_setup( void )
 	receptor_dynamics_info.version = "0.2.0";
 	receptor_dynamics_info.main_function= receptor_dynamics_model; 
 	
+	// what variables and parameters do you need? 
+	
 	// submodel_registry.register_model( receptor_dynamics_info ); 
 	receptor_dynamics_info.register_model(); 
 	

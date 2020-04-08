@@ -140,54 +140,49 @@ void create_cell_types( void )
 			parameters.doubles("virus_fraction_released_at_death"); 
 	}
 	
-	// 
-	
-	// register the submodels (which ensures that the cells have all the internal variables they need) 
+	// register the submodels 
+	// (which ensures that the cells have all the internal variables they need) 
 	
 	internal_virus_model_setup();
 	internal_virus_response_model_setup();
 	submodel_registry.display( std::cout ); 
 	
-	std::cout << cell_defaults.custom_data << std::endl; 
-
-	system("pause");
-	
 	// set uptake rate of virions 
 	static int nV = microenvironment.find_density_index( "virion" ); 
-	cell_defaults.phenotype.secretion.uptake_rates[ nV] = parameters.doubles( "virion_uptake_rate" ); 
+	cell_defaults.phenotype.secretion.uptake_rates[nV] = parameters.doubles( "virion_uptake_rate" ); 
 	
 	// disable motility 
 	cell_defaults.phenotype.motility.is_motile = false; 	
 	
 	// add custom data here
+	// set variable values here 
 
 	Parameter<double> paramD; 	
 	paramD = parameters.doubles["virion_uncoating_rate"]; 
-	cell_defaults.custom_data.add_variable( "virion_uncoating_rate" , paramD.units, paramD.value ); 
+//	cell_defaults.custom_data.add_variable( "virion_uncoating_rate" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "virion uncoating rate" ] = paramD.value; 
 	
 	paramD = parameters.doubles["uncoated_to_RNA_rate"]; 
-	cell_defaults.custom_data.add_variable( "uncoated_to_RNA_rate" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "uncoated to RNA rate" ] = paramD.value; 
 	
 	paramD = parameters.doubles["protein_synthesis_rate"]; 
-	cell_defaults.custom_data.add_variable( "protein_synthesis_rate" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "protein synthesis rate" ] = paramD.value; 
 	
 	paramD = parameters.doubles["virion_assembly_rate"]; 
-	cell_defaults.custom_data.add_variable( "virion_assembly_rate" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "virion assembly rate" ] = paramD.value; 
 	
 	paramD = parameters.doubles["virion_export_rate"]; 
-	cell_defaults.custom_data.add_variable( "virion_export_rate" , paramD.units, paramD.value ); 
-
+	cell_defaults.custom_data[ "virion export rate" ] = paramD.value; 
 
 	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
-	cell_defaults.custom_data.add_variable( "max_infected_apoptosis_rate" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "max infected apoptosis rate" ] = paramD.value; 
 
 	paramD = parameters.doubles["max_apoptosis_half_max"]; 
-	cell_defaults.custom_data.add_variable( "max_apoptosis_half_max" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "max apoptosis half max" ] = paramD.value; 
 
 	paramD = parameters.doubles["apoptosis_hill_power"]; 
-	cell_defaults.custom_data.add_variable( "apoptosis_hill_power" , paramD.units, paramD.value ); 
+	cell_defaults.custom_data[ "apoptosis hill power" ] = paramD.value; 
 	
-
 	// Now, let's define another cell type. 
 	// It's best to just copy the default and modify it. 
 	
@@ -205,7 +200,6 @@ void create_cell_types( void )
 		
 	build_cell_definitions_maps(); 
 	display_cell_definitions( std::cout ); 
-	
 	
 	return; 
 }
@@ -253,6 +247,8 @@ void setup_microenvironment( void )
 	
 	return; 
 }
+
+Cell* pInfected = NULL; 
 
 void setup_tissue( void )
 {
@@ -329,6 +325,7 @@ void setup_tissue( void )
 	// infect the cell closest to the center  
 	
 	pNearestCell->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
+	pInfected = pNearestCell; 
 	
 	return; 
 }
@@ -338,16 +335,16 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	std::vector< std::string> output( 4, "black" ); 
 	// std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
 	
-	static int color_index = microenvironment.find_density_index( "assembled virion" ); 
+	static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
 	
 	// color by assembled virion 
 	
-	static double max_virion = 1.0 * pCell->custom_data[ "max_apoptosis_half_max" ] + 1e-16; 
-
+	static double max_virion = 1.0 * pCell->custom_data[ "max apoptosis half max" ] + 1e-16; 
+	
 	if( pCell->phenotype.death.dead == false )
 	{
 		// find fraction of max viral load 
-		double v = pCell->phenotype.molecular.internalized_total_substrates[ color_index ] ; 
+		double v = pCell->custom_data[ color_index ] ; 
 		
 		double interpolation = 0; 
 		if( v < 1 )

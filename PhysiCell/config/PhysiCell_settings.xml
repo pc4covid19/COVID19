@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
-		<y_min>-500</y_min>
-		<y_max>500</y_max>
+		<x_min>-250</x_min>
+		<x_max>250</x_max>
+		<y_min>-250</y_min>
+		<y_max>250</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -128,6 +128,7 @@
 			<Dirichlet_boundary_condition units="virion/um^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
+<!--
 		<variable name="uncoated virion" units="virion/um^3" ID="1">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">90.0</diffusion_coefficient>
@@ -154,7 +155,7 @@
 			<initial_condition units="protein/um^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="protein/um^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
-		
+-->		
 		<variable name="assembled virion" units="virion/um^3" ID="4">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">90.0</diffusion_coefficient>
