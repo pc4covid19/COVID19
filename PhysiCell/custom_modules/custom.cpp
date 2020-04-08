@@ -98,6 +98,7 @@ void create_cell_types( void )
 	// set default_cell_functions; 
 	
 	cell_defaults.functions.update_phenotype = viral_dynamics; // NULL; 
+	cell_defaults.functions.custom_cell_rule = receptor_dynamics_model; 
 	
 	// needed for a 2-D simulation: 
 	
@@ -269,8 +270,6 @@ void setup_microenvironment( void )
 	return; 
 }
 
-Cell* pInfected = NULL; 
-
 void setup_tissue( void )
 {
 	static int nV = microenvironment.find_density_index( "virion" ); 
@@ -346,7 +345,6 @@ void setup_tissue( void )
 	// infect the cell closest to the center  
 	
 	pNearestCell->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
-	pInfected = pNearestCell; 
 	
 	return; 
 }
@@ -354,7 +352,6 @@ void setup_tissue( void )
 std::vector<std::string> my_coloring_function( Cell* pCell )
 {
 	std::vector< std::string> output( 4, "black" ); 
-	// std::vector<std::string> output = false_cell_coloring_cytometry(pCell); 
 
 	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
 	static int color_index = cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
@@ -367,9 +364,6 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	{
 		// find fraction of max viral load 
 		double v = pCell->custom_data[ color_index ] ; 
-		
-//		if( v > my_max )
-//		{ my_max = v; std::cout << "max v: " << my_max << std::endl; } 
 		
 		double interpolation = 0; 
 		if( v < 1 )

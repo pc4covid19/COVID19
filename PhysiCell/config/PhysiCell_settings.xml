@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
-		<y_min>-500</y_min>
-		<y_max>500</y_max>
+		<x_min>-250</x_min>
+		<x_max>250</x_max>
+		<y_min>-250</y_min>
+		<y_max>250</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">2880</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">10000</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -104,12 +104,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">60</interval>
+			<interval units="min">120</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">30</interval>
+			<interval units="min">60</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -198,7 +198,7 @@
 
 <div_receptors type="divider" description="---ACE2 receptor dynamics with virus binding---"/>	
 
-	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">100</ACE2_receptors_per_cell>
+	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell>
 	
 	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.2</ACE2_binding_rate> 
 

@@ -204,7 +204,7 @@ int main( int argc, char* argv[] )
 			
 			// receptor dynamics 
 			
-			receptor_dynamics_model( diffusion_dt );
+			// receptor_dynamics_model( diffusion_dt );
 		
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
