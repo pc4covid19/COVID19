@@ -143,6 +143,7 @@ void create_cell_types( void )
 	// register the submodels 
 	// (which ensures that the cells have all the internal variables they need) 
 	
+	receptor_dynamics_model_setup(); 
 	internal_virus_model_setup();
 	internal_virus_response_model_setup();
 	submodel_registry.display( std::cout ); 
@@ -157,6 +158,7 @@ void create_cell_types( void )
 	// add custom data here
 	// set variable values here 
 
+	// viral dynamics parameters 
 	Parameter<double> paramD; 	
 	paramD = parameters.doubles["virion_uncoating_rate"]; 
 //	cell_defaults.custom_data.add_variable( "virion_uncoating_rate" , paramD.units, paramD.value ); 
@@ -174,6 +176,7 @@ void create_cell_types( void )
 	paramD = parameters.doubles["virion_export_rate"]; 
 	cell_defaults.custom_data[ "virion export rate" ] = paramD.value; 
 
+	// viral response parameters. 
 	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
 	cell_defaults.custom_data[ "max infected apoptosis rate" ] = paramD.value; 
 
@@ -182,6 +185,24 @@ void create_cell_types( void )
 
 	paramD = parameters.doubles["apoptosis_hill_power"]; 
 	cell_defaults.custom_data[ "apoptosis hill power" ] = paramD.value; 
+	
+	// receptor dynamics parameters. 
+
+	paramD = parameters.doubles["ACE2_binding_rate"]; 
+	cell_defaults.custom_data[ "ACE2 binding rate" ] = paramD.value; 
+
+	paramD = parameters.doubles["ACE2_endocytosis_rate"]; 
+	cell_defaults.custom_data[ "ACE2 endocytosis rate" ] = paramD.value; 
+
+	paramD = parameters.doubles["ACE2_cargo_release_rate"]; 
+	cell_defaults.custom_data[ "ACE2 cargo release rate" ] = paramD.value; 
+
+	paramD = parameters.doubles["ACE2_recycling_rate"]; 
+	cell_defaults.custom_data[ "ACE2 recycling rate" ] = paramD.value; 
+
+	paramD = parameters.doubles["ACE2_receptors_per_cell"]; 
+	cell_defaults.custom_data[ "unbound external ACE2" ] = paramD.value; 
+	
 	
 	// Now, let's define another cell type. 
 	// It's best to just copy the default and modify it. 

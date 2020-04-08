@@ -198,9 +198,20 @@
 
 <div_receptors type="divider" description="---ACE2 receptor dynamics with virus binding---"/>	
 
-	<ACE2_receptors_per_cell type="int" units="dimensionless" description="number of ACE2 receptors per cell">100</ACE2_receptors_per_cell>
-	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-SARS-CoV-2 binding rate">0.01</ACE2_binding_rate> 
+	<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">10</ACE2_receptors_per_cell>
+	
+	<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.01</ACE2_binding_rate> 
 
+	<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
+	
+	<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.01</ACE2_cargo_release_rate> 
+
+	<ACE2_recycling_rate type="double" units="1/min" description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
+	
+	
+	
+	
+ACE2_endocytosis_rate
 
 <div_apoptosis type="divider" description="---Apoptotic Response---"/>		
 

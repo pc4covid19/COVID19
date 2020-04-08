@@ -46,9 +46,11 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	static int nP  = pCell->custom_data.find_variable_index( "viral protein" ); 
 	
 	// copy virions from "internalized variables" to "custom variables"
-	
+/*	
 	pCell->custom_data[nV_internal] = 
 		phenotype.molecular.internalized_total_substrates[nV_external]; 
+	// this transfer is now handled in receptor dynamics 
+*/		
 	pCell->custom_data[nA_internal] = 
 		phenotype.molecular.internalized_total_substrates[nA_external]; 
 		
@@ -92,8 +94,10 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
  
 	// copy data from custom variables to "internalized variables" 
 	
+/*	
 	phenotype.molecular.internalized_total_substrates[nV_external] = 
 		pCell->custom_data[nV_internal];
+*/		
 	phenotype.molecular.internalized_total_substrates[nA_external] = 
 		pCell->custom_data[nA_internal];	
 	
