@@ -33,17 +33,9 @@ The model includes a basic pharmacodynamic response (to assembled virions) to ca
 
 **Model details:** https://github.com/MathCancer/COVID19/wiki/About 
 
-**Homepage:**      http://PhysiCell.org
-
-**Downloads:**     http://PhysiCell.sf.net
+**Homepage:**      http://covid19.PhysiCell.org
 
 **Support:**       https://sourceforge.net/p/physicell/tickets/
-
-**Quick Start:**   Look at QuickStart.pdf in the documentation folder. 
-
-**User Guide:**    Look at UserGuide.pdf in the documentation folder. 
- 
-**Tutorials:**     http://www.mathcancer.org/blog/physicell-tutorials/
 
 **Latest info:**   follow [@PhysiCell](https://twitter.com/PhysiCell) and [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
 
@@ -53,11 +45,9 @@ See changes.md for the full change log.
 
 ## Release summary: 
 
-This releases first documentation on the math. See the /math directory. 
+This release incorporates major v1 model feedback, particularly a refactoring into a more modular architecture with submodels, a placeholder ACE2 receptor traffickign model, and receptor-modulated endocytosis. 
 
 **NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
-
-
 
 ### New features and changes:
 
@@ -67,7 +57,9 @@ This releases first documentation on the math. See the /math directory.
 
 + Set default diffusion coefficient to 90 micron^2/min based on v1 feedback 
 
-+ Added a basic functionality to "register" all submodels into a list with basic information. 
++ Added a basic functionality to "register" all submodels into a list with basic information and automatically creation of custom cell variables. 
+
++ Cells now automatically record their internal virus variables in output data. 
 
 ### Bugfixes 
 
