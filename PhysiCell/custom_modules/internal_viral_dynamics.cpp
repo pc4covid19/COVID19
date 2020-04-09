@@ -74,7 +74,7 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	pCell->custom_data[nP] += dP; 
 
 	// degrade mRNA 
-
+	
 
 	// degrade protein 
 	
