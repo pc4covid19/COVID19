@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">10000</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">7200</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -109,7 +109,7 @@
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">30</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -219,9 +219,8 @@
 	<use_single_infected_cell type="bool" units="none" description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 
 <div_visualization type="divider" description="---Visualization Options---"/>
-
 	<color_variable type="string" description="color cells based on this variable">assembled virion</color_variable>
-			
+		
 	</user_parameters>
 	
 	

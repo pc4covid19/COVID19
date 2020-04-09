@@ -416,58 +416,6 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
 {
-/*	
-	static int nE = microenvironment.find_density_index( "virion" ); 
-	static int nUV = microenvironment.find_density_index( "uncoated virion" ); 
-	static int nR = microenvironment.find_density_index( "viral RNA" ); 
-	static int nP = microenvironment.find_density_index( "viral protein" ); 
-	static int nA = microenvironment.find_density_index( "assembled virion" ); 
-	
-	// if dead, stop this business, 
-	if( phenotype.death.dead == true )
-	{
-		phenotype.secretion.set_all_uptake_to_zero();
-		pCell->functions.update_phenotype = NULL; 
-		return;
-	}
-	
-	// uncoat endocytosed virus
-	double dE = dt * pCell->custom_data["virion_uncoating_rate"] *  ( phenotype.molecular.internalized_total_substrates[nE] ); 
-	if( dE > phenotype.molecular.internalized_total_substrates[nE] )
-	{ dE = phenotype.molecular.internalized_total_substrates[nE]; } 
-	phenotype.molecular.internalized_total_substrates[nE] -= dE; 
-	phenotype.molecular.internalized_total_substrates[nUV] += dE; 
-	
-	// convert uncoated virus to usable mRNA 
-	double dR = dt * pCell->custom_data["uncoated_to_RNA_rate"] *  ( phenotype.molecular.internalized_total_substrates[nUV] ); 
-	if( dR > phenotype.molecular.internalized_total_substrates[nUV] )
-	{ dR = phenotype.molecular.internalized_total_substrates[nUV]; } 
-	phenotype.molecular.internalized_total_substrates[nUV] -= dR; 
-	phenotype.molecular.internalized_total_substrates[nR] += dR; 
-	
-	// use mRNA to create viral protein 
-	double dP = dt * pCell->custom_data["protein_synthesis_rate"] *  ( phenotype.molecular.internalized_total_substrates[nR] ); 
-	phenotype.molecular.internalized_total_substrates[nP] += dP; 
-	
-	// degrade mRNA 
-
-
-	// degrade protein 
-	
-	
-	// assemble virus 
-	double dA = dt * pCell->custom_data["virion_assembly_rate"] *  ( phenotype.molecular.internalized_total_substrates[nP] ); 
-	if( dA > phenotype.molecular.internalized_total_substrates[nP] )
-	{ dA = phenotype.molecular.internalized_total_substrates[nP]; } 
-	phenotype.molecular.internalized_total_substrates[nP] -= dA; 
-	phenotype.molecular.internalized_total_substrates[nA] += dA; 
-	
-	
-	// set export rate 
-	
-	phenotype.secretion.net_export_rates[nA] = pCell->custom_data["virion_export_rate" ] *  ( phenotype.molecular.internalized_total_substrates[nA] ); 
-	
-*/	
 	// viral dynamics model 
 	internal_virus_model(pCell,phenotype,dt);
 	
@@ -475,20 +423,6 @@ void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	internal_virus_response_model(pCell,phenotype,dt);
 
-/*
-	// now, set apoptosis rate 
-	
-	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
-	phenotype.death.rates[apoptosis_model_index] = pCell->custom_data["max_infected_apoptosis_rate"] ; 
-	
-	double v = phenotype.molecular.internalized_total_substrates[nA] /
-		pCell->custom_data["max_apoptosis_half_max"] ; 
-	v = pow( v, pCell->custom_data["apoptosis_hill_power"] ); 
-	
-	double effect = v / (1.0+v); 
-	phenotype.death.rates[apoptosis_model_index] *= effect; 
-*/
-	
 	return; 
 }
 
