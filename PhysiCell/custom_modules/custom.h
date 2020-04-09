@@ -96,7 +96,6 @@ void setup_microenvironment( void );
 
 std::vector<std::string> my_coloring_function( Cell* );
 
-
 void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt ); 
 
 void move_exported_to_viral_field( void ); 

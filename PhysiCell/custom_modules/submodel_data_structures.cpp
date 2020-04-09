@@ -59,8 +59,6 @@ void Submodel_Information::display( std::ostream& os )
 	{ os << "NULL"; }
 	os << std::endl; 
 	
-	
-	
 	return; 
 }
 
