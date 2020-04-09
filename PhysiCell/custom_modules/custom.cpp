@@ -383,7 +383,13 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 		double v = pCell->custom_data[ color_index ] ; 
 		
 		if( v < 0 )
-		{ std::cout << "aha!" << std::endl; exit(-2); } 
+		{
+			std::cout << "aha!" << std::endl; 
+			
+			std::cout << pCell->custom_data <<std::endl; 
+			
+			exit(-2); 
+		} 
 		
 		double interpolation = 0; 
 		if( v < 1 )

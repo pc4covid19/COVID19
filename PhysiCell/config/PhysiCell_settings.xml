@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-400</x_min>
-		<x_max>400</x_max>
-		<y_min>-400</y_min>
-		<y_max>400</y_max>
+		<x_min>-250</x_min>
+		<x_max>250</x_max>
+		<y_min>-250</y_min>
+		<y_max>250</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -104,12 +104,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">120</interval>
+			<interval units="min">30</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">30</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -215,7 +215,7 @@
 	<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 		
 <div_initialization type="divider" description="---Initialization Options--"/>
-	<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0 (enter 0 to infect 1 cell)">10</multiplicity_of_infection>
+	<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0 (enter 0 to infect 1 cell)">1000</multiplicity_of_infection>
 
 <div_visualization type="divider" description="---Visualization Options---"/>
 

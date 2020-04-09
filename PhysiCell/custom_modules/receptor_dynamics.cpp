@@ -64,6 +64,20 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	// internalized virus tells us how many have recently bound to receptors 
 	double newly_bound = phenotype.molecular.internalized_total_substrates[nV_external]; 
+	// if it tried to bind to more virus than there are receptors, compensate 
+	double excess_binding = newly_bound - pCell->custom_data[nR_EU]; 
+	if( excess_binding > 0.0 )
+	{
+		// don't bring in more virus than there are receptors 
+		newly_bound = pCell->custom_data[nR_EU]; 
+		// dump any excess back into the microenvironment
+		static double one_virion_to_density = 1.0 / microenvironment.mesh.dV; 
+		// this needs omp critical because 2 cells writing to 1 voxel is not thread safe 
+		#pragma omp critical 
+		{
+			pCell->nearest_density_vector()[nV_external] += excess_binding * one_virion_to_density; 
+		}
+	}
 	phenotype.molecular.internalized_total_substrates[nV_external] = 0.0; 
 	
 	// add newly bound receptor to R_EB
