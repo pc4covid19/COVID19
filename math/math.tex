@@ -130,10 +130,10 @@ set the ``internalized substrate'' quantity to zero.
 Based on this, let's say it takes 3 hours to move from $R_{EU}$ to $R_{EB}$ to $R_{IB}$, so that
 \begin{equation}
 % \frac{ R_{EU}(0) }{ r_\textrm{bind}} + \frac{1}{r_\textrm{endo}} = 180 \textrm{ min}. 
-\frac{ 1 }{ r_\textrm{bind}} + \frac{1}{r_\textrm{endo}} = 180 \textrm{ min}. 
+\frac{ 1 }{ r_\textrm{bind} R_{EU}(0) } + \frac{1}{r_\textrm{endo}} = 180 \textrm{ min}. 
 \end{equation}
-% (We scale the first parameter by initial number of receptors to acount for the fact that this rate holds early when there are many free receptors.) 
-Supposing that binding is relatively fast compared to endocytosis, let's suppose binding take on the order of 5 minutes, and endocytosis requires on the order of 175 minutes. 
+(We scale the first parameter by initial number of receptors to acount for the fact that this rate holds early when there are many free receptors.) 
+Supposing that binding is relatively fast compared to endocytosis, let's suppose binding take on the order of 1 minute (for plentiful free receptors), and endocytosis requires on the order of 180 minutes. 
 
 Continuing, we need 13-3 = 10 hours = 600 min to transit from $R_{IB}$ to $R_{IU}$, so $r_\textrm{release} = \frac{1}{600}$. 
 
@@ -141,12 +141,18 @@ Then, we need and additional 60 minutes to recycle the freed receptor (14 hours 
 
 Since these are rough estimates, let's use only one significant digits: 
 \begin{eqnarray}
-r_\textrm{bind} & = & \frac{1}{5} = 0.2 \textrm{ min}^{-1} \\ 
+R_{EU}(0) r_\textrm{bind} & = & 1 \textrm{ min}^{-1} \\ 
 r_\textrm{endo} & = & \frac{1}{175} \sim 0.006 \textrm{ min}^{-1} \\ 
 r_\textrm{release} & = & \frac{1}{600} \sim 0.002 \textrm{ min}^{-1} \\ 
 r_\textrm{recycle} & = & \frac{1}{60} \sim 0.02 \textrm{ min}^{-1} \\ 
 \end{eqnarray}
-
+Assuming there are 1000 to 10000 receptors per cell, we will use a default 1000 receptors and set $r_\textrm{bind} = 0.001 $. Because the other estimates are rough, we wil round to nearest order of magnitude. Thus, 
+\begin{eqnarray}
+r_\textrm{bind} & = & 0.001 \textrm{ min}^{-1} \\ 
+r_\textrm{endo} & = & 0.01 \textrm{ min}^{-1} \\ 
+r_\textrm{release} & = & 0.001 \textrm{ min}^{-1} \\ 
+r_\textrm{recycle} & = & 0.01 \textrm{ min}^{-1} \\ 
+\end{eqnarray}
 
 The paper states that viral proteins were expressed by about 18 hours. So, this will help constrain teh viral dynamics parameters.  Supposing it takes about 13 hours to release virion, the process of uncoating, preparing RNA, and synthesizing proteins takes on the order of 18-13 = 5 hours. Let's divide the time evening among these points, so that takes 100 minutes in each step. Then we will for now set 
 \begin{eqnarray}
@@ -154,7 +160,7 @@ r_\textrm{uncoat} & = & 0.01 \textrm{ min}^{-1} \\
 r_\textrm{prep} & = & 0.01 \textrm{ min}^{-1} \\ 
 r_\textrm{synth} & = & 0.01 \textrm{ min}^{-1} 
 \end{eqnarray}
-Let us suppose for now that $r_\textrm{assemble} = r_\textrm{exo} = 0.01 \textrm{ min}^{-1}$ 
+Let us suppose for now that $r_\textrm{assemble} = r_\textrm{exo} = 0.01 \textrm{ min}^{-1}$. 
  
 
 

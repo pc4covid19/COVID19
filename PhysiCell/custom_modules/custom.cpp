@@ -151,7 +151,7 @@ void create_cell_types( void )
 	
 	// set uptake rate of virions 
 	static int nV = microenvironment.find_density_index( "virion" ); 
-	cell_defaults.phenotype.secretion.uptake_rates[nV] = parameters.doubles( "virion_uptake_rate" ); 
+	// cell_defaults.phenotype.secretion.uptake_rates[nV] = parameters.doubles( "virion_uptake_rate" ); 
 	
 	// disable motility 
 	cell_defaults.phenotype.motility.is_motile = false; 	
@@ -301,7 +301,7 @@ void setup_tissue( void )
 	// find hte cell nearest to the center 
 	double nearest_distance_squared = 9e99; 
 	Cell* pNearestCell = NULL; 
-
+	
 	int n = 0; 
 	while( y < y_max )
 	{
@@ -342,9 +342,26 @@ void setup_tissue( void )
 		}
 	}
 	
+	int number_of_virions = (int) parameters.doubles("multiplicity_of_infection") * 
+		(*all_cells).size(); 
+	double single_virion_density_change = 1.0 / microenvironment.mesh.dV; 
+	
 	// infect the cell closest to the center  
 	
-	pNearestCell->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
+	if( number_of_virions == 0 )
+	{
+		std::cout << "Infecting center cell with one virion ... " << std::endl; 
+		pNearestCell->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
+	}
+	for( int n=0 ; n < number_of_virions ; n++ )
+	{
+		// pick a random voxel 
+		int i = (int) ( UniformRandom() * (microenvironment.mesh.x_coordinates.size()-1.0) );
+		int j = (int) ( UniformRandom() * (microenvironment.mesh.y_coordinates.size()-1.0) );
+		
+		// int n = (int) ( ( microenvironment.number_of_voxels()-1.0 ) * UniformRandom() ); 
+		microenvironment(i,j)[nV] += single_virion_density_change; 
+	}
 	
 	return; 
 }
