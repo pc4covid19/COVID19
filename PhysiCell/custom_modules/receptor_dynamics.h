@@ -12,4 +12,8 @@ using namespace PhysiCell;
 void receptor_dynamics_model_setup( void );
 void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt );
 
+// this needs to be done on faster time scale; 
+void receptor_dynamics_model( double dt ); 
+
+
 #endif 

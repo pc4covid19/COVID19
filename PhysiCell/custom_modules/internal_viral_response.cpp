@@ -24,10 +24,6 @@ void internal_virus_response_model_setup( void )
 	return; 
 }
 
-// inputs: 
-
-// outputs: 
-
 void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// bookkeeping -- find microenvironment variables we need
