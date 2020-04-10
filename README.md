@@ -1,7 +1,7 @@
 # COVID19 tissue simulator 
-**Version:** 0.2.0
+**Version:** 0.2.1
 
-**Release date:** 9 April 2020
+**Release date:** 10 April 2020
 
 ## Overview
 This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium. It is being rapidly prototyped and refined with community support (see below).
@@ -44,13 +44,19 @@ See changes.md for the full change log.
 * * * 
 
 ## Release summary: 
+### 0.2.1:
+This is a bug release fix, which fixes a rendering bug where all cells were visualized as black. 
 
+### 0.2.0:
 This release incorporates major v1 model feedback, particularly a refactoring into a more modular architecture with submodels, a placeholder ACE2 receptor traffickign model, and receptor-modulated endocytosis. 
 
 **NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
 
 ### New features and changes:
+#### 0.2.1:
++ None. 
 
+#### 0.2.0:
 + Refactored into modular design based on v1 preprint feedback. 
 
 + Set default max time to 7200 minutes
@@ -70,7 +76,9 @@ This release incorporates major v1 model feedback, particularly a refactoring in
 + Worked to improve parameter estimates based on ACE2 papers. 
 
 ### Bugfixes 
+#### 0.2.1: 
 
+#### 0.2.0: 
 + A single cell is infected at the center of the domain, rather than a hard-coded test that fails for some domain sizes. 
 
 ### Notices for intended changes that may affect backwards compatibility:

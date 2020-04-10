@@ -390,7 +390,7 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 	// color by assembled virion 
 	
 //	static double my_max = -9e9; 
-/*	
+
 	if( pCell->phenotype.death.dead == false )
 	{
 		// find fraction of max viral load 
@@ -418,7 +418,8 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 		output[0] = color; 
 		output[2] = color; 
 		output[3] = color; 
-
+	}
+/*
 		// color boundary by bound ACE2 receptor on 
 		// surface or inside cell 
 		
