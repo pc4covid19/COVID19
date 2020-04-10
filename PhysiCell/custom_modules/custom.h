@@ -68,6 +68,11 @@
 #include "../core/PhysiCell.h"
 #include "../modules/PhysiCell_standard_modules.h" 
 
+#include "./submodel_data_structures.h" 
+#include "./internal_viral_dynamics.h"
+#include "./internal_viral_response.h" 
+#include "./receptor_dynamics.h" 
+
 using namespace BioFVM; 
 using namespace PhysiCell;
 
@@ -90,7 +95,6 @@ void setup_microenvironment( void );
 // custom pathology coloring function 
 
 std::vector<std::string> my_coloring_function( Cell* );
-
 
 void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt ); 
 
