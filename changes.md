@@ -70,6 +70,8 @@ This release incorporates major v1 model feedback, particularly a refactoring in
 
 + Worked to improve parameter estimates based on ACE2 papers. 
 
++ Cell surface is colored baced on bound ACE2 receptor elevel. 
+
 ### Bugfixes 
 
 + A single cell is infected at the center of the domain, rather than a hard-coded test that fails for some domain sizes. 

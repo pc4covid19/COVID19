@@ -359,11 +359,15 @@ void setup_tissue( void )
 		for( int n=0 ; n < number_of_virions ; n++ )
 		{
 			// pick a random voxel 
-			int i = (int) ( UniformRandom() * (microenvironment.mesh.x_coordinates.size()-1.0) );
-			int j = (int) ( UniformRandom() * (microenvironment.mesh.y_coordinates.size()-1.0) );
+			std::vector<double> position = {0,0,0}; 
+			position[0] = x_min + (x_max-x_min)*UniformRandom(); 
+			position[1] = y_min + (y_max-y_min)*UniformRandom(); 
+			
+			int m = microenvironment.nearest_voxel_index( position ); 
 			
 			// int n = (int) ( ( microenvironment.number_of_voxels()-1.0 ) * UniformRandom() ); 
-			microenvironment(i,j)[nV] += single_virion_density_change; 
+			// microenvironment(i,j)[nV] += single_virion_density_change; 
+			microenvironment(m)[nV] += single_virion_density_change; 
 		}
 	}
 	
@@ -376,11 +380,17 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 
 	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
 	static int color_index = cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
+	static int nV = cell_defaults.custom_data.find_variable_index( "virion" ); 
+	
+	static int nV_external = microenvironment.find_density_index( "virion" ); 
+	static int nR_EB = cell_defaults.custom_data.find_variable_index( "bound external ACE2" ); 
+	static int nR_IB = cell_defaults.custom_data.find_variable_index( "bound internal ACE2" ); 
+	
 	
 	// color by assembled virion 
 	
 //	static double my_max = -9e9; 
-	
+/*	
 	if( pCell->phenotype.death.dead == false )
 	{
 		// find fraction of max viral load 
@@ -408,7 +418,34 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 		output[0] = color; 
 		output[2] = color; 
 		output[3] = color; 
+
+		// color boundary by bound ACE2 receptor on 
+		// surface or inside cell 
+		
+		v = pCell->custom_data[ nR_EB ] + pCell->custom_data[ nR_IB ] + 
+			pCell->phenotype.molecular.internalized_total_substrates[ nV_external ]; 
+
+		interpolation = 0; 
+		if( v < 1 )
+		{ interpolation = 0; } 
+		if( v >= 1.0 && v < 10 )
+		{ interpolation = 0.25; } 
+		if( v >= 10.0 && v < 100 )
+		{ interpolation = 0.5; } 
+		if( v >= 100.0 && v < 1000 )
+		{ interpolation = 0.75; } 
+		if( v >= 1000.0 )
+		{ interpolation = 1.0; } 
+
+		red = (int) floor( 255.0 * interpolation ) ; 
+		green = red; 
+		blue = 255 - red; 
+
+		sprintf( color, "rgb(%u,%u,%u)" , red,green,blue ); 
+		
+		output[1] = color;			
 	}
+*/
 	
 	return output; 
 }
