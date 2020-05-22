@@ -50,6 +50,23 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	static int nUV = pCell->custom_data.find_variable_index( "uncoated_virion" ); 
 	static int nR  = pCell->custom_data.find_variable_index( "viral_RNA" ); 
 	static int nP  = pCell->custom_data.find_variable_index( "viral_protein" ); 
+
+/*	
+	static bool done = false; 
+	extern Cell* pInfected; 
+	if( pCell == pInfected && 1 == 0 )
+	{
+		std::cout << std::endl << "viral dynamics : " << __LINE__ << " " 
+			<< phenotype.molecular.internalized_total_substrates[ nV_external ] << " " 
+			<< phenotype.molecular.internalized_total_substrates[ nA_external ] << " " 
+			<< pCell->custom_data[nV_internal] << " " 
+			<< pCell->custom_data[nUV] << " " 
+			<< pCell->custom_data[nR] << " " 
+			<< pCell->custom_data[nP] << " " 	
+			<< pCell->custom_data[nA_internal] << " " 
+			<< std::endl; 		
+	}
+*/	
 	
 	// copy virions from "internalized variables" to "custom variables"
 /*	

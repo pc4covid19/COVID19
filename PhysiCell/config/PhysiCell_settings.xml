@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
-		<y_min>-500</y_min>
-		<y_max>500</y_max>
+		<x_min>-400</x_min>
+		<x_max>400</x_max>
+		<y_min>-400</y_min>
+		<y_max>400</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -97,19 +97,19 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>6</omp_num_threads>
+		<omp_num_threads>4</omp_num_threads>
 	</parallel> 
 	
 	<save>
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">360</interval>
+			<interval units="min">60</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">30</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -121,7 +121,7 @@
 	<microenvironment_setup>
 		<variable name="virion" units="virion/um^3" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">90.0</diffusion_coefficient>
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/um^3">0</initial_condition>
@@ -130,7 +130,7 @@
 
 		<variable name="assembled virion" units="virion/um^3" ID="1">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">90.0</diffusion_coefficient>
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/um^3">0</initial_condition>
@@ -423,7 +423,7 @@
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0">0.01</multiplicity_of_infection>
-			<use_single_infected_cell type="bool" units="none" description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
+			<use_single_infected_cell type="bool" units="none" description="Infect center cell with one virion (overrides MOI)">true</use_single_infected_cell>
 			
 			<number_of_CD8_Tcells type="int" units="none" description="initial number of CD8 T cells">50</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" description="initial number of macrophages">50</number_of_macrophages>
@@ -435,7 +435,7 @@
 -->
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
-			<color_variable type="string" description="color cells based on this variable">assembled virion</color_variable>
+			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 		
 			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
 			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>

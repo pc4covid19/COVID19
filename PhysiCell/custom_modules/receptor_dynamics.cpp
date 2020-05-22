@@ -58,6 +58,30 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	static int nR_endo = pCell->custom_data.find_variable_index( "ACE2_endocytosis_rate" ); 
 	static int nR_release = pCell->custom_data.find_variable_index( "ACE2_cargo_release_rate" ); 	
 	static int nR_recycle = pCell->custom_data.find_variable_index( "ACE2_recycling_rate" ); 
+
+/*	
+	static bool done = false;
+	extern Cell* pInfected; 
+		if( pCell == pInfected && 1 == 0 )
+		{
+std::cout << "receptor : " << __LINE__ << " " 
+
+			<< phenotype.molecular.internalized_total_substrates[ nV_external ] << " " 
+			<< phenotype.molecular.internalized_total_substrates[ nA_external ] << " " 
+	<< pCell->custom_data[nV_internal] << " " 
+	<< pCell->custom_data[nA_internal] << " " 
+
+	<< pCell->custom_data[nR_EU] << " " 
+	<< pCell->custom_data[nR_EB] << " " 
+	<< pCell->custom_data[nR_IB] << " " 
+	<< pCell->custom_data[nR_IU] << " " 
+	<< pCell->custom_data[nR_bind] << " " 
+	<< pCell->custom_data[nR_endo] << " " 
+	<< pCell->custom_data[nR_recycle] << " "
+	<< pCell->custom_data[nR_recycle] << std::endl; 
+		}			
+*/
+	
 	
 	// do nothing if dead 
 	if( phenotype.death.dead == true )

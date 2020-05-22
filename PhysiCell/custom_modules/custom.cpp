@@ -178,14 +178,12 @@ void setup_tissue( void )
 {
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	
-	
 	// create some cells near the origin
 	
 	Cell* pC;
 	
 	// hexagonal cell packing 
 	Cell_Definition* pCD = find_cell_definition("lung epithelium"); 
-
 	
 	double cell_radius = pCD->phenotype.geometry.radius; 
 	double spacing = 0.95 * cell_radius * 2.0; 
@@ -266,8 +264,6 @@ void setup_tissue( void )
 			microenvironment(m)[nV] += single_virion_density_change; 
 		}
 	}
-	
-//	std::cout << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << std::endl; 
 	
 	// now place immune cells 
 	
