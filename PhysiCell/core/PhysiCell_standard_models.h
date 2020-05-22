@@ -104,6 +104,7 @@ bool standard_necrosis_arrest_function( Cell* pCell, Phenotype& phenotype, doubl
 // standard volume functions 
 
 void standard_volume_update_function( Cell* pCell, Phenotype& phenotype, double dt ); // done 
+void basic_volume_model( Cell* pCell, Phenotype& phenotype, double dt ); 
 
 // standard mechanics functions 
 
@@ -126,6 +127,10 @@ bool create_standard_cell_death_models( void ); // done
 bool create_standard_cycle_and_death_models( void ); // done 
 
 void initialize_default_cell_definition( void ); // done 
+
+
+void chemotaxis_function( Cell* pCell, Phenotype& phenotype , double dt ); 
+
 	
 };
 

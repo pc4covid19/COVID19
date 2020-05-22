@@ -72,6 +72,7 @@
 #include "./internal_viral_dynamics.h"
 #include "./internal_viral_response.h" 
 #include "./receptor_dynamics.h" 
+#include "./immune_submodels.h" 
 
 using namespace BioFVM; 
 using namespace PhysiCell;

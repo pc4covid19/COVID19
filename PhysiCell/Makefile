@@ -45,7 +45,8 @@ PhysiCell_pugixml.o PhysiCell_settings.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o
+PhysiCell_custom_module_OBJECTS := custom.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o 
+immune_submodels.o 
 
 pugixml_OBJECTS := pugixml.o
 
@@ -151,6 +152,9 @@ internal_viral_response.o: ./custom_modules/internal_viral_response.cpp
 
 receptor_dynamics.o: ./custom_modules/receptor_dynamics.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/receptor_dynamics.cpp
+	
+immune_submodels.o: ./custom_modules/immune_submodels.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/immune_submodels.cpp 	
 
 # cleanup
 
