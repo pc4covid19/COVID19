@@ -12,7 +12,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// requires faster time scale - done in main function 
 	
 	// viral dynamics model 
-	internal_virus_model(pCell,phenotype,dt);
+	internal_viral_dynamics_info.phenotype_function(pCell,phenotype,dt); 
+	// internal_virus_model(pCell,phenotype,dt);
 	
 	// viral response model 
 	internal_virus_response_model_info.phenotype_function(pCell,phenotype,dt); 

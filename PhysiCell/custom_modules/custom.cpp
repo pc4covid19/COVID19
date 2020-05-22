@@ -276,7 +276,7 @@ void setup_tissue( void )
 
 std::vector<std::string> epithelium_coloring_function( Cell* pCell )
 {
-	std::vector< std::string> output( 4, "black" ); 
+	std::vector<std::string> output( 4, "black" ); 
 
 	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
 	static int color_index = 

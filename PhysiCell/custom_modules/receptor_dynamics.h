@@ -8,6 +8,8 @@ using namespace PhysiCell;
 
 #ifndef __receptor_dynamics__
 #define __receptor_dynamics__
+
+extern Submodel_Information receptor_dynamics_info; 
 	
 void receptor_dynamics_model_setup( void );
 

@@ -6,18 +6,15 @@ using namespace PhysiCell;
 
 #include "./submodel_data_structures.h" 
 
-#include "./immune_submodels.h" // done 
-#include "./receptor_dynamics.h" // done 
-#include "./internal_viral_dynamics.h" // done 
-#include "./internal_viral_response.h"  // done 
+#include "./immune_submodels.h"  
+#include "./receptor_dynamics.h"  
+#include "./internal_viral_dynamics.h"  
+#include "./internal_viral_response.h"   
 
 #ifndef __epithelium_submodel__
 #define __epithelium_submodel__
 
-/*
-void immune_submodel_setup( void );
-void immune_submodel_model( Cell* pCell, Phenotype& phenotype, double dt );
-*/
+extern Submodel_Information epithelium_submodel_info; 
 
 void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt ); 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt ); 
