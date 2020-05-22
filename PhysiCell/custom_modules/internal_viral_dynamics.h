@@ -10,6 +10,7 @@ using namespace PhysiCell;
 #define __internal_viral_dynamics__
 	
 void internal_virus_model_setup( void );
+
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt );
 
 #endif 

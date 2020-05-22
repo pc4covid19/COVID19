@@ -40,7 +40,7 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt );
 
 
 // this damage response will need to be added to the "infected cell response" model 
-void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt ); 
+// void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt ); 
 
 
 

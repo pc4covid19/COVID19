@@ -546,6 +546,7 @@ Cell* immune_cell_check_neighbors_for_attachment( Cell* pAttacker , double dt )
 	return NULL; 
 }
 
+/*
 void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
@@ -566,4 +567,4 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	return; 
 }
-
+*/
