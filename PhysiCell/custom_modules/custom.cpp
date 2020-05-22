@@ -82,7 +82,6 @@ void create_cell_types( void )
 	   
 	   This is a good place to set default functions. 
 	*/ 
-	
 	cell_defaults.functions.volume_update_function = standard_volume_update_function;
 	cell_defaults.functions.update_velocity = standard_update_cell_velocity;
 
@@ -96,11 +95,6 @@ void create_cell_types( void )
 	int virion_index = microenvironment.find_density_index( "virion" ); 
 	int assembled_virion_index = microenvironment.find_density_index( "assembled virion" );
 	
-	cell_defaults.phenotype.molecular.fraction_released_at_death[virion_index] = 
-		parameters.doubles("virus_fraction_released_at_death"); 
-	cell_defaults.phenotype.molecular.fraction_released_at_death[assembled_virion_index] = 
-		parameters.doubles("virus_fraction_released_at_death"); 
-
 	/*
 	   This parses the cell definitions in the XML config file. 
 	*/
@@ -116,6 +110,12 @@ void create_cell_types( void )
 	// register the submodels 
 	// (which ensures that the cells have all the internal variables they need) 
 	
+	Cell_Definition* pCD = find_cell_definition( "lung epithelium" ); 
+	pCD->phenotype.molecular.fraction_released_at_death[virion_index] = 
+		parameters.doubles("virus_fraction_released_at_death"); 
+	pCD->phenotype.molecular.fraction_released_at_death[assembled_virion_index] = 
+		parameters.doubles("virus_fraction_released_at_death"); 
+
 	immune_submodels_setup();
 	// receptor_dynamics_model_setup(); 
 	// internal_virus_model_setup();
@@ -269,6 +269,8 @@ void setup_tissue( void )
 		}
 	}
 	
+//	std::cout << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << std::endl; 
+	
 	// now place immune cells 
 	
 	return; 
@@ -352,6 +354,8 @@ std::string blue_yellow_interpolation( double min, double val, double max )
 
 std::vector<std::string> tissue_coloring_function( Cell* pCell )
 {
+	return {"red", "green", "blue", "black" } ; 
+	
 	static int lung_epithelial_type = get_cell_definition( "lung epithelium" ).type; 
 	
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type; 
