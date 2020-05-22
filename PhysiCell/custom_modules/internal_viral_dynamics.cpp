@@ -10,7 +10,7 @@ Submodel_Information internal_viral_dynamics_info;
 void internal_virus_model_setup( void )
 {
 		// set version
-	internal_viral_dynamics_info.name = "internal viral dynamics"; 
+	internal_viral_dynamics_info.name = "internal viral replication dynamics"; 
 	internal_viral_dynamics_info.version = internal_virus_replication_version; 
 		// set functions 
 	internal_viral_dynamics_info.main_function = NULL; 

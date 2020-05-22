@@ -10,7 +10,7 @@ void internal_virus_response_model_setup( void )
 {
 	// set up the model 
 		// set version info 
-	internal_virus_response_model_info.name = "epithelium model"; 
+	internal_virus_response_model_info.name = "internal viral response"; 
 	internal_virus_response_model_info.version = internal_virus_response_version; 
 		// set functions 
 	internal_virus_response_model_info.main_function = NULL; 

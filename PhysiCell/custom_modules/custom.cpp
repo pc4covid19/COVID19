@@ -67,10 +67,6 @@
 
 #include "./custom.h"
 
-// declare cell definitions here 
-
-Cell_Definition lung_epithelium; 
-
 void create_cell_types( void )
 {
 	// set the random seed 
@@ -188,8 +184,10 @@ void setup_tissue( void )
 	Cell* pC;
 	
 	// hexagonal cell packing 
+	Cell_Definition* pCD = find_cell_definition("lung epithelium"); 
+
 	
-	double cell_radius = lung_epithelium.phenotype.geometry.radius; 
+	double cell_radius = pCD->phenotype.geometry.radius; 
 	double spacing = 0.95 * cell_radius * 2.0; 
 	
 	double x_min = microenvironment.mesh.bounding_box[0] + cell_radius; 
@@ -215,7 +213,7 @@ void setup_tissue( void )
 	{
 		while( x < x_max )
 		{
-			pC = create_cell( lung_epithelium ); 
+			pC = create_cell( get_cell_definition("lung epithelium" ) ); 
 			pC->assign_position( x,y, 0.0 );
 			
 			double dx = x - center_x;
@@ -354,8 +352,6 @@ std::string blue_yellow_interpolation( double min, double val, double max )
 
 std::vector<std::string> tissue_coloring_function( Cell* pCell )
 {
-	return {"red", "green", "blue", "black" } ; 
-	
 	static int lung_epithelial_type = get_cell_definition( "lung epithelium" ).type; 
 	
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type; 
