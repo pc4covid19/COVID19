@@ -42,7 +42,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int nA_external = microenvironment.find_density_index( "assembled virion" ); 
 	
 	static int nV_internal = pCell->custom_data.find_variable_index( "virion" ); 
-	static int nA_internal = pCell->custom_data.find_variable_index( "assembled virion" ); 
+	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" ); 
 	
 	// actual model goes here 
 
