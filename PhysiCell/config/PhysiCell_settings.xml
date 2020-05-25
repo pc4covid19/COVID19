@@ -355,7 +355,7 @@
 				</mechanics>
 				<death>
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">5e-4</rate> <!-- 5.31667e-05 --> 
+						<rate units="1/min">5e-4</rate> <!-- 5e-4 --> 
 					</model> 
 				</death>
 				<motility>  
@@ -385,6 +385,11 @@
 		
 		<cell_definition name="CD8 Tcell" parent_type="immune" ID="3">
 			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<rate units="1/min">0</rate> <!-- 5e-4 --> 
+					</model> 
+				</death>
 				<motility>  
 				</motility>
 				<volume>
