@@ -10,6 +10,15 @@ Submodel_Information CD8_submodel_info;
 Submodel_Information Macrophage_submodel_info; 
 Submodel_Information Neutrophil_submodel_info; 
 
+void remove_all_adhesions( Cell* pCell )
+{
+	// detach all attached cells 
+	for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
+	{ detach_cells( pCell, pCell->state.neighbors[n] ); }		
+	
+	return; 
+}
+
 void create_infiltrating_immune_cell( Cell_Definition* pCD )
 {
 	static double Xmin = microenvironment.mesh.bounding_box[0]; 
@@ -80,11 +89,6 @@ void create_infiltrating_Tcell(void)
 
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
-	// for 
-/*	
-	if( pCell->state.neighbors.size() > 0 )
-	{ std::cout << "adhered Tcell " << pCell << std::endl; } 
-*/
 	
 	return; 
 }
@@ -98,10 +102,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// since those are part of mechanics. 
 		
 		// detach all attached cells 
-		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
-		{
-			detach_cells( pCell, pCell->state.neighbors[n] ); 
-		}		
+		remove_all_adhesions( pCell ); 
 		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
@@ -343,6 +344,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 				std::cout << "\t\t\t" << pCell->type << " eats " << pTestCell->type << std::endl; 
 				std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 				pCell->ingest_cell( pTestCell ); 
+				remove_all_adhesions( pTestCell ); // debug 
 				
 				phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
 					pCell->custom_data["activated_macrophage_secretion_rate"]; // 10;

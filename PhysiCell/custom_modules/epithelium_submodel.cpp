@@ -27,10 +27,7 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	if( phenotype.death.dead == true )
 	{
 		// detach all attached cells 
-		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
-		{
-			detach_cells( pCell, pCell->state.neighbors[n] ); 
-		}
+		remove_all_adhesions( pCell ); 
 	}
 	
 	// if I am dead, make sure to still secrete the chemokine 
@@ -62,6 +59,7 @@ void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		// the cell death functions don't automatically turn off custom functions, 
 		// since those are part of mechanics. 
+		remove_all_adhesions( pCell ); 
 		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
@@ -124,10 +122,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		// make sure to get rid of all adhesions! 
 		// detach all attached cells 
-		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
-		{
-			detach_cells( pCell, pCell->state.neighbors[n] ); 
-		}
+		remove_all_adhesions( pCell ); 
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 

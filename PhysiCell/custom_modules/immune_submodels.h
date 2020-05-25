@@ -26,8 +26,7 @@ void add_elastic_velocity( Cell* pActingOn, Cell* pAttachedTo , double elastic_c
 void extra_elastic_attachment_mechanics( Cell* pCell, Phenotype& phenotype, double dt );
 void attach_cells( Cell* pCell_1, Cell* pCell_2 );
 void detach_cells( Cell* pCell_1 , Cell* pCell_2 );
-
-
+void remove_all_adhesions( Cell* pCell ); 
 
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt ); 
 void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt ); 
