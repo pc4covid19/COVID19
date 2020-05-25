@@ -329,6 +329,11 @@
 		
 		<cell_definition name="lung epithelium" parent_type="default" ID="1">
 			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<rate units="1/min">1e-2</rate> <!-- 5.31667e-05 --> 
+					</model> 
+				</death>
 				<motility>  
 					<options>
 						<enabled>false</enabled>
