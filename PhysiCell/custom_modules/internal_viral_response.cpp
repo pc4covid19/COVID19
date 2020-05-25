@@ -69,6 +69,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	
 //	if( A > 0.9999999 )
+	// warning hardcoded 
 	if( P > 0.001 )
 	{
 		phenotype.secretion.secretion_rates[chemokine_index] = 

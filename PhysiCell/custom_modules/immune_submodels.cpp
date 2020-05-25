@@ -340,6 +340,9 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 				phenotype.motility.migration_speed = 
 					pCell->custom_data[ "activated_macrophage_speed" ]; 
+					
+				// warning : hardcoded 
+				phenotype.motility.migration_bias = 0.5; 
 			}
 			return; 
 		}

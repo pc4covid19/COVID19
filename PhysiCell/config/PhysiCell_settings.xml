@@ -409,7 +409,7 @@
 				</death>
 				<motility>  
 					<speed>1</speed>
-					<migration_bias>0.2</migration_bias>
+					<migration_bias>0</migration_bias>
 					<persistence_time>1</persistence_time>
 					<chemotaxis>
 						<substrate>chemokine</substrate>

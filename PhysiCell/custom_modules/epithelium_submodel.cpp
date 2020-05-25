@@ -22,6 +22,36 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// T-cell based death
 	TCell_induced_apoptosis(pCell, phenotype, dt ); 
 	
+	// if I am dead, remove all adhesions 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
+	if( phenotype.death.dead == true )
+	{
+		// detach all attached cells 
+		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
+		{
+			detach_cells( pCell, pCell->state.neighbors[n] ); 
+		}
+	}
+	
+	// if I am dead, make sure to still secrete the chemokine 
+	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
+	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
+	double P = pCell->custom_data[nP];
+	
+	// warning hardcoded 
+	if( phenotype.death.dead == true && P > 0.001 )
+	{
+		phenotype.secretion.secretion_rates[chemokine_index] = 
+			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
+	}
+	
+	// if I am dead, don't bother executing this function again 
+	if( phenotype.death.dead == true )
+	{
+		pCell->functions.update_phenotype = NULL; 
+	}
+	
 	return; 
 }
 
