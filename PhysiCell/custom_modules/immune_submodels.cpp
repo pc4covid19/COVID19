@@ -117,7 +117,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		extra_elastic_attachment_mechanics( pCell, phenotype, dt );
 		
 		// induce damage to whatever we're adhered to 
-		#pragma omp critical
+		#pragma omp critical(track_contact_time)
 		{
 			for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
 			{
@@ -492,7 +492,7 @@ void extra_elastic_attachment_mechanics( Cell* pCell, Phenotype& phenotype, doub
 
 void attach_cells( Cell* pCell_1, Cell* pCell_2 )
 {
-	#pragma omp critical
+	#pragma omp critical(attach)
 	{
 		bool already_attached = false; 
 		for( int i=0 ; i < pCell_1->state.neighbors.size() ; i++ )
@@ -518,7 +518,7 @@ void attach_cells( Cell* pCell_1, Cell* pCell_2 )
 
 void detach_cells( Cell* pCell_1 , Cell* pCell_2 )
 {
-	#pragma omp critical
+	#pragma omp critical(detach)
 	{
 		bool found = false; 
 		int i = 0; 

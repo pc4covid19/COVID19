@@ -26,11 +26,9 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
 	if( phenotype.death.dead == true )
 	{
-		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 		// detach all attached cells 
 		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
 		{
-			std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 			detach_cells( pCell, pCell->state.neighbors[n] ); 
 		}
 	}
