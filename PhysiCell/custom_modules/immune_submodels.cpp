@@ -210,8 +210,11 @@ void keep_immune_cells_off_edge( void )
 			position[1] = Ymin + Yrange * UniformRandom(); 
 			position[2] = Zmin + Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
 
-			pC->assign_position( position ); 	
-			pC->update_voxel_in_container(); 
+			#pragma omp critical(move_from_edge)
+			{
+				pC->assign_position( position ); 	
+				pC->update_voxel_in_container(); 
+			}
 		}
 	}
 	return; 
