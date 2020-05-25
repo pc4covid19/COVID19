@@ -8,8 +8,11 @@ using namespace PhysiCell;
 
 #ifndef __internal_viral_dynamics__
 #define __internal_viral_dynamics__
+
+extern Submodel_Information internal_viral_dynamics_info; 
 	
 void internal_virus_model_setup( void );
+
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt );
 
 #endif 

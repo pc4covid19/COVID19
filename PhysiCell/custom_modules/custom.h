@@ -72,17 +72,11 @@
 #include "./internal_viral_dynamics.h"
 #include "./internal_viral_response.h" 
 #include "./receptor_dynamics.h" 
+#include "./immune_submodels.h" 
+#include "./epithelium_submodel.h" 
 
 using namespace BioFVM; 
 using namespace PhysiCell;
-
-void tumor_cell_phenotype_with_oncoprotein( Cell* pCell, Phenotype& phenotype, double dt ); 
-
-// any additional cell types (beyond cell_defaults)
-
-extern Cell_Definition lung_epithelium; 
-
-// custom cell phenotype functions could go here 
 
 // setup functions to help us along 
 
@@ -94,8 +88,10 @@ void setup_microenvironment( void );
 
 // custom pathology coloring function 
 
-std::vector<std::string> my_coloring_function( Cell* );
+std::string blue_yellow_interpolation( double min, double val, double max );
+std::vector<std::string> epithelium_coloring_function( Cell* );
+std::vector<std::string> tissue_coloring_function( Cell* );
 
-void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt ); 
+// eventually move this to a tissue submodel 
 
 void move_exported_to_viral_field( void ); 

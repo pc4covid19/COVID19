@@ -114,7 +114,6 @@ int main( int argc, char* argv[] )
 	/* Users typically start modifying here. START USERMODS */ 
 	
 	create_cell_types();
-	
 	setup_tissue();
 
 	/* Users typically stop modifying here. END USERMODS */ 
@@ -139,7 +138,7 @@ int main( int argc, char* argv[] )
 
 	// for simplicity, set a pathology coloring function 
 	
-	std::vector<std::string> (*cell_coloring_function)(Cell*) = my_coloring_function; 
+	std::vector<std::string> (*cell_coloring_function)(Cell*) = tissue_coloring_function; 
 	
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() ); 
 	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
@@ -204,7 +203,7 @@ int main( int argc, char* argv[] )
 			
 			// receptor dynamics 
 			
-			receptor_dynamics_model( diffusion_dt );
+			receptor_dynamics_main_model( diffusion_dt );
 		
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
@@ -214,6 +213,10 @@ int main( int argc, char* argv[] )
 			*/
 			
 			move_exported_to_viral_field(); 
+			
+			immune_cell_recruitment( diffusion_dt ); 
+			
+			keep_immune_cells_in_bounds( diffusion_dt ); 
 			
 			PhysiCell_globals.current_time += diffusion_dt;
 		}

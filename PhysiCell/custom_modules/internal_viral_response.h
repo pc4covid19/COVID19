@@ -16,6 +16,7 @@ using namespace PhysiCell;
 extern Submodel_Information internal_virus_response_model_info; 
 
 void internal_virus_response_model_setup( void );
+
 void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt );
 
 #endif 

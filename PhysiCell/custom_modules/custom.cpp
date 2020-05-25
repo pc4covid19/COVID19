@@ -67,158 +67,62 @@
 
 #include "./custom.h"
 
-// declare cell definitions here 
-
-Cell_Definition lung_epithelium; 
-
 void create_cell_types( void )
 {
-	// use the same random seed so that future experiments have the 
-	// same initial histogram of oncoprotein, even if threading means 
-	// that future division and other events are still not identical 
-	// for all runs 
+	// set the random seed 
+	SeedRandom( parameters.ints("random_seed") );  
 	
-	SeedRandom( parameters.ints("random_seed") ); // or specify a seed here 
-	
-	// housekeeping 
-	
-	initialize_default_cell_definition();
-	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
-	cell_defaults.phenotype.molecular.sync_to_microenvironment( &microenvironment ); 
-	
-	// Name the default cell type 
-	
-	cell_defaults.type = 0; 
-	cell_defaults.name = "default"; 
-	
-	// set default cell cycle model 
+	/* 
+	   Put any modifications to default cell definition here if you 
+	   want to have "inherited" by other cell types. 
+	   
+	   This is a good place to set default functions. 
+	*/ 
+	cell_defaults.functions.volume_update_function = standard_volume_update_function;
+	cell_defaults.functions.update_velocity = standard_update_cell_velocity;
 
-	cell_defaults.functions.cycle_model = live; 
+	cell_defaults.functions.update_migration_bias = NULL; 
+	cell_defaults.functions.update_phenotype = NULL;  
+	cell_defaults.functions.custom_cell_rule = NULL; 
 	
-	// set default_cell_functions; 
+	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL; 
+	cell_defaults.functions.calculate_distance_to_membrane = NULL; 
 	
-	cell_defaults.functions.update_phenotype = viral_dynamics; // NULL; 
-	cell_defaults.functions.custom_cell_rule = NULL; // receptor_dynamics_model; 
+	int virion_index = microenvironment.find_density_index( "virion" ); 
+	int assembled_virion_index = microenvironment.find_density_index( "assembled virion" );
 	
-	// needed for a 2-D simulation: 
+	/*
+	   This parses the cell definitions in the XML config file. 
+	*/
 	
-	/* grab code from heterogeneity */ 
-	
-	cell_defaults.functions.set_orientation = up_orientation; 
-	cell_defaults.phenotype.geometry.polarity = 1.0;
-	cell_defaults.phenotype.motility.restrict_to_2D = true; 
-	
-	// make sure the defaults are self-consistent. 
-	
-	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment );
-	cell_defaults.phenotype.sync_to_functions( cell_defaults.functions ); 
+	initialize_cell_definitions_from_pugixml(); 
 
-	// set the rate terms in the default phenotype 
-
-	// first find index for a few key variables. 
-	int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Apoptosis" );
-	int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
-
-	int live_phase_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::live );
-
-	// initially no necrosis or apoptosis 
-	cell_defaults.phenotype.death.rates[apoptosis_model_index] = 0.0; 
-	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
-	
-	// set cycle rate to zero 
-	cell_defaults.phenotype.cycle.data.transition_rate(live_phase_index,live_phase_index) = 0.0; 
-
-	// set all secretion, uptake, and export rates to zero 
-	// set all to be fully released by apoptotic cells 
-	for( int n = 0; n < microenvironment.number_of_densities(); n++ )
-	{
-		cell_defaults.phenotype.secretion.uptake_rates[n] = 0; 
-		cell_defaults.phenotype.secretion.secretion_rates[n] = 0; 
-		cell_defaults.phenotype.secretion.saturation_densities[n] = 0; 
-		cell_defaults.phenotype.secretion.net_export_rates[n] = 0; 
-		
-		cell_defaults.phenotype.molecular.fraction_released_at_death[n] = 
-			parameters.doubles("virus_fraction_released_at_death"); 
-	}
+	/* 
+	   Put any modifications to individual cell definitions here. 
+	   
+	   This is a good place to set custom functions. 
+	*/ 
 	
 	// register the submodels 
 	// (which ensures that the cells have all the internal variables they need) 
 	
-	receptor_dynamics_model_setup(); 
-	internal_virus_model_setup();
-	internal_virus_response_model_setup();
+	Cell_Definition* pCD = find_cell_definition( "lung epithelium" ); 
+	pCD->phenotype.molecular.fraction_released_at_death[virion_index] = 
+		parameters.doubles("virus_fraction_released_at_death"); 
+	pCD->phenotype.molecular.fraction_released_at_death[assembled_virion_index] = 
+		parameters.doubles("virus_fraction_released_at_death"); 
+
+	immune_submodels_setup();
+	// receptor_dynamics_model_setup(); 
+	// internal_virus_model_setup();
+	// internal_virus_response_model_setup();
+	epithelium_submodel_setup(); 
+
 	submodel_registry.display( std::cout ); 
-	
-	// set uptake rate of virions 
-	static int nV = microenvironment.find_density_index( "virion" ); 
-	// cell_defaults.phenotype.secretion.uptake_rates[nV] = parameters.doubles( "virion_uptake_rate" ); 
-	
-	// disable motility 
-	cell_defaults.phenotype.motility.is_motile = false; 	
-	
-	// add custom data here
-	// set variable values here 
-
-	// viral dynamics parameters 
-	Parameter<double> paramD; 	
-	paramD = parameters.doubles["virion_uncoating_rate"]; 
-//	cell_defaults.custom_data.add_variable( "virion_uncoating_rate" , paramD.units, paramD.value ); 
-	cell_defaults.custom_data[ "virion uncoating rate" ] = paramD.value; 
-	
-	paramD = parameters.doubles["uncoated_to_RNA_rate"]; 
-	cell_defaults.custom_data[ "uncoated to RNA rate" ] = paramD.value; 
-	
-	paramD = parameters.doubles["protein_synthesis_rate"]; 
-	cell_defaults.custom_data[ "protein synthesis rate" ] = paramD.value; 
-	
-	paramD = parameters.doubles["virion_assembly_rate"]; 
-	cell_defaults.custom_data[ "virion assembly rate" ] = paramD.value; 
-	
-	paramD = parameters.doubles["virion_export_rate"]; 
-	cell_defaults.custom_data[ "virion export rate" ] = paramD.value; 
-
-	// viral response parameters. 
-	paramD = parameters.doubles["max_infected_apoptosis_rate"]; 
-	cell_defaults.custom_data[ "max infected apoptosis rate" ] = paramD.value; 
-
-	paramD = parameters.doubles["max_apoptosis_half_max"]; 
-	cell_defaults.custom_data[ "max apoptosis half max" ] = paramD.value; 
-
-	paramD = parameters.doubles["apoptosis_hill_power"]; 
-	cell_defaults.custom_data[ "apoptosis hill power" ] = paramD.value; 
-	
-	// receptor dynamics parameters. 
-
-	paramD = parameters.doubles["ACE2_binding_rate"]; 
-	cell_defaults.custom_data[ "ACE2 binding rate" ] = paramD.value; 
-
-	paramD = parameters.doubles["ACE2_endocytosis_rate"]; 
-	cell_defaults.custom_data[ "ACE2 endocytosis rate" ] = paramD.value; 
-
-	paramD = parameters.doubles["ACE2_cargo_release_rate"]; 
-	cell_defaults.custom_data[ "ACE2 cargo release rate" ] = paramD.value; 
-
-	paramD = parameters.doubles["ACE2_recycling_rate"]; 
-	cell_defaults.custom_data[ "ACE2 recycling rate" ] = paramD.value; 
-
-	paramD = parameters.doubles["ACE2_receptors_per_cell"]; 
-	cell_defaults.custom_data[ "unbound external ACE2" ] = paramD.value; 
-	
-	
-	// Now, let's define another cell type. 
-	// It's best to just copy the default and modify it. 
-	
-	// make this cell type randomly motile, less adhesive, greater survival, 
-	// and less proliferative 
-	
-	lung_epithelium = cell_defaults; 
-	lung_epithelium.type = 1; 
-	lung_epithelium.name = "lung epithelium"; 
-	
-	// make sure the new cell type has its own reference phenotype
-	
-	lung_epithelium.parameters.pReference_live_phenotype = &( lung_epithelium.phenotype ); 
-	
+		
+	/*
+	   This builds the map of cell definitions and summarizes the setup. 
+	*/
 		
 	build_cell_definitions_maps(); 
 	display_cell_definitions( std::cout ); 
@@ -274,14 +178,14 @@ void setup_tissue( void )
 {
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	
-	
 	// create some cells near the origin
 	
 	Cell* pC;
 	
 	// hexagonal cell packing 
+	Cell_Definition* pCD = find_cell_definition("lung epithelium"); 
 	
-	double cell_radius = lung_epithelium.phenotype.geometry.radius; 
+	double cell_radius = pCD->phenotype.geometry.radius; 
 	double spacing = 0.95 * cell_radius * 2.0; 
 	
 	double x_min = microenvironment.mesh.bounding_box[0] + cell_radius; 
@@ -307,7 +211,7 @@ void setup_tissue( void )
 	{
 		while( x < x_max )
 		{
-			pC = create_cell( lung_epithelium ); 
+			pC = create_cell( get_cell_definition("lung epithelium" ) ); 
 			pC->assign_position( x,y, 0.0 );
 			
 			double dx = x - center_x;
@@ -319,16 +223,6 @@ void setup_tissue( void )
 				nearest_distance_squared = temp;
 				pNearestCell = pC; 
 			}
-			
-/*			
-			// if this cell is at (0,0,0), insert one virion
-			
-			if( fabs( x-5 ) < 5 && fabs( y-5 ) < 5 )
-			{
-				pC->phenotype.molecular.internalized_total_substrates[ nV ] = 1.0; 
-			}
-*/			
-			
 			x += spacing; 
 		}
 		x = x_min; 
@@ -371,26 +265,24 @@ void setup_tissue( void )
 		}
 	}
 	
+	// now place immune cells 
+	
+	initial_immune_cell_placement();
+	
 	return; 
 }
 
-std::vector<std::string> my_coloring_function( Cell* pCell )
+std::vector<std::string> epithelium_coloring_function( Cell* pCell )
 {
-	std::vector< std::string> output( 4, "black" ); 
+	std::vector<std::string> output( 4, "black" ); 
 
 	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
-	static int color_index = cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
+	static int color_index = 
+		cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
 	static int nV = cell_defaults.custom_data.find_variable_index( "virion" ); 
-	
-	static int nV_external = microenvironment.find_density_index( "virion" ); 
-	static int nR_EB = cell_defaults.custom_data.find_variable_index( "bound external ACE2" ); 
-	static int nR_IB = cell_defaults.custom_data.find_variable_index( "bound internal ACE2" ); 
-	
 	
 	// color by assembled virion 
 	
-//	static double my_max = -9e9; 
-
 	if( pCell->phenotype.death.dead == false )
 	{
 		// find fraction of max viral load 
@@ -419,51 +311,9 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 		output[2] = color; 
 		output[3] = color; 
 	}
-/*
-		// color boundary by bound ACE2 receptor on 
-		// surface or inside cell 
-		
-		v = pCell->custom_data[ nR_EB ] + pCell->custom_data[ nR_IB ] + 
-			pCell->phenotype.molecular.internalized_total_substrates[ nV_external ]; 
-
-		interpolation = 0; 
-		if( v < 1 )
-		{ interpolation = 0; } 
-		if( v >= 1.0 && v < 10 )
-		{ interpolation = 0.25; } 
-		if( v >= 10.0 && v < 100 )
-		{ interpolation = 0.5; } 
-		if( v >= 100.0 && v < 1000 )
-		{ interpolation = 0.75; } 
-		if( v >= 1000.0 )
-		{ interpolation = 1.0; } 
-
-		red = (int) floor( 255.0 * interpolation ) ; 
-		green = red; 
-		blue = 255 - red; 
-
-		sprintf( color, "rgb(%u,%u,%u)" , red,green,blue ); 
-		
-		output[1] = color;			
-	}
-*/
 	
 	return output; 
 }
-
-
-void viral_dynamics( Cell* pCell, Phenotype& phenotype, double dt )
-{
-	// viral dynamics model 
-	internal_virus_model(pCell,phenotype,dt);
-	
-	// viral response model 
-	
-	internal_virus_response_model(pCell,phenotype,dt);
-
-	return; 
-}
-
 
 void move_exported_to_viral_field( void )
 {
@@ -480,3 +330,83 @@ void move_exported_to_viral_field( void )
 	return;
 }
 
+std::string blue_yellow_interpolation( double min, double val, double max )
+{
+// 	std::string out;
+	
+	double interpolation = (val-min)/(max-min+1e-16); 
+	if( interpolation < 0.0 )
+	{ interpolation = 0.0; } 
+	if( interpolation > 1.0 )
+	{ interpolation = 1.0; }
+	
+	int red_green = (int) floor( 255.0 * interpolation ) ; 
+	int blue = 255 - red_green; 
+
+	char color [1024]; 
+	sprintf( color, "rgb(%u,%u,%u)" , red_green,red_green,blue ); 
+	return color;  
+}
+
+std::vector<std::string> tissue_coloring_function( Cell* pCell )
+{
+	static int lung_epithelial_type = get_cell_definition( "lung epithelium" ).type; 
+	
+	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type; 
+	static int Macrophage_type = get_cell_definition( "macrophage" ).type; 
+	static int Neutrophil_type = get_cell_definition( "neutrophil" ).type; 
+	
+	// start with white 
+	
+	std::vector<std::string> output = {"white", "black", "white" , "white" };	
+	// false_cell_coloring_cytometry(pCell); 
+	
+	if( pCell->phenotype.death.dead == true )
+	{
+		if( pCell->type != lung_epithelial_type )
+		{
+			output[0] = parameters.strings("apoptotic_immune_color");		
+			output[2] = output[0]; 		
+			output[3] = output[0]; 	
+			return output; 
+		}
+
+		output[0] = parameters.strings("apoptotic_epithelium_color");	
+		output[2] = output[0]; 		
+		output[3] = output[0]; 		
+		return output; 
+	}
+
+	if( pCell->phenotype.death.dead == false && pCell->type == lung_epithelial_type )
+	{
+		// color by virion 
+		output = epithelium_coloring_function(pCell); 
+		return output; 
+	}
+	
+	if( pCell->phenotype.death.dead == false && pCell->type == CD8_Tcell_type )
+	{
+		output[0] = parameters.strings("CD8_Tcell_color");  
+		output[2] = parameters.strings("CD8_Tcell_color");  
+		output[3] = parameters.strings("CD8_Tcell_color"); 
+		return output; 
+	}
+
+	if( pCell->phenotype.death.dead == false && pCell->type == Macrophage_type )
+	{
+		output[0] = parameters.strings("Macrophage_color");  
+		output[2] = parameters.strings("Macrophage_color");  
+		output[3] = parameters.strings("Macrophage_color"); 
+		return output; 
+	}
+
+	if( pCell->phenotype.death.dead == false && pCell->type == Neutrophil_type )
+	{
+		output[0] = parameters.strings("Neutrophil_color");  
+		output[2] = parameters.strings("Neutrophil_color");  
+		output[3] = parameters.strings("Neutrophil_color");  
+		return output; 
+	}
+
+	return output; 
+}
