@@ -175,10 +175,9 @@ data-cleanup:
 FOLDER := output
 FRAMERATE := 24
 movie:
-	magick mogrify -format jpg $(FOLDER)/snap*.svg 
-	cp $(FOLDER)/snap*.jpg .
+	#copy $(FOLDER)/snap*.jpg .
 	mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.avi	
-	rm snap*.jpg
+	#del snap*.jpg
 # archival 
 	
 checkpoint: 

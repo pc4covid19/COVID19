@@ -314,7 +314,7 @@
 				<cell_attachment_rate units="1/min">0</cell_attachment_rate>
 				<cell_attachment_lifetime units="min">0</cell_attachment_lifetime>
 				
-				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold>
+				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold>  
 				<max_attachment_distance units="micron">15</max_attachment_distance>
 				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
 				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris>
@@ -331,7 +331,7 @@
 			<phenotype>
 				<death>
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">1e-2</rate> <!-- 5.31667e-05 --> 
+						<rate units="1/min">0</rate> <!-- 5.31667e-05 --> 
 					</model> 
 				</death>
 				<motility>  
@@ -385,11 +385,6 @@
 		
 		<cell_definition name="CD8 Tcell" parent_type="immune" ID="3">
 			<phenotype>
-				<death>
-					<model code="100" name="apoptosis"> 
-						<rate units="1/min">5e-4</rate> <!-- 5e-4 --> 
-					</model> 
-				</death>
 				<motility>  
 				</motility>
 				<volume>
@@ -398,7 +393,7 @@
 				</volume>
 				<secretion>
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">10</secretion_rate>
+						<secretion_rate units="1/min">1</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
 					</substrate> 	
 				</secretion>
@@ -414,7 +409,7 @@
 				<death>
 					<!-- death is about 5x slower --> 
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">0</rate> <!-- 5.31667e-05 --> 
+						<rate units="1/min">1e-5</rate> <!-- 5.31667e-05 --> 
 					</model> 
 				</death>
 				<motility>  
@@ -425,8 +420,7 @@
 						<substrate>chemokine</substrate>
 					</chemotaxis>
 				</motility>
-				<secretion>
-				</secretion>
+
 				<volume>
 					<total units="micron^3">4849</total>
 					<nuclear units="micron^3">485</nuclear>
@@ -477,11 +471,11 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 0.00000005 -->
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal>
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal>
 			
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 0.000005 -->
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal>
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">.5</CD8_Tcell_recruitment_saturation_signal>
 		

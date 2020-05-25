@@ -219,8 +219,12 @@ void keep_immune_cells_off_edge( void )
 
 			#pragma omp critical(move_from_edge)
 			{
+				std::cout << " moving cell " << pC << " of type " << pC->type_name << std::endl; 
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
 				pC->assign_position( position ); 	
-				pC->update_voxel_in_container(); 
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+				// pC->update_voxel_in_container(); // cut this? 
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
 			}
 		}
 	}
@@ -341,19 +345,27 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 			#pragma omp critical(macrophage_eat) 
 			{
 				std::cout << "\t\tnom nom nom" << std::endl; 
-				std::cout << "\t\t\t" << pCell->type << " eats " << pTestCell->type << std::endl; 
+				std::cout << "\t\t\t" << pCell->type_name << " eats " << pTestCell->type_name << std::endl; 
 				std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 				pCell->ingest_cell( pTestCell ); 
 				remove_all_adhesions( pTestCell ); // debug 
 				
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+				
 				phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
 					pCell->custom_data["activated_macrophage_secretion_rate"]; // 10;
+
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
 
 				phenotype.motility.migration_speed = 
 					pCell->custom_data[ "activated_macrophage_speed" ]; 
 					
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+
 				// warning : hardcoded 
 				phenotype.motility.migration_bias = 0.5; 
+				
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
 			}
 			return; 
 		}
