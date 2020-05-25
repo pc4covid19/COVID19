@@ -97,6 +97,12 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// the cell death functions don't automatically turn off custom functions, 
 		// since those are part of mechanics. 
 		
+		// detach all attached cells 
+		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
+		{
+			detach_cells( pCell, pCell->state.neighbors[n] ); 
+		}		
+		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
 		return; 
