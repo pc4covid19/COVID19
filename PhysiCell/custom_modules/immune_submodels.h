@@ -42,12 +42,25 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt );
 // this damage response will need to be added to the "infected cell response" model 
 // void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt ); 
 
+// immune cell recruitment 
 
+void create_infiltrating_immune_cell( Cell_Definition* pCD );
+void create_infiltrating_immune_cell( std::string cell_name );
+
+void create_infiltrating_Tcell( void ); 
+void create_infiltrating_neutrophil( void );
+
+void immune_cell_recruitment( double dt ); 
+void initial_immune_cell_placement( void ); 
 
 
 void immune_submodels_setup( void ); 
 
 // this needs to be done on faster time scale; 
 // void receptor_dynamics_model( double dt ); 
+
+void keep_immune_cells_off_edge(void); 
+void keep_immune_cells_in_bounds( double dt );
+
 
 #endif 

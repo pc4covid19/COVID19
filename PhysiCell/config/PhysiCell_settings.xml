@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">7200</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">14400</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -109,7 +109,7 @@
 		</full_data>
 		
 		<SVG>
-			<interval units="min">30</interval>
+			<interval units="min">7.5</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -161,7 +161,7 @@
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/um^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/um^3" enabled="false">0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="mol/um^3" enabled="true">0</Dirichlet_boundary_condition>
 		</variable>
 
 		<options>
@@ -306,7 +306,8 @@
 				<max_infected_apoptosis_rate type="double" units="1/min" description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
 				<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max>
 				<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
-				<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>				
+				<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
+				<infected_cell_chemokine_secretion_rate units="1/min" type="double">1</infected_cell_chemokine_secretion_rate>
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min">0.0</TCell_contact_time>
@@ -318,6 +319,8 @@
 				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
 				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris>
 				
+				<activated_macrophage_speed units="micron/min" type="double">0.4</activated_macrophage_speed>
+				<activated_macrophage_secretion_rate units="1/min" type="double">10</activated_macrophage_secretion_rate>
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
 			
@@ -341,10 +344,19 @@
 		<!-- generic immune cell type --> 
 		<cell_definition name="immune" parent_type="default" ID="2">
 			<phenotype>
+				<mechanics> 
+					<cell_cell_adhesion_strength units="micron/min">0</cell_cell_adhesion_strength>
+					<cell_cell_repulsion_strength units="micron/min">0.001</cell_cell_repulsion_strength>
+				</mechanics>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<rate units="1/min">5e-4</rate> <!-- 5.31667e-05 --> 
+					</model> 
+				</death>
 				<motility>  
 					<speed units="micron/min">4</speed>
 					<persistence_time units="min">1</persistence_time>
-					<migration_bias units="dimensionless">0.5</migration_bias>
+					<migration_bias units="dimensionless">0.7</migration_bias>
 					<options>
 						<enabled>true</enabled>
 						<use_2D>true</use_2D>
@@ -357,7 +369,7 @@
 				</motility>
 				<secretion>
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">10</secretion_rate>
+						<secretion_rate units="1/min">0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
 					</substrate> 	
 				</secretion>
@@ -370,7 +382,15 @@
 			<phenotype>
 				<motility>  
 				</motility>
+				<volume>
+					<total units="micron^3">478</total>
+					<nuclear units="micron^3">95</nuclear>
+				</volume>
 				<secretion>
+					<substrate name="pro-inflammatory cytokine">
+						<secretion_rate units="1/min">10</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
 				</secretion>
 			</phenotype>
 			<custom_data>
@@ -381,15 +401,26 @@
 		
 		<cell_definition name="macrophage" parent_type="immune" ID="4">
 			<phenotype>
+				<death>
+					<!-- death is about 5x slower --> 
+					<model code="100" name="apoptosis"> 
+						<rate units="1/min">0</rate> <!-- 5.31667e-05 --> 
+					</model> 
+				</death>
 				<motility>  
-					<migration_bias>0.1</migration_bias>
-					<persistence_time>5</persistence_time>
+					<speed>1</speed>
+					<migration_bias>0.2</migration_bias>
+					<persistence_time>1</persistence_time>
 					<chemotaxis>
 						<substrate>chemokine</substrate>
 					</chemotaxis>
 				</motility>
 				<secretion>
 				</secretion>
+				<volume>
+					<total units="micron^3">4849</total>
+					<nuclear units="micron^3">485</nuclear>
+				</volume>
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -398,12 +429,21 @@
 		<cell_definition name="neutrophil" parent_type="immune" ID="5">
 			<phenotype>
 				<motility>  
+					<migration_bias>0.1</migration_bias>
+					<persistence_time>1</persistence_time>
+					<chemotaxis>
+						<substrate>virion</substrate>
+					</chemotaxis>
 				</motility>
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">1</uptake_rate>
+						<uptake_rate units="1/min">10</uptake_rate>
 					</substrate> 	
 				</secretion>
+				<volume>
+					<total units="micron^3">1437</total>
+					<nuclear units="micron^3">718.5</nuclear>
+				</volume>
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -419,23 +459,35 @@
 
 		
 		<div_ACE2 type="divider" description="--ACE2 receptor model initialization--"/>
-			<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell>
+		<!--
+			<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell> --> <!-- not used? --> 
+		
+		<div_immune type="divider" description="--Immune activation parameters--"/>
+			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">10</immune_dt> 
+			
+			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
+			
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 0.00000005 -->
+			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal>
+			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal>
+			
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 0.000005 -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal>
+			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">.5</CD8_Tcell_recruitment_saturation_signal>
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0">0.01</multiplicity_of_infection>
 			<use_single_infected_cell type="bool" units="none" description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			
-			<number_of_CD8_Tcells type="int" units="none" description="initial number of CD8 T cells">50</number_of_CD8_Tcells>
+			<number_of_CD8_Tcells type="int" units="none" description="initial number of CD8 T cells">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" description="initial number of macrophages">50</number_of_macrophages>
-			<number_of_neutrophils type="int" units="none" description="initial number of neutrophils">10</number_of_neutrophils>
-			<!--
-			<number_of_dead_cells type="int" units="none" description="initial number of apoptotic epithelial cells">10</number_of_dead_cells>
-			<number_of_infected_cells type="int" units="none" description="initial number of infected epithelial cells">150</number_of_infected_cells>
-			<number_of_uninfected_cells type="int" units="none" description="initial number of uninfected epithelial cells">50</number_of_uninfected_cells>
--->
+			<number_of_neutrophils type="int" units="none" description="initial number of neutrophils">0</number_of_neutrophils>
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
+			
+			<apoptotic_epithelium_color type="string" description="">black</apoptotic_epithelium_color>
+			<apoptotic_immune_color type="string" description="">rosybrown</apoptotic_immune_color>
 		
 			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
 			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>

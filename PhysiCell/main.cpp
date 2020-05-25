@@ -214,6 +214,10 @@ int main( int argc, char* argv[] )
 			
 			move_exported_to_viral_field(); 
 			
+			immune_cell_recruitment( diffusion_dt ); 
+			
+			keep_immune_cells_in_bounds( diffusion_dt ); 
+			
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 		

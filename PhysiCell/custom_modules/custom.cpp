@@ -267,6 +267,8 @@ void setup_tissue( void )
 	
 	// now place immune cells 
 	
+	initial_immune_cell_placement();
+	
 	return; 
 }
 
@@ -361,9 +363,17 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	
 	if( pCell->phenotype.death.dead == true )
 	{
-		output[0] = "black"; 		
-		output[2] = "black"; 		
-		output[3] = "black"; 		
+		if( pCell->type != lung_epithelial_type )
+		{
+			output[0] = parameters.strings("apoptotic_immune_color");		
+			output[2] = output[0]; 		
+			output[3] = output[0]; 	
+			return output; 
+		}
+
+		output[0] = parameters.strings("apoptotic_epithelium_color");	
+		output[2] = output[0]; 		
+		output[3] = output[0]; 		
 		return output; 
 	}
 

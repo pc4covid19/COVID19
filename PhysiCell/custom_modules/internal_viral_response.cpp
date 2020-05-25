@@ -59,5 +59,26 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	double effect = v / (1.0+v); 
 	phenotype.death.rates[apoptosis_model_index] *= effect; 
 	
+	// if we're infected, secrete a chemokine for the immune model
+	static int nA = pCell->custom_data.find_variable_index( "assembled_virion" ); 	
+	double A = pCell->custom_data[nA]; 
+	
+	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
+	double P = pCell->custom_data[nP];
+
+	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
+	
+//	if( A > 0.9999999 )
+	if( P > 0.001 )
+	{
+		phenotype.secretion.secretion_rates[chemokine_index] = 
+			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 		
+	}
+	else
+	{
+		phenotype.secretion.secretion_rates[chemokine_index] = 0.0;
+	}
+	
 	return; 
 }
