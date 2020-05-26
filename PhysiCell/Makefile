@@ -177,6 +177,9 @@ FRAMERATE := 24
 movie:
 	#copy $(FOLDER)/snap*.jpg .
 	mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.avi	
+	# mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.mp4 -of mpeg
+	ffmpeg -i out.avi -vcodec libx264 -pix_fmt yuv420p -strict -2 -acodec aac out.mp4
+	ffmpeg -r 24 -f image2 -i snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -acodec aac out1.mp4
 	#del snap*.jpg
 # archival 
 	

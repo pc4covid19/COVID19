@@ -31,6 +31,10 @@ void create_infiltrating_immune_cell( Cell_Definition* pCD )
 	
 	static bool setup_done = false; 
 	
+	// warning hardcoded
+	static double relative_edge_margin = 0.0; // 0.1; 
+	static double relative_interior = 1 - 2 * relative_edge_margin; 
+	
 	if( default_microenvironment_options.simulate_2D == true && setup_done == false )
 	{
 		Zmin = 0.0; 
@@ -45,13 +49,13 @@ void create_infiltrating_immune_cell( Cell_Definition* pCD )
 	
 	if( setup_done == false )
 	{
-		Xmin += 0.1*Xrange; 
-		Ymin += 0.1*Yrange; 
-		Zmin = 0;
+		Xmin += relative_edge_margin*Xrange; 
+		Ymin += relative_edge_margin*Yrange; 
+		Zmin += relative_edge_margin*Zrange;
 		
-		Xrange *= 0.8;
-		Yrange *= 0.8;
-		Zrange = 0.0; 
+		Xrange *= relative_interior;
+		Yrange *= relative_interior;
+		Zrange *= relative_interior; 
 		setup_done = true; 
 	}
 	
@@ -187,15 +191,19 @@ void keep_immune_cells_off_edge( void )
 	static double Yrange = (Ymax - Ymin); 
 	static double Zrange = (Zmax - Zmin); 
 	
+	// warning hardcoded
+	static double relative_edge_margin = 0; // 0.1; 
+	static double relative_interior = 1 - 2 * relative_edge_margin; 
+	
 	if( setup_done == false )
 	{
-		Xmin += 0.1*Xrange; 
-		Ymin += 0.1*Yrange; 
-		Zmin += 0.1*Zrange;
+		Xmin += relative_edge_margin*Xrange; 
+		Ymin += relative_edge_margin*Yrange; 
+		Zmin += relative_edge_margin*Zrange;
 		
-		Xrange *= 0.8;
-		Yrange *= 0.8;
-		Zrange *= 0.8;  
+		Xrange *= relative_interior;
+		Yrange *= relative_interior;
+		Zrange *= relative_interior;  
 		setup_done = true; 
 	}
 	
