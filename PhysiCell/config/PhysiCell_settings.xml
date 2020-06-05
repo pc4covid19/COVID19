@@ -113,7 +113,7 @@
 		</full_data>
 		
 		<SVG>
-			<interval units="min">7.5</interval>
+			<interval units="min">6</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -515,11 +515,11 @@
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">0.00000005</neutrophil_max_recruitment_rate> <!-- 8e-9 -->
-			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.005</neutrophil_recruitment_min_signal> <!--0.1 -->
-			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.01</neutrophil_recruitment_saturation_signal> <!-- 0.3 -->
+			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.01</neutrophil_recruitment_min_signal> <!--0.1 -->
+			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.03</neutrophil_recruitment_saturation_signal> <!-- 0.3 -->
 
 			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">0.00000005</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.01</CD8_Tcell_recruitment_min_signal> <!-- 0.3 -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.03</CD8_Tcell_recruitment_min_signal> <!-- 0.3 -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.05</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
@@ -541,7 +541,7 @@
 			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
 			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>
 			<Macrophage_color type="string" description="">lime</Macrophage_color>
-			<activated_macrophage_color type="string" description="color of activated macrophage">goldenrod</activated_macrophage_color>
+			<activated_macrophage_color type="string" description="color of activated macrophage">fuchsia</activated_macrophage_color>
 			<Neutrophil_color type="string" description="">cyan</Neutrophil_color>
 		
 	</user_parameters>
