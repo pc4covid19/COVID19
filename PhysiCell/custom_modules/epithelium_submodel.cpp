@@ -134,7 +134,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		remove_all_adhesions( pCell ); 
 		
 		std::cout << "I'm dead of a T cell " << std::endl; 
-		std::cout << "\t\tat " pCell->position << std::endl; 
+		std::cout << "\t\tat " << pCell->position << std::endl; 
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 
