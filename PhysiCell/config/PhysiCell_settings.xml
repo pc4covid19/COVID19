@@ -269,7 +269,7 @@
 				</mechanics>
 				
 				<motility>  
-					<speed units="micron/min">1</speed>
+					<speed units="micron/min">4</speed>
 					<persistence_time units="min">1</persistence_time>
 					<migration_bias units="dimensionless">.5</migration_bias>
 					
