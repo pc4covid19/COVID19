@@ -1032,6 +1032,9 @@ std::vector<Cell*>& Cell::cells_in_my_container( void )
 
 void Cell::ingest_cell( Cell* pCell_to_eat )
 {
+	if( pCell_to_eat->phenotype.volume.total < 1e-15 || this == pCell_to_eat )
+	{ return; } 
+	
 	// absorb all the volume(s)
 
 	// absorb fluid volume (all into the cytoplasm) 
@@ -1068,7 +1071,7 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 	pCell_to_eat->phenotype.volume.total = 0.0; 
 
 	phenotype.volume.fluid_fraction = phenotype.volume.fluid / 
-		(  phenotype.volume.total ); 
+		(  phenotype.volume.total + 1e-16 ); 
 	pCell_to_eat->phenotype.volume.fluid_fraction = 0.0; 
 
 	phenotype.volume.cytoplasmic_to_nuclear_ratio = phenotype.volume.cytoplasmic_solid / 

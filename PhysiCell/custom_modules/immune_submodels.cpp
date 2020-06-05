@@ -373,15 +373,19 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		pTestCell = neighbors[n]; 
 //		std::cout << pTestCell << " "; 
 		// if it is not me and not a macrophage 
+//		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
+//			pTestCell->phenotype.volume.total > 1e-16 && UniformRandom()<macrophage_probability_of_phagocytosis)
+//		{
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
-			pTestCell->phenotype.flagged_for_removal == false && UniformRandom()<macrophage_probability_of_phagocytosis)
+			UniformRandom()<macrophage_probability_of_phagocytosis )
 		{
 //			std::cout << std::endl; 
 //			std::cout << "\t\tnom nom nom" << std::endl; 
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(macrophage_eat)
 			{
-				std::cout << "\t\t\t" << pCell->type_name << " eats " << pTestCell->type_name << std::endl; 
+				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
+				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
 				remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
 			}	
@@ -485,8 +489,10 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		pTestCell = neighbors[n]; 
 //		std::cout << pTestCell << " "; 
 		// if it is not me and not a macrophage 
+//		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
+//			pTestCell->phenotype.volume.total > 1e-16 && UniformRandom()<neutrophil_probability_of_phagocytosis)
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
-			pTestCell->phenotype.flagged_for_removal == false && UniformRandom()<neutrophil_probability_of_phagocytosis)
+			UniformRandom()<neutrophil_probability_of_phagocytosis)
 		{
 //			std::cout << std::endl; 
 //			std::cout << "\t\tnom nom nom" << std::endl; 
@@ -494,6 +500,9 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(neutrophil_eat)
 			{
+				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
+				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
+				
 				remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
 			}
@@ -830,7 +839,7 @@ void immune_cell_recruitment( double dt )
 	{
 		double elapsed_time = (t_immune - t_last_immune );
 //		std::cout<<"t immune: "<<t_immune<<" elapsed time "<<elapsed_time<<std::endl;
-//		std::cout << "Immune time! " << t_immune << " (elapsed: " << elapsed_time << ") " << std::endl; 
+		std::cout << "Immune time! " << t_immune << " (elapsed: " << elapsed_time << ") " << std::endl; 
 		
 		// neutrophil recruitment 
 		
@@ -857,11 +866,22 @@ void immune_cell_recruitment( double dt )
 		// multiply by dV and rate_max 
 		total_scaled_signal = total_rate; 
 		
+		std::cout << NR_min_signal << " : " << total_rate / (double) microenvironment.mesh.voxels.size() 
+		<< " : " << NR_sat_signal << std::endl; 
+		
+		std::cout << total_rate << " : " << total_rate * microenvironment.mesh.dV 
+		<< " : " << total_rate * microenvironment.mesh.dV*neutrophil_recruitment_rate  << std::endl; 
+
+
 		total_rate *= microenvironment.mesh.dV; 
 		total_rate *= neutrophil_recruitment_rate; 
 		
+		std::cout << total_rate << std::endl; 
+
 		// expected number of new neutrophils 
 		int number_of_new_cells = (int) round( total_rate * elapsed_time ); 
+
+		std::cout << "\t\t" << number_of_new_cells << std::endl << std::endl; 
 		
 		if( number_of_new_cells )
 		{

@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-400</x_min>
-		<x_max>400</x_max>
-		<y_min>-400</y_min>
-		<y_max>400</y_max>
+		<x_min>-200</x_min>
+		<x_max>200</x_max>
+		<y_min>-200</y_min>
+		<y_max>200</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>8</omp_num_threads>
+		<omp_num_threads>4</omp_num_threads>
 	</parallel> 
 
 	<options>
@@ -514,13 +514,13 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
-			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.05</neutrophil_recruitment_min_signal> <!--0.1 debug -->
-			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-7</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
+			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.1</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
-			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-7</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
+			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
