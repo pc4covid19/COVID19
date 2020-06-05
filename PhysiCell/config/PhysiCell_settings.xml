@@ -99,6 +99,10 @@
 	<parallel>
 		<omp_num_threads>4</omp_num_threads>
 	</parallel> 
+
+	<options>
+		<legacy_random_points_on_sphere_in_divide>false</legacy_random_points_on_sphere_in_divide>
+	</options>	
 	
 	<save>
 		<folder>output</folder> <!-- use . for root --> 
@@ -183,7 +187,7 @@
 			<phenotype>
 				<cycle code="6" name="flow_cytometry_separated_cycle_model">  
 					<!-- using higher than normal significant digits to match divisions in default code -->
-					<transition_rates units="1/min"> 
+					<phase_transition_rates units="1/min"> 
 						<!-- G0/G1 to S -->
 						<rate start_index="0" end_index="1" fixed_duration="false">0</rate>
 						<!-- 0.00334672 --> 
@@ -193,15 +197,15 @@
 						<rate start_index="2" end_index="3" fixed_duration="true">0.00416667</rate>
 						<!-- M to G0/G1 -->
 						<rate start_index="3" end_index="0" fixed_duration="true">0.0166667</rate>
-					</transition_rates>
+					</phase_transition_rates>
 				</cycle>
 				
 				<death>  
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">0</rate> <!-- 5.31667e-05 --> 
-						<transition_rates units="1/min">
+						<death_rate units="1/min">0</death_rate> <!-- 5.31667e-05 --> 
+						<phase_transition_rates units="1/min">
 							<rate start_index="0" end_index="1" fixed_duration="true">0.00193798</rate>
-						</transition_rates>
+						</phase_transition_rates>
 						<parameters>
 							<unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
 							<lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
@@ -213,11 +217,11 @@
 					</model> 
 
 					<model code="101" name="necrosis">
-						<rate units="1/min">0.0</rate>
-						<transition_rates units="1/min">
+						<death_rate units="1/min">0.0</death_rate>
+						<phase_transition_rates units="1/min">
 							<rate start_index="0" end_index="1" fixed_duration="false">9e9</rate>
 							<rate start_index="1" end_index="2" fixed_duration="true">1.15741e-5</rate>
-						</transition_rates>
+						</phase_transition_rates>
 						<parameters>
 							<unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
 							<lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
@@ -331,7 +335,7 @@
 			<phenotype>
 				<death>
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">0</rate> <!-- 5.31667e-05 --> 
+						<death_rate units="1/min">0</death_rate> <!-- 5.31667e-05 --> 
 					</model> 
 				</death>
 				<motility>  
@@ -355,7 +359,7 @@
 				</mechanics>
 				<death>
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">5e-4</rate> <!-- 5e-4 --> 
+						<death_rate units="1/min">5e-4</death_rate> <!-- 5e-4 --> 
 					</model> 
 				</death>
 				<motility>  
@@ -409,16 +413,18 @@
 				<death>
 					<!-- death is about 5x slower --> 
 					<model code="100" name="apoptosis"> 
-						<rate units="1/min">1e-5</rate> <!-- 5.31667e-05 --> 
+						<death_rate units="1/min">1e-5</death_rate> <!-- 5.31667e-05 --> 
 					</model> 
 				</death>
 				<motility>  
 					<speed>1</speed>
 					<migration_bias>0</migration_bias>
 					<persistence_time>1</persistence_time>
-					<chemotaxis>
-						<substrate>chemokine</substrate>
-					</chemotaxis>
+					<options>
+						<chemotaxis>
+							<substrate>chemokine</substrate>
+						</chemotaxis>
+					</options>
 				</motility>
 
 				<volume>
@@ -435,9 +441,11 @@
 				<motility>  
 					<migration_bias>0.1</migration_bias>
 					<persistence_time>1</persistence_time>
-					<chemotaxis>
-						<substrate>virion</substrate>
-					</chemotaxis>
+					<options>
+						<chemotaxis>
+							<substrate>virion</substrate>
+						</chemotaxis>
+					</options>
 				</motility>
 				<secretion>
 					<substrate name="virion">
