@@ -504,7 +504,6 @@
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		<!-- example parameters from the template --> 
 
-		
 		<div_ACE2 type="divider" description="--ACE2 receptor model initialization--"/>
 		<!--
 			<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell> --> <!-- not used? --> 
@@ -514,13 +513,13 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 -->
-			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal>
-			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal>
-			
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal>
-			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">.5</CD8_Tcell_recruitment_saturation_signal>
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">0.00000005</neutrophil_max_recruitment_rate> <!-- 8e-9 -->
+			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.005</neutrophil_recruitment_min_signal> <!--0.1 -->
+			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.01</neutrophil_recruitment_saturation_signal> <!-- 0.3 -->
+
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">0.00000005</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.01</CD8_Tcell_recruitment_min_signal> <!-- 0.3 -->
+			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.05</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0">0.01</multiplicity_of_infection>
@@ -529,6 +528,8 @@
 			<number_of_CD8_Tcells type="int" units="none" description="initial number of CD8 T cells">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" description="initial number of macrophages">50</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" description="initial number of neutrophils">0</number_of_neutrophils>
+			
+			<perecentage_tissue_vascularized units="1/min" type="double">8.8</perecentage_tissue_vascularized>			
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
