@@ -248,6 +248,9 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// the cell death functions don't automatically turn off custom functions, 
 		// since those are part of mechanics. 
 		
+		// detach all attached cells 
+		remove_all_adhesions( pCell ); 
+		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
 		return; 
@@ -268,7 +271,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		extra_elastic_attachment_mechanics( pCell, phenotype, dt );
 		
 		// induce damage to whatever we're adhered to 
-		#pragma omp critical
+		#pragma omp critical(track_contact_time)
 		{
 			for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
 			{
@@ -313,7 +316,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
 //	std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
-	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" ); 
 	static Cell_Definition* pCD = find_cell_definition( "macrophage" ); 
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
@@ -340,6 +343,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		
 //		std::cout << " I ate to much and must therefore die " << std::endl; 
 //		system("pause"); 
+
+		// Paul on June 5, 2020: do you want a "return" here? 
 	}
 
 //	std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
@@ -355,6 +360,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	
 //	std::cout << "\t\t" << __FUNCTION__ << " " << __LINE__ << std::endl; 
 	double macrophage_probability_of_phagocytosis = parameters.doubles("macrophage_probability_of_phagocytosis");
+	// Note from Paul on June 5, 2020: this probability depends on dt. 
+	// You shoudl chnage it to a rate, so probability = rate * dt 
 
 	int n = 0; 
 	Cell* pTestCell = neighbors[n]; 
@@ -371,20 +378,20 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\tnom nom nom" << std::endl; 
 //			std::cout << "\t\t\t" << pCell->type << " eats " << pTestCell->type << std::endl; 
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
-			pCell->ingest_cell( pTestCell ); 
-			
-			pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
-				parameters.doubles("activated_macrophage_secretion_rate"); // 10;
-			pCell->phenotype.secretion.uptake_rates[chemokine_index] = 
-				parameters.doubles("activated_cell_chemokine_uptake_rate"); // 10;
-			pCell->phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 
-				parameters.doubles("activated_cell_cytokine_uptake_rate"); // 10;
-			pCell->phenotype.secretion.uptake_rates[debris_index] = 
-				parameters.doubles("activated_cell_chemokine_uptake_rate"); // 10;
-					
+			#pragma omp critical(macrophage_eat)
+			{
+				pCell->ingest_cell( pTestCell ); 
+				remove_all_adhesions( pTestCell ); // debug 
+			}	
+				pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
+					parameters.doubles("activated_macrophage_secretion_rate"); // 10;
+				pCell->phenotype.secretion.uptake_rates[chemokine_index] = 
+					parameters.doubles("activated_cell_chemokine_uptake_rate"); // 10;
+				pCell->phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 
+					parameters.doubles("activated_cell_cytokine_uptake_rate"); // 10;
+				pCell->phenotype.secretion.uptake_rates[debris_index] = 
+					parameters.doubles("activated_cell_chemokine_uptake_rate"); // 10;
       
-      // Paul M says: This should be read from a parameter value instead of hard-coded. 
-
 			pCell->phenotype.motility.migration_speed = 
 				parameters.doubles("activated_macrophage_speed"); 
 			
@@ -424,6 +431,12 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	pCell->phenotype.motility.migration_bias_direction = sensitivity_chemokine*pCell->nearest_gradient(chemokine_index)+sensitivity_eat_me*pCell->nearest_gradient(debris_index);
 	normalize( &( phenotype.motility.migration_bias_direction) );
 	
+	// Paul says on June 5, 2020: probably want to change this to a 
+	// bias direction function. Right now, it is forcing a resample of 
+	// direction every dt_cell time, rather than based on the persistence time. 
+	// And whatever is in the chemotaxis function (if any) will override this 
+	// bias vector. 
+	
 	// make changes to volume change rate??
 
 	// if too much debris, comit to apoptosis 	
@@ -439,6 +452,8 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		
 //		std::cout << " I ate to much and must therefore die " << std::endl; 
 //		system("pause"); 
+
+		// Paul on June 5, 2020: do you want a "return" here? 
 	}
 
 //	std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
@@ -472,7 +487,11 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\tnom nom nom" << std::endl; 
 //			std::cout << "\t\t\t" << pCell->type << " eats " << pTestCell->type << std::endl; 
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
-			pCell->ingest_cell( pTestCell ); 
+			#pragma omp critical(neutrophil_eat)
+			{
+				pCell->ingest_cell( pTestCell ); 
+				remove_all_adhesions( pTestCell ); // debug 
+			}
 			
 			static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 			static int chemokine_index = microenvironment.find_density_index( "chemokine");
@@ -486,8 +505,6 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 			pCell->phenotype.secretion.uptake_rates[debris_index] = 
 				parameters.doubles("activated_cell_chemokine_uptake_rate"); // 10;
 				
-					
-      
       // Paul M says: This should be read from a parameter value instead of hard-coded. 
 
 			pCell->phenotype.motility.migration_speed = 
@@ -635,7 +652,7 @@ void extra_elastic_attachment_mechanics( Cell* pCell, Phenotype& phenotype, doub
 
 void attach_cells( Cell* pCell_1, Cell* pCell_2 )
 {
-	#pragma omp critical
+	#pragma omp critical(attach)
 	{
 		bool already_attached = false; 
 		for( int i=0 ; i < pCell_1->state.neighbors.size() ; i++ )
@@ -661,7 +678,7 @@ void attach_cells( Cell* pCell_1, Cell* pCell_2 )
 
 void detach_cells( Cell* pCell_1 , Cell* pCell_2 )
 {
-	#pragma omp critical
+	#pragma omp critical(detach)
 	{
 		bool found = false; 
 		int i = 0; 
@@ -701,7 +718,14 @@ void detach_cells( Cell* pCell_1 , Cell* pCell_2 )
 	return; 
 }
 
-
+void remove_all_adhesions( Cell* pCell )
+{
+	// detach all attached cells 
+	for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
+	{ detach_cells( pCell, pCell->state.neighbors[n] ); }		
+	
+	return; 
+}
 
 bool attempt_immune_cell_attachment( Cell* pAttacker, Cell* pTarget , double dt )
 {
@@ -755,6 +779,8 @@ Cell* immune_cell_check_neighbors_for_attachment( Cell* pAttacker , double dt )
 	return NULL; 
 }
 
+  // this is in epithelium now 
+/*
 void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
@@ -780,6 +806,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	return; 
 }
+*/
 
 void immune_cell_recruitment( double dt )
 {
@@ -914,4 +941,118 @@ void initial_immune_cell_placement( void )
 	{ create_infiltrating_immune_cell( pN ); }		
 
 	return;
+}
+
+void keep_immune_cells_off_edge( void )
+{
+	static double Xmin = microenvironment.mesh.bounding_box[0]; 
+	static double Ymin = microenvironment.mesh.bounding_box[1]; 
+	static double Zmin = microenvironment.mesh.bounding_box[2]; 
+
+	static double Xmax = microenvironment.mesh.bounding_box[3]; 
+	static double Ymax = microenvironment.mesh.bounding_box[4]; 
+	static double Zmax = microenvironment.mesh.bounding_box[5]; 
+
+	static bool setup_done = false; 
+	if( default_microenvironment_options.simulate_2D == true && setup_done == false )
+	{
+		Zmin = 0.0; 
+		Zmax = 0.0; 
+	}
+	
+	static double Xrange = (Xmax - Xmin); 
+	static double Yrange = (Ymax - Ymin); 
+	static double Zrange = (Zmax - Zmin); 
+	
+	// warning hardcoded
+	static double relative_edge_margin = 0; // 0.1; 
+	static double relative_interior = 1 - 2 * relative_edge_margin; 
+	
+	if( setup_done == false )
+	{
+		Xmin += relative_edge_margin*Xrange; 
+		Ymin += relative_edge_margin*Yrange; 
+		Zmin += relative_edge_margin*Zrange;
+		
+		Xrange *= relative_interior;
+		Yrange *= relative_interior;
+		Zrange *= relative_interior;  
+		setup_done = true; 
+	}
+	
+	static int epithelial_type = get_cell_definition( "lung epithelium" ).type; 
+
+	for( int n=0 ; n < (*all_cells).size() ; n++ )
+	{
+		Cell* pC = (*all_cells)[n]; 
+		if( pC->phenotype.death.dead == false && pC->is_out_of_domain && pC->type != epithelial_type )
+		{
+			
+			pC->is_out_of_domain = false; 
+			pC->is_active = true; 
+			pC->is_movable = true; 			
+			
+			
+			std::vector<double> position = pC->position; 
+			position[0] = Xmin + Xrange * UniformRandom(); 
+			position[1] = Ymin + Yrange * UniformRandom(); 
+			position[2] = Zmin + Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
+
+			#pragma omp critical(move_from_edge)
+			{
+				std::cout << " moving cell " << pC << " of type " << pC->type_name << std::endl; 
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+				pC->assign_position( position ); 	
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+				// pC->update_voxel_in_container(); // cut this? 
+				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+			}
+		}
+	}
+	return; 
+/*	
+	// keep cells away from the outer edge 
+	
+	// check for out of bounds 
+	std::vector<double> position = pCell->position; 
+	static std::vector<double>* pBB = &(microenvironment.mesh.bounding_box); 
+	if( position[0] < (*pBB)[0] || position[0] > (*pBB)[3] || 
+		position[1] < (*pBB)[1] || position[1] > (*pBB)[4] || 
+		position[2] < (*pBB)[2] || position[2] > (*pBB)[5] )
+	{
+		position[0] = Xmin + Xrange * UniformRandom(); 
+		position[1] = Ymin + Yrange * UniformRandom(); 
+		position[2] = Zmin + Zrange * UniformRandom(); 
+
+		pCell->assign_position( position ); 
+		return; 
+	}			
+*/
+	return;
+}
+
+void keep_immune_cells_in_bounds( double dt )
+{
+	static double dt_bounds = 5; 
+	static double next_time = 0.0; 
+
+	static double t_bounds = 0.0; 
+	static double t_last_bounds = 0.0; 
+	static double t_next_bounds = 0.0; 
+	
+	static double tolerance = 0.1 * diffusion_dt; 
+	
+	// is it time for the next immune recruitment? 
+	if( t_bounds > t_next_bounds- tolerance )
+	{
+		double elapsed_time = (t_bounds - t_last_bounds );
+		
+		keep_immune_cells_off_edge(); 
+		
+		t_last_bounds = t_bounds; 
+		t_next_bounds = t_bounds + dt_bounds; 
+	}
+	t_bounds += dt; 
+
+	return; 
 }

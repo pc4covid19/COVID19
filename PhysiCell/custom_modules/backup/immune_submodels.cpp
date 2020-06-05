@@ -304,7 +304,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 */	
 	
 //	std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
-	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" ); 
 	static Cell_Definition* pCD = find_cell_definition( "macrophage" ); 
 	
 	// make changes to volume change rate??
