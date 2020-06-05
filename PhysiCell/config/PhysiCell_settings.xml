@@ -128,7 +128,7 @@
 				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="virion/micron^3">10</initial_condition>
+			<initial_condition units="virion/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
@@ -332,7 +332,7 @@
 				<max_attachment_distance units="micron">15</max_attachment_distance>
 				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
 <!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
-				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>				
+				<relative_maximum_volume units="dimensionless">1.8</relative_maximum_volume>
 				
 				<!-- macrophage -->
 				<activated_macrophage_speed units="micron/min" type="double">0.4</activated_macrophage_speed>
@@ -342,7 +342,8 @@
 				<activated_cell_chemokine_uptake_rate units="1/min" type="double">0.0510</activated_cell_chemokine_uptake_rate>
 				<activated_cell_cytokine_uptake_rate units="1/min" type="double">0.0018</activated_cell_cytokine_uptake_rate>
 				<sensitivity_to_eat_me_chemotaxis units="dimensionless" type="double">1.0</sensitivity_to_eat_me_chemotaxis>
-				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double">1.0</sensitivity_to_chemokine_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double">1.0</sensitivity_to_chemokine_chemotaxis> <!-- 1 --> 
+				<activated_macrophage units="dimensionless" type="double">0.0</activated_macrophage>
 
 				<!-- neutrophil-->
 				<activated_neutrophil_speed units="micron/min" type="double">0.4</activated_neutrophil_speed>
@@ -540,6 +541,7 @@
 			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
 			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>
 			<Macrophage_color type="string" description="">lime</Macrophage_color>
+			<activated_macrophage_color type="string" description="color of activated macrophage">goldenrod</activated_macrophage_color>
 			<Neutrophil_color type="string" description="">cyan</Neutrophil_color>
 		
 	</user_parameters>

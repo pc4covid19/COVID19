@@ -372,8 +372,8 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 		}
 
 		output[0] = parameters.strings("apoptotic_epithelium_color");	
-		output[2] = output[0]; 		
-		output[3] = output[0]; 		
+		output[2] = output[0];
+		output[3] = output[0];
 		return output; 
 	}
 
@@ -387,24 +387,28 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	if( pCell->phenotype.death.dead == false && pCell->type == CD8_Tcell_type )
 	{
 		output[0] = parameters.strings("CD8_Tcell_color");  
-		output[2] = parameters.strings("CD8_Tcell_color");  
-		output[3] = parameters.strings("CD8_Tcell_color"); 
+		output[2] = output[0];
+		output[3] = output[0];
 		return output; 
 	}
 
 	if( pCell->phenotype.death.dead == false && pCell->type == Macrophage_type )
 	{
-		output[0] = parameters.strings("Macrophage_color");  
-		output[2] = parameters.strings("Macrophage_color");  
-		output[3] = parameters.strings("Macrophage_color"); 
+		std::string color = parameters.strings("Macrophage_color");  
+		if( pCell->custom_data["activated_macrophage" ] > 0.5 )
+		{ color = parameters.strings("activated_macrophage_color"); }
+		
+		output[0] = color; 
+		output[2] = output[0];
+		output[3] = output[0];
 		return output; 
 	}
 
 	if( pCell->phenotype.death.dead == false && pCell->type == Neutrophil_type )
 	{
 		output[0] = parameters.strings("Neutrophil_color");  
-		output[2] = parameters.strings("Neutrophil_color");  
-		output[3] = parameters.strings("Neutrophil_color");  
+		output[2] = output[0];
+		output[3] = output[0];
 		return output; 
 	}
 
