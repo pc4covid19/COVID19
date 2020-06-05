@@ -381,7 +381,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(macrophage_eat)
 			{
-				std::cout << "\t\t\t" << pCell->type << " eats " << pTestCell->type << std::endl; 
+				std::cout << "\t\t\t" << pCell->type_name << " eats " << pTestCell->type_name << std::endl; 
 				pCell->ingest_cell( pTestCell ); 
 				remove_all_adhesions( pTestCell ); // debug 
 			}	
@@ -862,6 +862,7 @@ void immune_cell_recruitment( double dt )
 		
 		// expected number of new neutrophils 
 		int number_of_new_cells = (int) round( total_rate * elapsed_time ); 
+		
 		if( number_of_new_cells )
 		{
 			std::cout << "\tRecruiting " << number_of_new_cells << " neutrophils ... " << std::endl; 
@@ -870,11 +871,14 @@ void immune_cell_recruitment( double dt )
 //			std::cout << "\tTotal signa : " << total_scaled_signal * microenvironment.mesh.dV << std::endl; 
 //			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
 //			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
+
+		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_neutrophil(); }
+		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 		}
 		
-		// neutrophil recruitment 
+		// CD8 Tcell recruitment 
 		
 		static double CD8_Tcell_recruitment_rate = parameters.doubles( "CD8_Tcell_max_recruitment_rate" ); 
 		static double TC_min_signal = parameters.doubles( "CD8_Tcell_recruitment_min_signal" ); 
@@ -912,8 +916,12 @@ void immune_cell_recruitment( double dt )
 //			std::cout << "\tTotal signa : " << total_scaled_signal * microenvironment.mesh.dV << std::endl; 
 //			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
 //			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
+
+		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
+
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_Tcell(); }
+		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 		}
 		
 		t_last_immune = t_immune; 

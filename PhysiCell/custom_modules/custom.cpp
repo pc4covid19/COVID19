@@ -171,6 +171,8 @@ void setup_microenvironment( void )
 	
 	initialize_microenvironment(); 	
 	
+	choose_initialized_voxels();
+	
 	return; 
 }
 
