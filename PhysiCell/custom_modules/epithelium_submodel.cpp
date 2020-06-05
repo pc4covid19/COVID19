@@ -8,6 +8,8 @@ Submodel_Information epithelium_submodel_info;
 
 void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static int debris_index = microenvironment.find_density_index( "debris");
+	
 	// receptor dynamics 
 	// requires faster time scale - done in main function 
 	
@@ -28,6 +30,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		// detach all attached cells 
 		remove_all_adhesions( pCell ); 
+		
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 	}
 	
 	// if I am dead, make sure to still secrete the chemokine 
@@ -36,7 +40,7 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	double P = pCell->custom_data[nP];
 	
 	// warning hardcoded 
-	if( phenotype.death.dead == true && P > 0.001 )
+	if( phenotype.death.dead == false && P > 0.001 )
 	{
 		phenotype.secretion.secretion_rates[chemokine_index] = 
 			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
@@ -54,6 +58,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	pCell->is_movable = false; 
+	
 	// if I'm dead, don't bother 
 	if( phenotype.death.dead == true )
 	{

@@ -382,8 +382,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 			#pragma omp critical(macrophage_eat)
 			{
 				std::cout << "\t\t\t" << pCell->type_name << " eats " << pTestCell->type_name << std::endl; 
-				pCell->ingest_cell( pTestCell ); 
 				remove_all_adhesions( pTestCell ); // debug 
+				pCell->ingest_cell( pTestCell ); 
 			}	
 				pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
 					pCell->custom_data["activated_macrophage_secretion_rate"]; // 10;
@@ -494,8 +494,8 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(neutrophil_eat)
 			{
-				pCell->ingest_cell( pTestCell ); 
 				remove_all_adhesions( pTestCell ); // debug 
+				pCell->ingest_cell( pTestCell ); 
 			}
 			
 			static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
@@ -1015,11 +1015,8 @@ void keep_immune_cells_off_edge( void )
 			#pragma omp critical(move_from_edge)
 			{
 				std::cout << " moving cell " << pC << " of type " << pC->type_name << std::endl; 
-				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
 				pC->assign_position( position ); 	
-				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
-				// pC->update_voxel_in_container(); // cut this? 
-				std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;
+				remove_all_adhesions( pC ); 
 			}
 		}
 	}
