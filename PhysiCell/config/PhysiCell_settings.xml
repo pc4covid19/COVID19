@@ -74,10 +74,10 @@
 
 <PhysiCell_settings version="devel-version">
 	<domain>
-		<x_min>-200</x_min>
-		<x_max>200</x_max>
-		<y_min>-200</y_min>
-		<y_max>200</y_max>
+		<x_min>-400</x_min>
+		<x_max>400</x_max>
+		<y_min>-400</y_min>
+		<y_max>400</y_max>
 		<z_min>-10</z_min>
 		<z_max>10</z_max>
 		<dx>20</dx>
@@ -113,7 +113,7 @@
 		</full_data>
 		
 		<SVG>
-			<interval units="min">6</interval>
+			<interval units="min">15</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -165,7 +165,7 @@
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/micron^3" enabled="true">0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
 		<variable name="debris" units="mol/micron^3" ID="5">
@@ -174,7 +174,7 @@
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/micron^3" enabled="true">0</Dirichlet_boundary_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
 		<options>
@@ -452,7 +452,7 @@
 						<use_2D>true</use_2D>					
 						<chemotaxis>
 							<enabled>true</enabled>
-							<substrate>chemokine</substrate> <!-- debris -->
+							<substrate>debris</substrate> <!-- debris -->
 							<direction>1</direction>
 						</chemotaxis>
 					</options>
@@ -514,11 +514,11 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-7</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-8</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-7</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		

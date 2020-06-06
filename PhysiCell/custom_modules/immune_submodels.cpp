@@ -18,7 +18,7 @@ void choose_initialized_voxels( void )
 	// read in percentage of tissue that's vascularised
 	double percentage_vascularised = parameters.doubles("perecentage_tissue_vascularized");
 	int max_voxel_index = microenvironment.mesh.voxels.size() - 1; 
-	int number_of_vascularized_voxels = (int) ( percentage_vascularised/100 * ( max_voxel_index+1) ); 
+	int number_of_vascularized_voxels = (int) ( percentage_vascularised/100.0 * ( max_voxel_index+1) ); 
 
 	 // choose which voxels are veins
 	 for( int n = 0 ; n < number_of_vascularized_voxels ; n++ )
@@ -384,8 +384,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(macrophage_eat)
 			{
-				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
-				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
+//				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
+//				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
 				remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
 			}	
@@ -500,9 +500,8 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 //			std::cout << "\t\t\t" << pCell  << " eats " << pTestCell << std::endl; 
 			#pragma omp critical(neutrophil_eat)
 			{
-				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
-				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
-				
+//				std::cout << "\t\t\t" << pCell->type_name << " " << pCell << " eats " 
+//				<< pTestCell->type_name << " " << pTestCell << " " << pTestCell->phenotype.volume.total << std::endl; 
 				remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
 			}
@@ -838,8 +837,7 @@ void immune_cell_recruitment( double dt )
 	if( t_immune > t_next_immune- tolerance )
 	{
 		double elapsed_time = (t_immune - t_last_immune );
-//		std::cout<<"t immune: "<<t_immune<<" elapsed time "<<elapsed_time<<std::endl;
-		std::cout << "Immune time! " << t_immune << " (elapsed: " << elapsed_time << ") " << std::endl; 
+//		std::cout << "Immune time! " << t_immune << " (elapsed: " << elapsed_time << ") " << std::endl; 
 		
 		// neutrophil recruitment 
 		
@@ -866,22 +864,23 @@ void immune_cell_recruitment( double dt )
 		// multiply by dV and rate_max 
 		total_scaled_signal = total_rate; 
 		
+/*		
 		std::cout << NR_min_signal << " : " << total_rate / (double) microenvironment.mesh.voxels.size() 
 		<< " : " << NR_sat_signal << std::endl; 
 		
 		std::cout << total_rate << " : " << total_rate * microenvironment.mesh.dV 
 		<< " : " << total_rate * microenvironment.mesh.dV*neutrophil_recruitment_rate  << std::endl; 
-
+*/
 
 		total_rate *= microenvironment.mesh.dV; 
 		total_rate *= neutrophil_recruitment_rate; 
 		
-		std::cout << total_rate << std::endl; 
+//		std::cout << total_rate << std::endl; 
 
 		// expected number of new neutrophils 
 		int number_of_new_cells = (int) round( total_rate * elapsed_time ); 
 
-		std::cout << "\t\t" << number_of_new_cells << std::endl << std::endl; 
+//		std::cout << "\t\t" << number_of_new_cells << std::endl << std::endl; 
 		
 		if( number_of_new_cells )
 		{
@@ -892,10 +891,8 @@ void immune_cell_recruitment( double dt )
 //			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
 //			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
 
-		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_neutrophil(); }
-		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 		}
 		
 		// CD8 Tcell recruitment 
@@ -937,11 +934,8 @@ void immune_cell_recruitment( double dt )
 //			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
 //			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
 
-		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
-
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_Tcell(); }
-		std::cout << __FUNCTION__ << " " << __LINE__ << std::endl; 
 		}
 		
 		t_last_immune = t_immune; 

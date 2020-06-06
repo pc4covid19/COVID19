@@ -133,8 +133,10 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		// detach all attached cells 
 		remove_all_adhesions( pCell ); 
 		
-		std::cout << "I'm dead of a T cell " << std::endl; 
-		std::cout << "\t\tat " << pCell->position << std::endl; 
+		#pragma omp critical(tcell)
+		{
+		std::cout << "\t\t\t\t" << pCell << " is dead of a T cell at " << pCell->position << std::endl; 
+		}
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 

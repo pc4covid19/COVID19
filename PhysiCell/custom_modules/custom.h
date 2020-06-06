@@ -95,3 +95,5 @@ std::vector<std::string> tissue_coloring_function( Cell* );
 // eventually move this to a tissue submodel 
 
 void move_exported_to_viral_field( void ); 
+
+void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice , double time, std::vector<std::string> (*cell_coloring_function)(Cell*) );
