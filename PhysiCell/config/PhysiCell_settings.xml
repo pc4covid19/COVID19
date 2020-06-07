@@ -498,7 +498,7 @@
 				</motility>
 				<secretion>
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min"></secretion_rate>
+						<secretion_rate units="1/min">0.8254</secretion_rate>
 					</substrate>
 					<substrate name="virion">
 						<uptake_rate units="1/min">0.001</uptake_rate>
