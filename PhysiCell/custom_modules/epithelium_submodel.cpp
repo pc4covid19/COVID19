@@ -8,6 +8,8 @@ Submodel_Information epithelium_submodel_info;
 
 void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static int debris_index = microenvironment.find_density_index( "debris");
+	
 	// receptor dynamics 
 	// requires faster time scale - done in main function 
 	
@@ -22,16 +24,48 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// T-cell based death
 	TCell_induced_apoptosis(pCell, phenotype, dt ); 
 	
+	// if I am dead, remove all adhesions 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
+	if( phenotype.death.dead == true )
+	{
+		// detach all attached cells 
+		remove_all_adhesions( pCell ); 
+		
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+	}
+	
+	// if I am dead, make sure to still secrete the chemokine 
+	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
+	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
+	double P = pCell->custom_data[nP];
+	
+	// warning hardcoded 
+	if( phenotype.death.dead == false && P > 0.001 )
+	{
+		phenotype.secretion.secretion_rates[chemokine_index] = 
+			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
+	}
+	
+	// if I am dead, don't bother executing this function again 
+	if( phenotype.death.dead == true )
+	{
+		pCell->functions.update_phenotype = NULL; 
+	}
+	
 	return; 
 }
 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	pCell->is_movable = false; 
+	
 	// if I'm dead, don't bother 
 	if( phenotype.death.dead == true )
 	{
 		// the cell death functions don't automatically turn off custom functions, 
 		// since those are part of mechanics. 
+		remove_all_adhesions( pCell ); 
 		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
@@ -89,18 +123,27 @@ void epithelium_submodel_setup( void )
 
 void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 {
-	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" ); 
+	static int debris_index = microenvironment.find_density_index( "debris" ); 
+	static int proinflammatory_cytokine_index = microenvironment.find_density_index("pro-inflammatory cytokine");
+	
 	if( pCell->custom_data["TCell_contact_time"] > pCell->custom_data["TCell_contact_death_threshold"] )
 	{
 		// make sure to get rid of all adhesions! 
 		// detach all attached cells 
-		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
+		remove_all_adhesions( pCell ); 
+		
+		#pragma omp critical(tcell)
 		{
-			detach_cells( pCell, pCell->state.neighbors[n] ); 
+		std::cout << "\t\t\t\t" << pCell << " is dead of a T cell at " << pCell->position << std::endl; 
 		}
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 
+		
+		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
+		pCell->phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+		
 		pCell->functions.update_phenotype = NULL; 
 	}
 	

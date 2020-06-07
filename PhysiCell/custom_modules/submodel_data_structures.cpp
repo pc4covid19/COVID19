@@ -107,7 +107,7 @@ void Submodel_Information::display( std::ostream& os )
 
 void Submodel_Registry::register_model( Submodel_Information& model )
 {
-	#pragma omp critical 
+	#pragma omp critical(submodel_registration) 
 	{
 		// already registered? 
 		bool found = false; 

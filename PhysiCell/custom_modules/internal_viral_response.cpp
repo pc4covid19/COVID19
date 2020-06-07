@@ -36,6 +36,8 @@ void internal_virus_response_model_setup( void )
 
 void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static Cell_Definition* pCD = find_cell_definition( "lung epithelium" ); 
+	
 	// bookkeeping -- find microenvironment variables we need
 
 	static int nV_external = microenvironment.find_density_index( "virion" ); 
@@ -49,15 +51,23 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// now, set apoptosis rate 
 	
 	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "apoptosis" );
-	phenotype.death.rates[apoptosis_model_index] = 
-		pCell->custom_data["max_infected_apoptosis_rate"] ; 
+	// phenotype.death.rates[apoptosis_model_index] = 
+	
+	// base death rate (from cell line)
+	double base_death_rate = 
+		pCD->phenotype.death.rates[apoptosis_model_index]; 
+	
+	// additional death rate from infectoin  
+	double additional_death_rate = pCell->custom_data["max_infected_apoptosis_rate"] ; 
+	
 	
 	double v = pCell->custom_data[nA_internal] / 
 		pCell->custom_data["max_apoptosis_half_max"] ; 
 	v = pow( v, pCell->custom_data["apoptosis_hill_power"] ); 
 	
 	double effect = v / (1.0+v); 
-	phenotype.death.rates[apoptosis_model_index] *= effect; 
+	additional_death_rate *= effect; 
+	phenotype.death.rates[apoptosis_model_index] = base_death_rate + additional_death_rate; 
 	
 	// if we're infected, secrete a chemokine for the immune model
 	static int nA = pCell->custom_data.find_variable_index( "assembled_virion" ); 	
@@ -69,6 +79,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	
 //	if( A > 0.9999999 )
+	// warning hardcoded 
 	if( P > 0.001 )
 	{
 		phenotype.secretion.secretion_rates[chemokine_index] = 

@@ -115,6 +115,55 @@ int main( int argc, char* argv[] )
 	
 	create_cell_types();
 	setup_tissue();
+	
+		/* test space */
+/*		
+	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
+
+	std::vector<double> vec = {0,0,0}; 
+	
+	Cell* pM = create_cell( get_cell_definition( "macrophage" ) ); 
+	pM->assign_position( vec ); 
+	
+	Cell* pE = create_cell( get_cell_definition( "lung epithelium" ) ); 
+	vec = {15,0,0};
+	pE->assign_position( vec ); 
+	pE->custom_data["assembled_virion"] = 100; 
+	
+	Cell* pT1 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
+	vec = {-15,0,0};
+	pT1->assign_position( vec ); 
+ 
+	Cell* pT2 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
+	vec = {-15,15,0};
+	pT2->assign_position( vec ); 
+
+	Cell* pN = create_cell( get_cell_definition( "neutrophil" ) ); 
+	vec = {0,15,0};
+	pN->assign_position( vec ); 
+ 
+	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
+	// CD8 adheres, then macrophage ingests, then neutrophil ingests 
+	attach_cells( pT1, pE ); 
+	pM->ingest_cell( pE ); 
+	pN->ingest_cell( pE );
+	attach_cells( pT2 , pE ); 
+	pT2->assign_position( {-500, 0 , 0} ); 
+	pM->ingest_cell( pE ); 
+	pN->ingest_cell( pT2 ); 
+
+
+	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
+
+	
+	
+	SVG_plot( "test.svg" , microenvironment, 0.0 , PhysiCell_globals.current_time, tissue_coloring_function );
+	
+	std::cout << __FILE__ << " successful exit " << __LINE__ << std::endl; 
+	exit(0); 
+*/	
+	
+
 
 	/* Users typically stop modifying here. END USERMODS */ 
 	
@@ -191,9 +240,9 @@ int main( int argc, char* argv[] )
 				if( PhysiCell_settings.enable_SVG_saves == true )
 				{	
 					sprintf( filename , "%s/snapshot%08u.svg" , PhysiCell_settings.folder.c_str() , PhysiCell_globals.SVG_output_index ); 
-					SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+					SVG_plot_virus( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
 					
-					PhysiCell_globals.SVG_output_index++; 
+ 					PhysiCell_globals.SVG_output_index++; 
 					PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
 				}
 			}
@@ -229,6 +278,15 @@ int main( int argc, char* argv[] )
 	}
 	catch( const std::exception& e )
 	{ // reference to the base of a polymorphic object
+	
+		std::cout << "Something went wrong. Let's save data." << std::endl; 
+		
+		sprintf( filename , "%s/error" , PhysiCell_settings.folder.c_str() ); 
+		save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
+		
+		sprintf( filename , "%s/error.svg" , PhysiCell_settings.folder.c_str() ); 
+		SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+	
 		std::cout << e.what(); // information from length_error printed
 	}
 	
