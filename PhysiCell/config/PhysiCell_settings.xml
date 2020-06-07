@@ -125,7 +125,7 @@
 	<microenvironment_setup>
 		<variable name="virion" units="virion/micron^3" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">2.5</diffusion_coefficient> <!-- 10 --> 
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
@@ -134,7 +134,7 @@
 
 		<variable name="assembled virion" units="virion/micron^3" ID="1">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">10.0</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">2.5</diffusion_coefficient> <!-- 10 --> 
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
@@ -417,7 +417,7 @@
 				</motility>
 				<secretion>
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">0</secretion_rate>
+						<secretion_rate units="1/min">0.8254</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
 					</substrate> 	
 				</secretion>
@@ -491,12 +491,15 @@
 						<use_2D>true</use_2D>					
 						<chemotaxis>
 							<enabled>true</enabled>
-							<substrate>virion</substrate>
+							<substrate>debris</substrate> <!-- virion --> 
 							<direction>1</direction>							
 						</chemotaxis>
 					</options>
 				</motility>
 				<secretion>
+					<substrate name="pro-inflammatory cytokine">
+						<secretion_rate units="1/min"></secretion_rate>
+					</substrate>
 					<substrate name="virion">
 						<uptake_rate units="1/min">0.001</uptake_rate>
 					</substrate> 	
@@ -527,12 +530,12 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.2</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
