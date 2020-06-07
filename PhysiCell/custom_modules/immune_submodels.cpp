@@ -436,6 +436,7 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// determine bias_direction for macrophage based on "eat me" signals and chemokine
 	double sensitivity_chemokine = pCell->custom_data["sensitivity_to_chemokine_chemotaxis"];
 	double sensitivity_eat_me = pCell->custom_data["sensitivity_to_eat_me_chemotaxis"];
+	
 	pCell->phenotype.motility.migration_bias_direction = sensitivity_chemokine*pCell->nearest_gradient(chemokine_index)+sensitivity_eat_me*pCell->nearest_gradient(debris_index);
 	normalize( &( phenotype.motility.migration_bias_direction) );
 	
@@ -993,8 +994,10 @@ void keep_immune_cells_off_edge( void )
 	static double Zrange = (Zmax - Zmin); 
 	
 	// warning hardcoded
-	static double relative_edge_margin = 0; // 0.1; 
+	static double relative_edge_margin = 0.01; // 0.1; 
 	static double relative_interior = 1 - 2 * relative_edge_margin; 
+	
+	static double tolerance = relative_edge_margin *(Xmax - Xmin); 
 	
 	if( setup_done == false )
 	{
@@ -1013,24 +1016,54 @@ void keep_immune_cells_off_edge( void )
 	for( int n=0 ; n < (*all_cells).size() ; n++ )
 	{
 		Cell* pC = (*all_cells)[n]; 
-		if( pC->phenotype.death.dead == false && pC->is_out_of_domain && pC->type != epithelial_type )
+		bool out_of_bounds = false; 
+		if( pC->position[0] < Xmin + tolerance || 
+			pC->position[0] > Xmax - tolerance ||
+			pC->position[1] < Ymin + tolerance ||
+			pC->position[1] > Ymax - tolerance )
+		{ out_of_bounds = true; }
+		bool move_allowed = false; 
+		if( pC->type != epithelial_type && pC->phenotype.death.dead == false )
+		{ move_allowed = true; } 
+
+//		if( pC->phenotype.death.dead == false && pC->is_out_of_domain && pC->type != epithelial_type )
+//		{
+		if( out_of_bounds && move_allowed )
 		{
-			
+			// old: move the existing cell
+			/*
 			pC->is_out_of_domain = false; 
 			pC->is_active = true; 
-			pC->is_movable = true; 			
+			pC->is_movable = true; 	
+			*/
 			
-			
-			std::vector<double> position = pC->position; 
+			std::vector<double> position = {0,0,0}; // 
 			position[0] = Xmin + Xrange * UniformRandom(); 
 			position[1] = Ymin + Yrange * UniformRandom(); 
 			position[2] = Zmin + Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
 
+			// old: move the existing cell
+			/*
 			#pragma omp critical(move_from_edge)
 			{
 				std::cout << " moving cell " << pC << " of type " << pC->type_name << std::endl; 
 				pC->assign_position( position ); 	
 				remove_all_adhesions( pC ); 
+			}
+			*/
+			
+			// new: delete that cell (or flag for removal) 
+			// new: create a NEW cell of same type at random location 
+			// also copy its custom data / state 
+			Cell* pNewCell = create_cell( get_cell_definition(pC->type_name) ); 
+			pNewCell->assign_position( position ); 
+			// pNewCell->custom_data = pC->custom_data; // enable in next testing 
+			
+			// new: delete that cell (or flag for removal) 
+			#pragma omp critical(kill_cell_on_edge)
+			{
+				remove_all_adhesions( pC ); 
+				pC->die(); 
 			}
 		}
 	}

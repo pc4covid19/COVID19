@@ -278,6 +278,15 @@ int main( int argc, char* argv[] )
 	}
 	catch( const std::exception& e )
 	{ // reference to the base of a polymorphic object
+	
+		std::cout << "Something went wrong. Let's save data." << std::endl; 
+		
+		sprintf( filename , "%s/error" , PhysiCell_settings.folder.c_str() ); 
+		save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
+		
+		sprintf( filename , "%s/error.svg" , PhysiCell_settings.folder.c_str() ); 
+		SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+	
 		std::cout << e.what(); // information from length_error printed
 	}
 	

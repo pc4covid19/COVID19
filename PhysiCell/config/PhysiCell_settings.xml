@@ -283,7 +283,20 @@
 						</chemotaxis>
 					</options>
 				</motility>
+
 				<secretion>
+					<substrate name="interferon 1">
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
+					<substrate name="pro-inflammatory cytokine">
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
+					<substrate name="chemokine">
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
+					<substrate name="debris">
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
 				</secretion>
 
 				<molecular />
@@ -328,7 +341,7 @@
 				<cell_attachment_rate units="1/min">0</cell_attachment_rate>
 				<cell_attachment_lifetime units="min">0</cell_attachment_lifetime>
 				
-				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold>  
+				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold> <!-- 50 -->
 				<max_attachment_distance units="micron">15</max_attachment_distance>
 				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
 <!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
@@ -431,8 +444,8 @@
 -->				
 			</phenotype>
 			<custom_data>
-				<cell_attachment_rate units="1/min">0.2</cell_attachment_rate>
-				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime>
+				<cell_attachment_rate units="1/min">0.2</cell_attachment_rate> <!-- 0.2 --> 
+				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime> <!-- 8.5 --> 
 			</custom_data>
 		</cell_definition>
 		
@@ -445,7 +458,7 @@
 					</model> 
 				</death>
 				<motility>  
-					<migration_bias>0.95</migration_bias>
+					<migration_bias>0.5</migration_bias>
 					<persistence_time>5</persistence_time>
 					<options>
 						<enabled>true</enabled>
@@ -514,11 +527,11 @@
 			
 			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
 			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-8</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">8e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-8</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		
