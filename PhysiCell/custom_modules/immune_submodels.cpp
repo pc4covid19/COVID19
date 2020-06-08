@@ -782,17 +782,20 @@ void add_elastic_velocity( Cell* pActingOn, Cell* pAttachedTo , double elastic_c
 {
 	std::vector<double> displacement = pAttachedTo->position - pActingOn->position; 
 	
-	if (displacement.size() == 0)
+	if (displacement.size() == 0 )
 	{
 		std::cout << "----- rwh: disp size=0" << std::endl;
 		std::cout << "----- pAttachedTo = " << pAttachedTo << std::endl;
 		std::cout << "----- pActingOn = " << pActingOn << std::endl;
 		
+		char filename[1024];
 		sprintf( filename , "%s/error" , PhysiCell_settings.folder.c_str() ); 
 		save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 		
+		extern std::vector<std::string> tissue_coloring_function(Cell*); // (*cell_coloring_function)(Cell*); 
+		
 		sprintf( filename , "%s/error.svg" , PhysiCell_settings.folder.c_str() ); 
-		SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+		SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, tissue_coloring_function );
 	}	
 	
 	axpy( &(pActingOn->velocity) , elastic_constant , displacement ); 
