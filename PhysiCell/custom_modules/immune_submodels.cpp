@@ -12,6 +12,116 @@ Submodel_Information Neutrophil_submodel_info;
 
 std::vector<int> vascularized_voxel_indices;
 
+// return true if out of bounds, within a tolerance 
+bool check_for_out_of_bounds( Cell* pC , double tolerance )
+{
+	static double Xmin = microenvironment.mesh.bounding_box[0]; 
+	static double Ymin = microenvironment.mesh.bounding_box[1]; 
+	static double Zmin = microenvironment.mesh.bounding_box[2]; 
+
+	static double Xmax = microenvironment.mesh.bounding_box[3]; 
+	static double Ymax = microenvironment.mesh.bounding_box[4]; 
+	static double Zmax = microenvironment.mesh.bounding_box[5]; 
+	
+	static bool two_dimensions = default_microenvironment_options.simulate_2D;
+
+	static bool setup_done = false; 
+	if( default_microenvironment_options.simulate_2D == true && setup_done == false )
+	{
+		Zmin = 0.0; 
+		Zmax = 0.0; 
+		setup_done = true; 
+	}
+
+	if( pC->position[0] < Xmin + tolerance )
+	{ return true; }
+	if( pC->position[0] > Xmax - tolerance )
+	{ return true; }
+
+	if( pC->position[1] < Ymin + tolerance )
+	{ return true; }
+	if( pC->position[1] > Ymax - tolerance )
+	{ return true; }
+
+	if( two_dimensions )
+	{ return false; }
+
+	if( pC->position[2] < Zmin + tolerance )
+	{ return true; }
+	if( pC->position[2] > Zmax - tolerance )
+	{ return true; }
+
+	return false;
+}
+
+void replace_out_of_bounds_cell( Cell* pC , double tolerance )
+{
+	static double Xmin = microenvironment.mesh.bounding_box[0]; 
+	static double Ymin = microenvironment.mesh.bounding_box[1]; 
+	static double Zmin = microenvironment.mesh.bounding_box[2]; 
+
+	static double Xmax = microenvironment.mesh.bounding_box[3]; 
+	static double Ymax = microenvironment.mesh.bounding_box[4]; 
+	static double Zmax = microenvironment.mesh.bounding_box[5]; 
+	
+	static bool setup_done = false; 
+	if( setup_done == false )
+	{
+		Xmin += tolerance; 
+		Ymin += tolerance; 
+		Zmin += tolerance; 
+		
+		Xmax -= tolerance; 
+		Ymax -= tolerance; 
+		Zmax -= tolerance; 
+		
+		if( default_microenvironment_options.simulate_2D == true )
+		{
+			Zmin = 0.0; 
+			Zmax = 0.0; 
+		}
+		setup_done = true; 
+	}
+
+	static double Xrange = Xmax - Xmin; 
+	static double Yrange = Ymax - Ymin; 
+	static double Zrange = Zmax - Zmin; 
+	
+
+	std::vector<double> position = {Xmin,Ymin,Zmin}; // 
+	position[0] += Xrange * UniformRandom(); 
+	position[1] += Yrange * UniformRandom(); 
+	position[2] += Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
+
+	#pragma omp critical(kill_cell_on_edge)
+	{
+		// create a new cell of same type 
+		Cell* pNewCell = create_cell( get_cell_definition(pC->type_name) ); 
+		pNewCell->assign_position( position ); 
+		// pNewCell->custom_data = pC->custom_data; // enable in next testing 
+
+		// get rid of the old one 
+		remove_all_adhesions( pC ); 
+		pC->die(); 
+		
+		/* alternate 
+		pC->lyse_cell(); 
+		pC->set_total_volume( 0.0 ); 
+		*/
+		
+	}	
+	
+}
+
+/*
+if( check_for_out_of_bounds( this , 10.0 ) )
+{ 
+	replace_out_of_bounds_cell( this, 10.0 );
+	return; 
+}
+*/
+
+
 //extern std::vector<int> vascularized_voxel_indices;
 void choose_initialized_voxels( void )
 {
@@ -242,6 +352,13 @@ void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	// bounds check 
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{ 
+		replace_out_of_bounds_cell( pCell, 10.0 );
+		return; 
+	}	
+	
 	// if I'm dead, don't bother 
 	if( phenotype.death.dead == true )
 	{
@@ -421,6 +538,13 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	// bounds check 
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{ 
+		replace_out_of_bounds_cell( pCell, 10.0 );
+		return; 
+	}	
+
 	return; 
 }
 
@@ -546,6 +670,13 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	// bounds check 
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{ 
+		replace_out_of_bounds_cell( pCell, 10.0 );
+		return; 
+	}	
+
 	return; 
 }
 
@@ -650,6 +781,20 @@ Cell* check_for_dead_neighbor_for_interaction( Cell* pAttacker , double dt )
 void add_elastic_velocity( Cell* pActingOn, Cell* pAttachedTo , double elastic_constant )
 {
 	std::vector<double> displacement = pAttachedTo->position - pActingOn->position; 
+	
+	if (displacement.size() == 0)
+	{
+		std::cout << "----- rwh: disp size=0" << std::endl;
+		std::cout << "----- pAttachedTo = " << pAttachedTo << std::endl;
+		std::cout << "----- pActingOn = " << pActingOn << std::endl;
+		
+		sprintf( filename , "%s/error" , PhysiCell_settings.folder.c_str() ); 
+		save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
+		
+		sprintf( filename , "%s/error.svg" , PhysiCell_settings.folder.c_str() ); 
+		SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+	}	
+	
 	axpy( &(pActingOn->velocity) , elastic_constant , displacement ); 
 	
 	return; 
