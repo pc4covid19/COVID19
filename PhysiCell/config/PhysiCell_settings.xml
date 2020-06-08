@@ -415,12 +415,6 @@
 						</chemotaxis>
 					</options>
 				</motility>
-				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">0.8254</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
-					</substrate> 	
-				</secretion>
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -475,6 +469,14 @@
 					<total units="micron^3">4849</total>
 					<nuclear units="micron^3">485</nuclear>
 				</volume>
+				
+				<secretion>
+					<substrate name="pro-inflammatory cytokine">
+						<secretion_rate units="1/min">1</secretion_rate>
+						<secretion_target units="substrate density">1</secretion_target>
+					</substrate> 	
+				</secretion>				
+				
 			</phenotype>
 			<custom_data>
 			</custom_data>
