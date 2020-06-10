@@ -944,6 +944,9 @@ void Cell::convert_to_cell_definition( Cell_Definition& cd )
 
 void delete_cell( int index )
 {
+	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
+	<< " " << (*all_cells)[index]->type_name << std::endl; 
+	
 	// release any attached cells (as of 1.7.2 release)
 	(*all_cells)[index]->remove_all_attached_cells(); 
 	
@@ -1046,7 +1049,11 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 	{
 		bool volume_was_zero = false; 
 		if( pCell_to_eat->phenotype.volume.total < 1e-15 )
-		{ volume_was_zero = true; }
+		{
+			volume_was_zero = true; 
+			std::cout << this << " " << this->type_name << " ingests " 
+			<< pCell_to_eat << " " << pCell_to_eat->type_name << std::endl; 
+		}
 		// absorb all the volume(s)
 
 		// absorb fluid volume (all into the cytoplasm) 
@@ -1107,7 +1114,7 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 		// pCell_to_eat->die(); // I don't think this is safe if it's in an OpenMP loop 
 		
 		// flag it for removal 
-		if( volume_was_zero )
+		if( volume_was_zero == false )
 		{ pCell_to_eat->flag_for_removal(); }
 		// mark it as dead 
 		pCell_to_eat->phenotype.death.dead = true; 
@@ -1140,7 +1147,7 @@ void Cell::lyse_cell( void )
 		if( phenotype.volume.total < 1e-15 )
 		{ volume_was_zero = true; }
 	
-		if( volume_was_zero )
+		if( volume_was_zero == false )
 		{ flag_for_removal(); }
 	}
 	
