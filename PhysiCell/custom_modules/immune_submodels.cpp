@@ -470,7 +470,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pTestCell = neighbors[n]; 
 		// if it is not me and not a macrophage 
-		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
+		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true &&  
 			UniformRandom()<macrophage_probability_of_phagocytosis )
 		{
 			#pragma omp critical(macrophage_eat)
