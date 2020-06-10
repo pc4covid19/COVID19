@@ -328,6 +328,14 @@ void Cell_Container::update_all_cells(double t, double phenotype_dt_ , double me
 			{
 				(*all_cells)[i]->functions.custom_cell_rule((*all_cells)[i], (*all_cells)[i]->phenotype, time_since_last_mechanics);
 			}
+			
+			// contact interactions 
+			
+			if( (*all_cells)[i]->functions.contact_function )
+			{
+				evaluate_interactions( (*all_cells)[i] , (*all_cells)[i]->phenotype, time_since_last_mechanics );
+			}
+			
 		}
 		// Calculate new positions
 		#pragma omp parallel for 

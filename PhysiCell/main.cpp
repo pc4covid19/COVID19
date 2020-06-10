@@ -85,6 +85,7 @@ using namespace PhysiCell;
 
 int main( int argc, char* argv[] )
 {
+
 	// load and parse settings file(s)
 	
 	bool XML_status = false; 
@@ -116,54 +117,7 @@ int main( int argc, char* argv[] )
 	create_cell_types();
 	setup_tissue();
 	
-		/* test space */
-/*		
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-
-	std::vector<double> vec = {0,0,0}; 
-	
-	Cell* pM = create_cell( get_cell_definition( "macrophage" ) ); 
-	pM->assign_position( vec ); 
-	
-	Cell* pE = create_cell( get_cell_definition( "lung epithelium" ) ); 
-	vec = {15,0,0};
-	pE->assign_position( vec ); 
-	pE->custom_data["assembled_virion"] = 100; 
-	
-	Cell* pT1 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
-	vec = {-15,0,0};
-	pT1->assign_position( vec ); 
- 
-	Cell* pT2 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
-	vec = {-15,15,0};
-	pT2->assign_position( vec ); 
-
-	Cell* pN = create_cell( get_cell_definition( "neutrophil" ) ); 
-	vec = {0,15,0};
-	pN->assign_position( vec ); 
- 
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-	// CD8 adheres, then macrophage ingests, then neutrophil ingests 
-	attach_cells( pT1, pE ); 
-	pM->ingest_cell( pE ); 
-	pN->ingest_cell( pE );
-	attach_cells( pT2 , pE ); 
-	pT2->assign_position( {-500, 0 , 0} ); 
-	pM->ingest_cell( pE ); 
-	pN->ingest_cell( pT2 ); 
-
-
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-
-	
-	
-	SVG_plot( "test.svg" , microenvironment, 0.0 , PhysiCell_globals.current_time, tissue_coloring_function );
-	
-	std::cout << __FILE__ << " successful exit " << __LINE__ << std::endl; 
-	exit(0); 
-*/	
-	
-
+	/* test space */
 
 	/* Users typically stop modifying here. END USERMODS */ 
 	
@@ -253,6 +207,9 @@ int main( int argc, char* argv[] )
 			// receptor dynamics 
 			
 			receptor_dynamics_main_model( diffusion_dt );
+			
+			// detach dead cells 
+			// detach_all_dead_cells( diffusion_dt );
 		
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
@@ -265,7 +222,7 @@ int main( int argc, char* argv[] )
 			
 			immune_cell_recruitment( diffusion_dt ); 
 			
-			keep_immune_cells_in_bounds( diffusion_dt ); 
+			// keep_immune_cells_in_bounds( diffusion_dt ); 
 			
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
@@ -303,5 +260,25 @@ int main( int argc, char* argv[] )
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 
 	BioFVM::display_stopwatch_value( std::cout , BioFVM::runtime_stopwatch_value() ); 
 
+
+	
+	extern int recruited_neutrophils; 
+	extern int recruited_Tcells; 
+	std::cout << "recruited neutrophils: " << recruited_neutrophils << std::endl; 
+	std::cout << "recruited T cells: " << recruited_Tcells << std::endl; 
+	
+	recruited_neutrophils = 0; 
+	recruited_Tcells = 0; 
+	for( int n =0 ; n < (*all_cells).size() ; n++ )
+	{
+		Cell* pC = (*all_cells)[n]; 
+		if( pC->type == 5 )
+		{ recruited_neutrophils++; }
+		if( pC->type == 3 )
+		{ recruited_Tcells++; }
+	}
+	std::cout << "remaining neutrophils: " << recruited_neutrophils << std::endl; 
+	std::cout << "remaining T cells: " << recruited_Tcells << std::endl; 
+	
 	return 0; 
 }

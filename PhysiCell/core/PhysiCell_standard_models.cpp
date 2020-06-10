@@ -844,5 +844,25 @@ void chemotaxis_function( Cell* pCell, Phenotype& phenotype , double dt )
 	return;
 }
 
+void standard_elastic_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
+{
+	std::vector<double> displacement = pC2->position - pC1->position; 
+	axpy( &(pC1->velocity) , p1.mechanics.attachment_elastic_constant , displacement ); 
+	return; 
+}
+
+void evaluate_interactions( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	if( pCell->functions.contact_function == NULL )
+	{ return; }
+	
+	for( int n = 0; n < pCell->state.attached_cells.size() ; n++ )
+	{
+		pCell->functions.contact_function( pCell, phenotype , 
+			pCell->state.attached_cells[n] , pCell->state.attached_cells[n]->phenotype , dt ); 
+	}
+	
+	return; 
+}
 
 };

@@ -137,11 +137,16 @@ extern Cell_Definition cell_defaults;
 
 class Cell_State
 {
+ private:
  public:
+	std::vector<Cell*> attached_cells; 
+
 	std::vector<Cell*> neighbors; // not currently tracked! 
 	std::vector<double> orientation;
 	
 	double simple_pressure; 
+	
+	int number_of_attached_cells( void ); 
 	
 	Cell_State(); 
 };
@@ -212,6 +217,10 @@ class Cell : public Basic_Agent
 	
 	void ingest_cell( Cell* pCell_to_eat ); // for use in predation, e.g., immune cells 
 
+	void attach_cell( Cell* pAddMe ); // done 
+	void detach_cell( Cell* pRemoveMe ); // done 
+	void remove_all_attached_cells( void ); // done 
+
 	// I want to eventually deprecate this, by ensuring that 
 	// critical BioFVM and PhysiCell data elements are synced when they are needed 
 	
@@ -255,6 +264,8 @@ void initialize_cell_definitions_from_pugixml( void );
 
 extern std::vector<double> (*cell_division_orientation)(void);
 
+void attach_cells( Cell* pCell_1, Cell* pCell_2 );
+void detach_cells( Cell* pCell_1 , Cell* pCell_2 );
 
 };
 
