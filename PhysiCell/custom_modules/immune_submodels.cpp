@@ -87,7 +87,6 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 	static double Yrange = Ymax - Ymin; 
 	static double Zrange = Zmax - Zmin; 
 	
-
 	std::vector<double> position = {Xmin,Ymin,Zmin}; // 
 	position[0] += Xrange * UniformRandom(); 
 	position[1] += Yrange * UniformRandom(); 
@@ -110,19 +109,9 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 		*/
 		
 	}	
-	
-}
-
-/*
-if( check_for_out_of_bounds( this , 10.0 ) )
-{ 
-	replace_out_of_bounds_cell( this, 10.0 );
 	return; 
 }
-*/
 
-
-//extern std::vector<int> vascularized_voxel_indices;
 void choose_initialized_voxels( void )
 {
 	// read in percentage of tissue that's vascularised
@@ -137,15 +126,15 @@ void choose_initialized_voxels( void )
 		vascularized_voxel_indices.push_back( index_vascularised_voxel ); 
 	 }
 	 
-	 return;
+	return;
 }
+
 void create_infiltrating_immune_cell( Cell_Definition* pCD )
 {
 	
 	Cell* pC = create_cell( *pCD ); 
 	
 	std::vector<double> position = choose_vascularized_position();
-	//pCell->set_position( position )
 
 	pC->assign_position( position );
 	
@@ -157,24 +146,26 @@ void create_infiltrating_immune_cell_initial( Cell_Definition* pCD )
 	
 	Cell* pC = create_cell( *pCD ); 
 	
-	// randomly place macrophages intially
-	double Xmin = microenvironment.mesh.bounding_box[0]; 
-	double Ymin = microenvironment.mesh.bounding_box[1]; 
-	double Zmin = microenvironment.mesh.bounding_box[2]; 
+	// randomly place cell intially
+	static double Xmin = microenvironment.mesh.bounding_box[0]; 
+	static double Ymin = microenvironment.mesh.bounding_box[1]; 
+	static double Zmin = microenvironment.mesh.bounding_box[2]; 
 
-	double Xmax = microenvironment.mesh.bounding_box[3]; 
-	double Ymax = microenvironment.mesh.bounding_box[4]; 
-	double Zmax = microenvironment.mesh.bounding_box[5]; 
+	static double Xmax = microenvironment.mesh.bounding_box[3]; 
+	static double Ymax = microenvironment.mesh.bounding_box[4]; 
+	static double Zmax = microenvironment.mesh.bounding_box[5]; 
 	
-	if( default_microenvironment_options.simulate_2D == true )
+	static bool setup_done = false; 
+	if( default_microenvironment_options.simulate_2D == true && setup_done == false )
 	{
 		Zmin = 0.0; 
 		Zmax = 0.0; 
+		setup_done = true; 
 	}
 	
-	double Xrange = (Xmax - Xmin); 
-	double Yrange = (Ymax - Ymin); 
-	double Zrange = (Zmax - Zmin); 
+	static double Xrange = (Xmax - Xmin); 
+	static double Yrange = (Ymax - Ymin); 
+	static double Zrange = (Zmax - Zmin); 
 	
 	// keep cells away from the outer edge 
 	
@@ -218,59 +209,6 @@ void create_infiltrating_neutrophil(void)
 	static Cell_Definition* pCD = find_cell_definition( "neutrophil" );
 	create_infiltrating_immune_cell( pCD ); 
 	
-	return; 
-	
-	static double Xmin = microenvironment.mesh.bounding_box[0]; 
-	static double Ymin = microenvironment.mesh.bounding_box[1]; 
-	static double Zmin = microenvironment.mesh.bounding_box[2]; 
-
-	double Xmax = microenvironment.mesh.bounding_box[3]; 
-	double Ymax = microenvironment.mesh.bounding_box[4]; 
-	double Zmax = microenvironment.mesh.bounding_box[5]; 
-	
-	if( default_microenvironment_options.simulate_2D == true )
-	{
-		Zmin = 0.0; 
-		Zmax = 0.0; 
-	}
-	
-	double Xrange = (Xmax - Xmin); 
-	double Yrange = (Ymax - Ymin); 
-	double Zrange = (Zmax - Zmin); 
-	
-	// keep cells away from the outer edge 
-	
-	Xmin += 0.1*Xrange; 
-	Ymin += 0.1*Yrange; 
-	Zmin = 0;
-	
-	Xrange *= 0.8;
-	Yrange *= 0.8;
-	Zrange = 0.0; 
-	
-	// create some of each type of cell 
-	
-	Cell* pC;
-	
-	std::vector<double> position = {0,0,0}; 
-	position[0] = Xmin + UniformRandom()*Xrange; 
-	position[1] = Ymin + UniformRandom()*Yrange; 
-	//position[2] = Zmin + UniformRandom()*Zrange; 
-		
-	pC = create_cell( get_cell_definition("neutrophil" ) ); 
-	pC->assign_position( position );
-	
-	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
-	static int debris_index = microenvironment.find_density_index( "debris");
-	static int chemokine_index = microenvironment.find_density_index( "chemokine");
-			
-	pC->phenotype.secretion.uptake_rates[chemokine_index] = 
-		pC->custom_data["activated_cell_chemokine_uptake_rate"]; // 10;
-	pC->phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 
-		pC->custom_data["activated_cell_cytokine_uptake_rate"]; // 10;
-	pC->phenotype.secretion.uptake_rates[debris_index] = 
-		pC->custom_data["activated_cell_chemokine_uptake_rate"]; // 10;
-	
 	return;
 }
 
@@ -278,74 +216,12 @@ void create_infiltrating_Tcell(void)
 {
 	static Cell_Definition* pCD = find_cell_definition( "CD8 Tcell" );
 	create_infiltrating_immune_cell( pCD ); 
-
-	return; 
-	static double Xmin = microenvironment.mesh.bounding_box[0]; 
-	static double Ymin = microenvironment.mesh.bounding_box[1]; 
-	static double Zmin = microenvironment.mesh.bounding_box[2]; 
-
-	static double Xmax = microenvironment.mesh.bounding_box[3]; 
-	static double Ymax = microenvironment.mesh.bounding_box[4]; 
-	static double Zmax = microenvironment.mesh.bounding_box[5]; 
 	
-	static bool setup_done = false; 
-	
-	if( default_microenvironment_options.simulate_2D == true && setup_done == false )
-	{
-		Zmin = 0.0; 
-		Zmax = 0.0; 
-	}
-	
-	static double Xrange = (Xmax - Xmin); 
-	static double Yrange = (Ymax - Ymin); 
-	static double Zrange = (Zmax - Zmin); 
-	
-	// keep cells away from the outer edge 
-	
-	if( setup_done == false )
-	{
-		Xmin += 0.1*Xrange; 
-		Ymin += 0.1*Yrange; 
-		Zmin = 0;
-		
-		Xrange *= 0.8;
-		Yrange *= 0.8;
-		Zrange = 0.0; 
-		setup_done = true; 
-	}
-	
-	// create some of each type of cell 
-	
-	Cell* pC;
-	
-	std::vector<double> position = {0,0,0}; 
-	position[0] = Xmin + UniformRandom()*Xrange; 
-	position[1] = Ymin + UniformRandom()*Yrange; 
-	//position[2] = Zmin + UniformRandom()*Zrange; 
-		
-	pC = create_cell( get_cell_definition("CD8 Tcell" ) ); 
-	pC->assign_position( position );
-		
-	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
-	static int debris_index = microenvironment.find_density_index( "debris");
-	static int chemokine_index = microenvironment.find_density_index( "chemokine");
-	
-	pC->phenotype.secretion.uptake_rates[chemokine_index] = 
-		pC->custom_data["activated_cell_chemokine_uptake_rate"]; // 10;
-	pC->phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 
-		pC->custom_data["activated_cell_cytokine_uptake_rate"]; // 10;
-	pC->phenotype.secretion.uptake_rates[debris_index] = 
-		pC->custom_data["activated_cell_chemokine_uptake_rate"]; // 10;
 	return;
 }
 
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
-	// for 
-/*	
-	if( pCell->state.neighbors.size() > 0 )
-	{ std::cout << "adhered Tcell " << pCell << std::endl; } 
-*/
 	
 	return; 
 }
@@ -941,35 +817,6 @@ Cell* immune_cell_check_neighbors_for_attachment( Cell* pAttacker , double dt )
 	return NULL; 
 }
 
-  // this is in epithelium now 
-/*
-void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
-{
-	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
-	static int debris_index = microenvironment.find_density_index( "debris" ); 
-	static int proinflammatory_cytokine_index = microenvironment.find_density_index("pro-inflammatory cytokine");
-	
-	if( pCell->custom_data["TCell_contact_time"] > pCell->custom_data["TCell_contact_death_threshold"] )
-	{
-		// std::cout << "I die now" << std::endl; 
-		
-		// make sure to get rid of all adhesions! 
-		// detach all attached cells 
-		for( int n = 0; n < pCell->state.neighbors.size() ; n++ )
-		{
-			detach_cells( pCell, pCell->state.neighbors[n] ); 
-		}
-		
-		pCell->start_death( apoptosis_index ); 
-		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
-		pCell->phenotype.secretion.secretion_rates[debris_index] = parameters.doubles("debris_secretion_rate"); 
-		pCell->functions.update_phenotype = NULL; 
-	}
-	
-	return; 
-}
-*/
-
 void immune_cell_recruitment( double dt )
 {
 	static int proinflammatory_cytokine_index = 
@@ -986,7 +833,6 @@ void immune_cell_recruitment( double dt )
 	if( t_immune > t_next_immune- tolerance )
 	{
 		double elapsed_time = (t_immune - t_last_immune );
-//		std::cout << "Immune time! " << t_immune << " (elapsed: " << elapsed_time << ") " << std::endl; 
 		
 		// neutrophil recruitment 
 		
@@ -1013,33 +859,16 @@ void immune_cell_recruitment( double dt )
 		// multiply by dV and rate_max 
 		total_scaled_signal = total_rate; 
 		
-/*		
-		std::cout << NR_min_signal << " : " << total_rate / (double) microenvironment.mesh.voxels.size() 
-		<< " : " << NR_sat_signal << std::endl; 
-		
-		std::cout << total_rate << " : " << total_rate * microenvironment.mesh.dV 
-		<< " : " << total_rate * microenvironment.mesh.dV*neutrophil_recruitment_rate  << std::endl; 
-*/
-
 		total_rate *= microenvironment.mesh.dV; 
 		total_rate *= neutrophil_recruitment_rate; 
-		
-//		std::cout << total_rate << std::endl; 
 
 		// expected number of new neutrophils 
 		int number_of_new_cells = (int) round( total_rate * elapsed_time ); 
-
-//		std::cout << "\t\t" << number_of_new_cells << std::endl << std::endl; 
 		
 		if( number_of_new_cells )
 		{
 			std::cout << "\tRecruiting " << number_of_new_cells << " neutrophils ... " << std::endl; 
 			
-//			std::cout << "\tTotal signal/dV : " << total_scaled_signal << std::endl;
-//			std::cout << "\tTotal signa : " << total_scaled_signal * microenvironment.mesh.dV << std::endl; 
-//			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
-//			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
-
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_neutrophil(); }
 		}
@@ -1077,11 +906,6 @@ void immune_cell_recruitment( double dt )
 		if( number_of_new_cells )
 		{
 			std::cout << "\tRecruiting " << number_of_new_cells << " CD8 T cells ... " << std::endl; 
-			
-//			std::cout << "\tTotal signal/dV : " << total_scaled_signal << std::endl;
-//			std::cout << "\tTotal signa : " << total_scaled_signal * microenvironment.mesh.dV << std::endl; 
-//			double total_volume = microenvironment.mesh.dV * microenvironment.mesh.voxels.size() ; 
-//			std::cout << "\tmean signal : " << total_scaled_signal * microenvironment.mesh.dV / total_volume << std::endl; 
 
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_Tcell(); }
@@ -1090,9 +914,6 @@ void immune_cell_recruitment( double dt )
 		t_last_immune = t_immune; 
 		t_next_immune = t_immune + dt_immune; 
 		
-//		std::cout << "\t\tnext immune time: " << t_next_immune << std::endl;  
-		
-//		std::cout<<"t immune: "<<t_immune<<" elapsed time "<<elapsed_time<<std::endl;
 	}
 	t_immune += dt; 
 	
@@ -1143,7 +964,7 @@ void keep_immune_cells_off_edge( void )
 	
 	// warning hardcoded
 	static double relative_edge_margin = 0.01; // 0.1; 
-	static double relative_interior = 1 - 2 * relative_edge_margin; 
+	static double relative_interior = 1.0 - 2.0 * relative_edge_margin; 
 	
 	static double tolerance = relative_edge_margin *(Xmax - Xmin); 
 	
@@ -1170,35 +991,18 @@ void keep_immune_cells_off_edge( void )
 			pC->position[1] < Ymin + tolerance ||
 			pC->position[1] > Ymax - tolerance )
 		{ out_of_bounds = true; }
+		
 		bool move_allowed = false; 
 		if( pC->type != epithelial_type && pC->phenotype.death.dead == false )
 		{ move_allowed = true; } 
 
-//		if( pC->phenotype.death.dead == false && pC->is_out_of_domain && pC->type != epithelial_type )
-//		{
 		if( out_of_bounds && move_allowed )
 		{
-			// old: move the existing cell
-			/*
-			pC->is_out_of_domain = false; 
-			pC->is_active = true; 
-			pC->is_movable = true; 	
-			*/
-			
 			std::vector<double> position = {0,0,0}; // 
 			position[0] = Xmin + Xrange * UniformRandom(); 
 			position[1] = Ymin + Yrange * UniformRandom(); 
 			position[2] = Zmin + Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
 
-			// old: move the existing cell
-			/*
-			#pragma omp critical(move_from_edge)
-			{
-				std::cout << " moving cell " << pC << " of type " << pC->type_name << std::endl; 
-				pC->assign_position( position ); 	
-				remove_all_adhesions( pC ); 
-			}
-			*/
 			
 			// new: delete that cell (or flag for removal) 
 			// new: create a NEW cell of same type at random location 
@@ -1216,25 +1020,6 @@ void keep_immune_cells_off_edge( void )
 		}
 	}
 	return; 
-/*	
-	// keep cells away from the outer edge 
-	
-	// check for out of bounds 
-	std::vector<double> position = pCell->position; 
-	static std::vector<double>* pBB = &(microenvironment.mesh.bounding_box); 
-	if( position[0] < (*pBB)[0] || position[0] > (*pBB)[3] || 
-		position[1] < (*pBB)[1] || position[1] > (*pBB)[4] || 
-		position[2] < (*pBB)[2] || position[2] > (*pBB)[5] )
-	{
-		position[0] = Xmin + Xrange * UniformRandom(); 
-		position[1] = Ymin + Yrange * UniformRandom(); 
-		position[2] = Zmin + Zrange * UniformRandom(); 
-
-		pCell->assign_position( position ); 
-		return; 
-	}			
-*/
-	return;
 }
 
 void keep_immune_cells_in_bounds( double dt )

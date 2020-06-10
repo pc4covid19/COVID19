@@ -116,54 +116,7 @@ int main( int argc, char* argv[] )
 	create_cell_types();
 	setup_tissue();
 	
-		/* test space */
-/*		
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-
-	std::vector<double> vec = {0,0,0}; 
-	
-	Cell* pM = create_cell( get_cell_definition( "macrophage" ) ); 
-	pM->assign_position( vec ); 
-	
-	Cell* pE = create_cell( get_cell_definition( "lung epithelium" ) ); 
-	vec = {15,0,0};
-	pE->assign_position( vec ); 
-	pE->custom_data["assembled_virion"] = 100; 
-	
-	Cell* pT1 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
-	vec = {-15,0,0};
-	pT1->assign_position( vec ); 
- 
-	Cell* pT2 = create_cell( get_cell_definition( "CD8 Tcell" ) ); 
-	vec = {-15,15,0};
-	pT2->assign_position( vec ); 
-
-	Cell* pN = create_cell( get_cell_definition( "neutrophil" ) ); 
-	vec = {0,15,0};
-	pN->assign_position( vec ); 
- 
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-	// CD8 adheres, then macrophage ingests, then neutrophil ingests 
-	attach_cells( pT1, pE ); 
-	pM->ingest_cell( pE ); 
-	pN->ingest_cell( pE );
-	attach_cells( pT2 , pE ); 
-	pT2->assign_position( {-500, 0 , 0} ); 
-	pM->ingest_cell( pE ); 
-	pN->ingest_cell( pT2 ); 
-
-
-	std::cout << __FILE__ << " " << __LINE__ << std::endl; 
-
-	
-	
-	SVG_plot( "test.svg" , microenvironment, 0.0 , PhysiCell_globals.current_time, tissue_coloring_function );
-	
-	std::cout << __FILE__ << " successful exit " << __LINE__ << std::endl; 
-	exit(0); 
-*/	
-	
-
+	/* test space */
 
 	/* Users typically stop modifying here. END USERMODS */ 
 	
