@@ -360,7 +360,8 @@ Cell::Cell()
 Cell::~Cell()
 {
 	std::cout << std::endl << "=====-----------------------------=====" << std::endl; 
-	std::cout << "\tcell destructor " << this << " " << type_name << " " << position << std::endl << std::endl; 
+	std::cout << "\tcell destructor " << this << " " << type_name << " " << position << std::endl;
+		std::cout << "\t\tattached cells: " << this->state.attached_cells.size() << std::endl << std::endl; 
 	
 	auto result = std::find(std::begin( *all_cells ), std::end( *all_cells ), this );
 	int temp_index = -1; 
