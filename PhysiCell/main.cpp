@@ -264,8 +264,10 @@ int main( int argc, char* argv[] )
 	
 	extern int recruited_neutrophils; 
 	extern int recruited_Tcells; 
+	
+	std::cout << std::endl; 
 	std::cout << "recruited neutrophils: " << recruited_neutrophils << std::endl; 
-	std::cout << "recruited T cells: " << recruited_Tcells << std::endl; 
+	std::cout << "recruited T cells: " << recruited_Tcells << std::endl << std::endl; 
 	
 	recruited_neutrophils = 0; 
 	recruited_Tcells = 0; 

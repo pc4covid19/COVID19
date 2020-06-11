@@ -322,6 +322,8 @@ void create_infiltrating_Tcell(void)
 
 void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
 {
+	// std::cout << pC1 << " " << pC1->type_name 
+	// << " contact with " << pC2 << " " << pC2->type_name << std::endl; 
 	// elastic adhesions 
 	standard_elastic_contact_function( pC1,p1, pC2, p2, dt );
 	

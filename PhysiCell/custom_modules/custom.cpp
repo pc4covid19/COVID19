@@ -171,14 +171,14 @@ void setup_microenvironment( void )
 	
 	initialize_microenvironment(); 	
 	
-	choose_initialized_voxels();
-	
 	return; 
 }
 
 void setup_tissue( void )
 {
 	static int nV = microenvironment.find_density_index( "virion" ); 
+	
+	choose_initialized_voxels();
 	
 	// create some cells near the origin
 	
