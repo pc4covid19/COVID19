@@ -74,6 +74,9 @@
 
 #include <signal.h>  // for segfault
 
+#include <algorithm>
+#include <iterator> 
+
 namespace PhysiCell{
 	
 std::unordered_map<std::string,Cell_Definition*> cell_definitions_by_name; 
@@ -350,6 +353,56 @@ Cell::Cell()
 	container = NULL;
 	
 	set_total_volume( phenotype.volume.total ); 
+	
+	return; 
+}
+
+Cell::~Cell()
+{
+	std::cout << std::endl << "=====-----------------------------=====" << std::endl; 
+	std::cout << "\tcell destructor " << this << " " << type_name << " " << position << std::endl << std::endl; 
+	
+	auto result = std::find(std::begin( *all_cells ), std::end( *all_cells ), this );
+	int temp_index = -1; 
+	if( result != std::end(*all_cells) )
+	{
+		std::cout << "cell was never removed from data structure " << std::endl ; 
+		
+		system("pause");
+		bool found = false; 
+		for( int n= 0 ; n < (*all_cells).size() ; n++ )
+		{
+			std::cout << this << " vs " << (*all_cells)[n] << std::endl; 
+			if( (*all_cells)[n] == this )
+			{ found = true; temp_index = n; system("pause"); } 
+			
+		}
+		
+		if( found )
+		{
+			// release any attached cells (as of 1.7.2 release)
+			this->remove_all_attached_cells(); 
+			
+			// released internalized substrates (as of 1.5.x releases)
+			this->release_internalized_substrates(); 
+
+			// performance goal: don't delete in the middle -- very expensive reallocation
+			// alternative: copy last element to index position, then shrink vector by 1 at the end O(constant)
+
+			// move last item to index location  
+			(*all_cells)[ (*all_cells).size()-1 ]->index=temp_index;
+			(*all_cells)[temp_index] = (*all_cells)[ (*all_cells).size()-1 ];
+			// shrink the vector
+			(*all_cells).pop_back();	
+
+			
+			// deregister agent in from the agent container
+			this->get_container()->remove_agent(this);
+			
+		}
+		//die(); 
+	}
+	
 	
 	return; 
 }
@@ -947,6 +1000,40 @@ void delete_cell( int index )
 	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
 	<< " " << (*all_cells)[index]->type_name << std::endl; 
 	
+	Cell* pDeleteMe = (*all_cells)[index]; 
+	
+	// release any attached cells (as of 1.7.2 release)
+	pDeleteMe->remove_all_attached_cells(); 
+	
+	// released internalized substrates (as of 1.5.x releases)
+	pDeleteMe->release_internalized_substrates(); 
+
+
+
+	// performance goal: don't delete in the middle -- very expensive reallocation
+	// alternative: copy last element to index position, then shrink vector by 1 at the end O(constant)
+
+	// move last item to index location  
+	(*all_cells)[ (*all_cells).size()-1 ]->index=index;
+	(*all_cells)[index] = (*all_cells)[ (*all_cells).size()-1 ];
+	// shrink the vector
+	(*all_cells).pop_back();	
+
+	
+	// deregister agent in from the agent container
+	pDeleteMe->get_container()->remove_agent(pDeleteMe);
+	// de-allocate (delete) the cell; 
+	delete pDeleteMe; 
+
+
+	return; 
+}
+
+void delete_cell_original( int index ) // before June 11, 2020
+{
+	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
+	<< " " << (*all_cells)[index]->type_name << std::endl; 
+	
 	// release any attached cells (as of 1.7.2 release)
 	(*all_cells)[index]->remove_all_attached_cells(); 
 	
@@ -968,6 +1055,9 @@ void delete_cell( int index )
 	(*all_cells).pop_back();	
 	return; 
 }
+
+
+
 
 void delete_cell( Cell* pDelete )
 {

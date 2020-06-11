@@ -190,6 +190,8 @@ class Cell : public Basic_Agent
 	void step(double dt);
 	Cell();
 	
+	~Cell(); 
+	
 	bool assign_position(std::vector<double> new_position);
 	bool assign_position(double, double, double);
 	void set_total_volume(double);

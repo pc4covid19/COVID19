@@ -140,6 +140,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 	
 	#pragma omp critical(kill_cell_on_edge)
 	{
+		std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
 		// create a new cell of same type 
 		Cell* pNewCell = create_cell( get_cell_definition(pC->type_name) ); 
 		pNewCell->assign_position( position ); 
