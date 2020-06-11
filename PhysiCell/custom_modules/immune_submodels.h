@@ -38,6 +38,9 @@ std::vector<double> choose_vascularized_position( void );
 extern std::vector<int> vascularized_voxel_indices;
 void choose_initialized_voxels( void );
 
+extern std::vector<Cell*> cells_to_move_from_edge; 
+void process_tagged_cells_on_edge( void ); 
+
 void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt );
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt ); 
 void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt ); 

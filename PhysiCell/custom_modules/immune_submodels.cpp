@@ -9,6 +9,8 @@ Submodel_Information CD8_submodel_info;
 Submodel_Information Macrophage_submodel_info; 
 Submodel_Information Neutrophil_submodel_info; 
 
+std::vector<Cell*> cells_to_move_from_edge; 
+
 
 std::vector<int> vascularized_voxel_indices;
 
@@ -135,7 +137,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 	position[0] += Xrange * UniformRandom(); 
 	position[1] += Yrange * UniformRandom(); 
 	position[2] += Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
-
+	
 	#pragma omp critical(kill_cell_on_edge)
 	{
 		// create a new cell of same type 
@@ -146,15 +148,26 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 		// get rid of the old one 
 		// pC->remove_all_attached_cells(); 
 		pC->die(); 
+		// pC->lyse_cell(); 
 		
-		/* alternate 
-		pC->lyse_cell(); 
-		pC->set_total_volume( 0.0 ); 
-		*/
+		// alternate 
+		// pC->lyse_cell(); 
 		
 	}	
 	return; 
 }
+
+void process_tagged_cells_on_edge( void )
+{
+	
+	for( int n=0 ; n < cells_to_move_from_edge.size(); n++ )
+	{
+		replace_out_of_bounds_cell( cells_to_move_from_edge[n] , 10.0 );
+	}	
+
+	return; 
+}
+
 
 void move_out_of_bounds_cell( Cell* pC , double tolerance )
 {
@@ -345,8 +358,10 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
-		replace_out_of_bounds_cell( pCell, 10.0 );
-		return; 
+		#pragma omp critical 
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return; 
 	}	
 	
 	// if I'm dead, don't bother 
@@ -508,8 +523,10 @@ void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
-		replace_out_of_bounds_cell( pCell, 10.0 );
-		return; 
+		#pragma omp critical 
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return; 
 	}
 	
 //	// death check 
@@ -614,8 +631,10 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
-		replace_out_of_bounds_cell( pCell, 10.0 );
-		return; 
+		#pragma omp critical 
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return; 
 	}	
 
 //	// death check 
