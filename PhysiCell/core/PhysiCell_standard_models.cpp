@@ -846,7 +846,19 @@ void chemotaxis_function( Cell* pCell, Phenotype& phenotype , double dt )
 
 void standard_elastic_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
 {
-	std::vector<double> displacement = pC2->position - pC1->position; 
+	if( pC1->position.size() != 3 || pC2->position.size() != 3 )
+	{
+		#pragma omp critical(crap)
+		{
+			std::cout << "what?! " << std::endl
+			<< pC1 << " : " << pC1->type << " " << pC1->type_name << " " << pC1->position << std::endl 
+			<< pC2 << " : " << pC2->type << " " << pC2->type_name << " " << pC2->position << std::endl ;
+		}
+		return; 
+	}
+	
+	std::vector<double> displacement = pC2->position;
+	displacement -= pC1->position; 
 	axpy( &(pC1->velocity) , p1.mechanics.attachment_elastic_constant , displacement ); 
 	return; 
 }

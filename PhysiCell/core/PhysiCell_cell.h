@@ -186,7 +186,7 @@ class Cell : public Basic_Agent
 	void lyse_cell( void ); 
 
 	Cell* divide( void );
-	void die( void );
+	void die( void ); 
 	void step(double dt);
 	Cell();
 	

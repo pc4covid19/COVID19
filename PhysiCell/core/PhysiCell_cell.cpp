@@ -359,24 +359,22 @@ Cell::Cell()
 
 Cell::~Cell()
 {
-	std::cout << std::endl << "=====-----------------------------=====" << std::endl; 
-	std::cout << "\tcell destructor " << this << " " << type_name << " at " << position << std::endl;
-		std::cout << "\t\tattached cells: " << this->state.attached_cells.size() << std::endl << std::endl; 
+//	std::cout << std::endl << "=====-----------------------------=====" << std::endl; 
+//	std::cout << "\tcell destructor " << this << " " << type_name << " at " << position << std::endl;
+//		std::cout << "\t\tattached cells: " << this->state.attached_cells.size() << std::endl << std::endl; 
 	
-	auto result = std::find(std::begin( *all_cells ), std::end( *all_cells ), this );
-	int temp_index = -1; 
+	auto result = std::find( std::begin(*all_cells),std::end(*all_cells),this );
 	if( result != std::end(*all_cells) )
 	{
-		std::cout << "cell was never removed from data structure " << std::endl ; 
-		
-		system("pause");
+		std::cout << "Warning: Cell was never removed from data structure " << std::endl ; 
+
+		int temp_index = -1; 
 		bool found = false; 
 		for( int n= 0 ; n < (*all_cells).size() ; n++ )
 		{
 			std::cout << this << " vs " << (*all_cells)[n] << std::endl; 
 			if( (*all_cells)[n] == this )
-			{ found = true; temp_index = n; system("pause"); } 
-			
+			{ found = true; temp_index = n; } 
 		}
 		
 		if( found )
@@ -395,13 +393,10 @@ Cell::~Cell()
 			(*all_cells)[temp_index] = (*all_cells)[ (*all_cells).size()-1 ];
 			// shrink the vector
 			(*all_cells).pop_back();	
-
 			
 			// deregister agent in from the agent container
 			this->get_container()->remove_agent(this);
-			
 		}
-		//die(); 
 	}
 	
 	
@@ -472,6 +467,9 @@ Cell* Cell::divide( )
 {
 	// phenotype.flagged_for_division = false; 
 	// phenotype.flagged_for_removal = false; 
+	
+	// make sure ot remove adhesions 
+	remove_all_attached_cells(); 
 	
 	Cell* child = create_cell();
 	child->copy_data( this );	
@@ -668,8 +666,6 @@ void Cell::set_radius(double new_radius )
 	return; 
 }
 
-
-
 double& Cell::get_total_volume(void)
 {
 	static bool I_warned_you = false; 
@@ -836,7 +832,8 @@ void Cell::copy_function_pointers(Cell* copy_me)
 
 void Cell::add_potentials(Cell* other_agent)
 {
-	if( this->ID == other_agent->ID )
+	// if( this->ID == other_agent->ID )
+	if( this == other_agent )
 	{ return; }
 
 	// 12 uniform neighbors at a close packing distance, after dividing out all constants
@@ -998,8 +995,8 @@ void Cell::convert_to_cell_definition( Cell_Definition& cd )
 
 void delete_cell( int index )
 {
-	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
-	<< " " << (*all_cells)[index]->type_name << std::endl; 
+//	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
+//	<< " " << (*all_cells)[index]->type_name << std::endl; 
 	
 	Cell* pDeleteMe = (*all_cells)[index]; 
 	
@@ -1009,8 +1006,6 @@ void delete_cell( int index )
 	// released internalized substrates (as of 1.5.x releases)
 	pDeleteMe->release_internalized_substrates(); 
 
-
-
 	// performance goal: don't delete in the middle -- very expensive reallocation
 	// alternative: copy last element to index position, then shrink vector by 1 at the end O(constant)
 
@@ -1019,7 +1014,6 @@ void delete_cell( int index )
 	(*all_cells)[index] = (*all_cells)[ (*all_cells).size()-1 ];
 	// shrink the vector
 	(*all_cells).pop_back();	
-
 	
 	// deregister agent in from the agent container
 	pDeleteMe->get_container()->remove_agent(pDeleteMe);
@@ -1032,8 +1026,8 @@ void delete_cell( int index )
 
 void delete_cell_original( int index ) // before June 11, 2020
 {
-	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
-	<< " " << (*all_cells)[index]->type_name << std::endl; 
+//	std::cout << __FUNCTION__ << " " << (*all_cells)[index] 
+//	<< " " << (*all_cells)[index]->type_name << std::endl; 
 	
 	// release any attached cells (as of 1.7.2 release)
 	(*all_cells)[index]->remove_all_attached_cells(); 
@@ -1056,9 +1050,6 @@ void delete_cell_original( int index ) // before June 11, 2020
 	(*all_cells).pop_back();	
 	return; 
 }
-
-
-
 
 void delete_cell( Cell* pDelete )
 {
@@ -1205,8 +1196,9 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 		// pCell_to_eat->die(); // I don't think this is safe if it's in an OpenMP loop 
 		
 		// flag it for removal 
-		if( volume_was_zero == false )
-		{ pCell_to_eat->flag_for_removal(); }
+//		if( volume_was_zero == false )
+//		{ pCell_to_eat->flag_for_removal(); } // should be safe now 
+		pCell_to_eat->flag_for_removal(); 
 		// mark it as dead 
 		pCell_to_eat->phenotype.death.dead = true; 
 		// set secretion and uptake to zero 
@@ -1220,6 +1212,10 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 
 		// remove all adhesions 
 		pCell_to_eat->remove_all_attached_cells();
+		
+		// set cell as unmovable and non-secreting 
+		pCell_to_eat->is_movable = false; 
+		pCell_to_eat->is_active = false; 
 	}
 	
 	return; 
@@ -1232,6 +1228,7 @@ void Cell::lyse_cell( void )
 	{ return; } 	
 	
 	// flag for removal 
+	/*
 	#pragma omp critical(lyse_cell)
 	{
 		bool volume_was_zero = false; 
@@ -1241,6 +1238,8 @@ void Cell::lyse_cell( void )
 		if( volume_was_zero == false )
 		{ flag_for_removal(); }
 	}
+	*/
+	flag_for_removal(); // should be safe now 
 	
 	// mark it as dead 
 	phenotype.death.dead = true; 
@@ -1261,6 +1260,10 @@ void Cell::lyse_cell( void )
 	// set volume to zero 
 	set_total_volume( 0.0 ); 
 
+	// set cell as unmovable and non-secreting 
+	is_movable = false; 
+	is_active = false; 	
+
 	return; 
 }
 
@@ -1278,18 +1281,6 @@ void build_cell_definitions_maps( void )
 		cell_definitions_by_type[ pCD->type ] = pCD; 
 	}
 
-/*
-	for( const auto& n : cell_definitions_by_name )
-	{
-		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	}	
-	std::cout << std::endl << std::endl;
-	for( const auto& n : cell_definitions_by_type )
-	{
-		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	}	
-	std::cout << std::endl << std::endl;
-*/
 	cell_definitions_by_name_constructed = true; 
 	
 	return;
@@ -1519,9 +1510,6 @@ Cell_Definition& get_cell_definition( int search_type )
 	return cell_defaults; 	
 }
 
-
-
-
 Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node )
 {
 	Cell_Definition* pCD; 
@@ -1716,8 +1704,6 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 		
 		
 	}
-
-
 	
 	// here's what it ***should*** do: 
 	// parse the model, get its code 

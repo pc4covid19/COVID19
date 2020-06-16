@@ -147,13 +147,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 		// pNewCell->custom_data = pC->custom_data; // enable in next testing 
 
 		// get rid of the old one 
-		// pC->remove_all_attached_cells(); 
-		pC->die(); 
 		// pC->lyse_cell(); 
-		
-		// alternate 
-		// pC->lyse_cell(); 
-		
 	}	
 	return; 
 }
@@ -169,7 +163,7 @@ void process_tagged_cells_on_edge( void )
 	return; 
 }
 
-
+// not used 
 void move_out_of_bounds_cell( Cell* pC , double tolerance )
 {
 	static double Xmin = microenvironment.mesh.bounding_box[0]; 
@@ -216,13 +210,7 @@ void move_out_of_bounds_cell( Cell* pC , double tolerance )
 		// pNewCell->custom_data = pC->custom_data; // enable in next testing 
 
 		// get rid of the old one 
-		// pC->remove_all_attached_cells(); 
-		pC->die(); 
-		
-		/* alternate 
-		pC->lyse_cell(); 
-		pC->set_total_volume( 0.0 ); 
-		*/
+		pC->lyse_cell();
 		
 	}	
 	return; 
@@ -359,7 +347,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
-		#pragma omp critical 
+		#pragma omp critical(T_cell_mechanics) 
 		{ cells_to_move_from_edge.push_back( pCell ); }
 		// replace_out_of_bounds_cell( pCell, 10.0 );
 		// return; 

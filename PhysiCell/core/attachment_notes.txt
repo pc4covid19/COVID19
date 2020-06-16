@@ -6,13 +6,14 @@ delete_cell
 ingest_cell (on target cell)
 lyse_cell 
 
+divide 
 
 
-// divide
 // copy, assignment ? 
 
 
 evaluated once every dt_mechanics in 
+
 PhysiCell_container.cpp
 using: 
 void evaluate_interactions( Cell*, Phenotype& , double ); 

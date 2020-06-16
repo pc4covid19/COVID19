@@ -85,7 +85,6 @@ using namespace PhysiCell;
 
 int main( int argc, char* argv[] )
 {
-
 	// load and parse settings file(s)
 	
 	bool XML_status = false; 
@@ -118,7 +117,7 @@ int main( int argc, char* argv[] )
 	setup_tissue();
 	
 	/* test space */
-
+	
 	/* Users typically stop modifying here. END USERMODS */ 
 	
 	// set MultiCellDS save options 
