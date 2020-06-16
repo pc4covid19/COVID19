@@ -100,6 +100,38 @@ std::vector<double> set_nudge_from_edge( Cell* pC , double tolerance )
 	return nudge;
 }
 
+void nudge_out_of_bounds_cell( Cell* pC , double tolerance )
+{
+	std::vector<double> pos = pC->position; 
+	std::vector<double> nudge = set_nudge_from_edge(pC,tolerance); 
+	std::cout << "\t" << pC << " " << pos << " " << nudge; 
+	
+	// set velocity to be moving away from edge 
+	pC->velocity = nudge; 
+	// pC->previous_velocity = nudge; 
+	
+	// remove attachments 
+	pC->remove_all_attached_cells(); 
+
+	nudge *= tolerance; 
+	pos += nudge; 
+	
+	std::cout << " " << nudge << " " << pos << std::endl; 
+	
+	if( pC->is_out_of_domain == true )
+	{ std::cout << "this cell was out of domain " << std::endl ; system("pause"); }
+	
+	pC->assign_position( pos ); 
+	pC->is_out_of_domain = false; 
+	pC->is_active = true; 
+
+	
+	
+	return; 
+}
+
+
+
 void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 {
 	static double Xmin = microenvironment.mesh.bounding_box[0]; 
@@ -147,7 +179,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 		// pNewCell->custom_data = pC->custom_data; // enable in next testing 
 
 		// get rid of the old one 
-		// pC->lyse_cell(); 
+		pC->lyse_cell(); 
 	}	
 	return; 
 }
@@ -157,8 +189,13 @@ void process_tagged_cells_on_edge( void )
 	
 	for( int n=0 ; n < cells_to_move_from_edge.size(); n++ )
 	{
-		replace_out_of_bounds_cell( cells_to_move_from_edge[n] , 10.0 );
+		Cell* pC = cells_to_move_from_edge[n]; 
+		std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
+		// replace_out_of_bounds_cell( cells_to_move_from_edge[n] , 10.0 );
+		nudge_out_of_bounds_cell( pC , 10.0 ); 
 	}	
+	if( cells_to_move_from_edge.size() > 0 ) 
+	{ std::cout << std::endl; } 
 
 	return; 
 }
