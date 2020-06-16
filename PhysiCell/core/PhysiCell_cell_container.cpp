@@ -315,9 +315,49 @@ void Cell_Container::update_all_cells(double t, double phenotype_dt_ , double me
 		// if we need gradients, compute them
 		if( default_microenvironment_options.calculate_gradients ) 
 		{ microenvironment.compute_all_gradient_vectors();  }
-		// end of new in Feb 2018 		
+		// end of new in Feb 2018 
 		
-		// Compute velocities
+		// perform interactions -- new in June 2020 
+		#pragma omp parallel for 
+		for( int i=0; i < (*all_cells).size(); i++ )
+		{
+			Cell* pC = (*all_cells)[i]; 
+			if( pC->functions.contact_function && pC->is_out_of_domain == false )
+			{ evaluate_interactions( pC,pC->phenotype,time_since_last_mechanics ); }
+		}
+		
+		// perform custom computations 
+
+		#pragma omp parallel for 
+		for( int i=0; i < (*all_cells).size(); i++ )
+		{
+			Cell* pC = (*all_cells)[i]; 
+			if( pC->functions.custom_cell_rule && pC->is_out_of_domain == false )
+			{ pC->functions.custom_cell_rule( pC,pC->phenotype,time_since_last_mechanics ); }
+		}
+		
+		// update velocities 
+		
+		#pragma omp parallel for 
+		for( int i=0; i < (*all_cells).size(); i++ )
+		{
+			Cell* pC = (*all_cells)[i]; 
+			if( pC->functions.update_velocity && pC->is_out_of_domain == false && pC->is_movable )
+			{ pC->functions.update_velocity( pC,pC->phenotype,time_since_last_mechanics ); }
+		}
+
+		// update positions 
+		
+		#pragma omp parallel for 
+		for( int i=0; i < (*all_cells).size(); i++ )
+		{
+			Cell* pC = (*all_cells)[i]; 
+			if( pC->is_out_of_domain == false && pC->is_movable)
+			{ pC->update_position(time_since_last_mechanics); }
+		}
+		
+/*		
+		// Compute custom functions, interations, and velocities
 		#pragma omp parallel for 
 		for( int i=0; i < (*all_cells).size(); i++ )
 		{
@@ -351,6 +391,7 @@ void Cell_Container::update_all_cells(double t, double phenotype_dt_ , double me
 				(*all_cells)[i]->update_position(time_since_last_mechanics);
 			}
 		}
+*/		
 		
 		// When somebody reviews this code, let's add proper braces for clarity!!! 
 		
