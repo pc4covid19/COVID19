@@ -168,7 +168,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 	
 	#pragma omp critical(kill_cell_on_edge)
 	{
-		std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
+		// std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
 		// create a new cell of same type 
 		Cell* pNewCell = create_cell( get_cell_definition(pC->type_name) ); 
 		pNewCell->assign_position( position ); 
@@ -186,12 +186,12 @@ void process_tagged_cells_on_edge( void )
 	for( int n=0 ; n < cells_to_move_from_edge.size(); n++ )
 	{
 		Cell* pC = cells_to_move_from_edge[n]; 
-		std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
+		// std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
 		// replace_out_of_bounds_cell( cells_to_move_from_edge[n] , 10.0 );
 		nudge_out_of_bounds_cell( pC , 10.0 ); 
 	}	
-	if( cells_to_move_from_edge.size() > 0 ) 
-	{ std::cout << std::endl; } 
+//	if( cells_to_move_from_edge.size() > 0 ) 
+//	{ std::cout << std::endl; } 
 
 	return; 
 }
