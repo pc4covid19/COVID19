@@ -90,42 +90,38 @@ std::vector<double> set_nudge_from_edge( Cell* pC , double tolerance )
 	{ nudge[1] -= 1;  }
 
 	if( two_dimensions )
-	{ return nudge; }
+	{ normalize(nudge); return nudge; }
 
 	if( pC->position[2] < Zmin + tolerance )
 	{ nudge[2] += 1; }
 	if( pC->position[2] > Zmax - tolerance )
 	{ nudge[2] -= 1; }
 
+	normalize(nudge);
 	return nudge;
 }
 
 void nudge_out_of_bounds_cell( Cell* pC , double tolerance )
 {
-	std::vector<double> pos = pC->position; 
 	std::vector<double> nudge = set_nudge_from_edge(pC,tolerance); 
-	std::cout << "\t" << pC << " " << pos << " " << nudge; 
-	
-	// set velocity to be moving away from edge 
-	pC->velocity = nudge; 
-	// pC->previous_velocity = nudge; 
 	
 	// remove attachments 
 	pC->remove_all_attached_cells(); 
+	
+	// set velocity away rom edge 
+	pC->velocity = nudge; 
 
+	// set new position 
 	nudge *= tolerance; 
-	pos += nudge; 
-	
-	std::cout << " " << nudge << " " << pos << std::endl; 
-	
-	if( pC->is_out_of_domain == true )
-	{ std::cout << "this cell was out of domain " << std::endl ; system("pause"); }
-	
-	pC->assign_position( pos ); 
+	pC->position += nudge;
+
+	// update in the data structure 
+	pC->update_voxel_in_container();
+
+	// allow that cell to move and be movable 
 	pC->is_out_of_domain = false; 
 	pC->is_active = true; 
-
-	
+	pC->is_movable= true; 
 	
 	return; 
 }
