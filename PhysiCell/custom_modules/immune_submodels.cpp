@@ -765,6 +765,7 @@ Cell* check_for_dead_neighbor_for_interaction( Cell* pAttacker , double dt )
 	return NULL; 
 }
 
+/*
 void add_elastic_velocity( Cell* pActingOn, Cell* pAttachedTo , double elastic_constant )
 {
 	std::vector<double> displacement = pAttachedTo->position - pActingOn->position; 
@@ -789,7 +790,9 @@ void add_elastic_velocity( Cell* pActingOn, Cell* pAttachedTo , double elastic_c
 	
 	return; 
 }
+*/
 
+/*
 void extra_elastic_attachment_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	for( int i=0; i < pCell->state.neighbors.size() ; i++ )
@@ -797,7 +800,8 @@ void extra_elastic_attachment_mechanics( Cell* pCell, Phenotype& phenotype, doub
 		add_elastic_velocity( pCell, pCell->state.neighbors[i], pCell->custom_data["elastic_attachment_coefficient"] ); 
 	}
 	return; 
-}	
+}
+*/	
 
 /*
 void attach_cells( Cell* pCell_1, Cell* pCell_2 )

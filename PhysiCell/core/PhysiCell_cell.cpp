@@ -1191,9 +1191,7 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 		// pCell_to_eat->die(); // I don't think this is safe if it's in an OpenMP loop 
 		
 		// flag it for removal 
-//		if( volume_was_zero == false )
-//		{ pCell_to_eat->flag_for_removal(); } // should be safe now 
-		pCell_to_eat->flag_for_removal(); 
+		// pCell_to_eat->flag_for_removal(); 
 		// mark it as dead 
 		pCell_to_eat->phenotype.death.dead = true; 
 		// set secretion and uptake to zero 
@@ -1206,12 +1204,16 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 		pCell_to_eat->functions.contact_function = NULL; 
 
 		// remove all adhesions 
-		pCell_to_eat->remove_all_attached_cells();
+		// pCell_to_eat->remove_all_attached_cells();
 		
 		// set cell as unmovable and non-secreting 
 		pCell_to_eat->is_movable = false; 
 		pCell_to_eat->is_active = false; 
 	}
+
+	// things that have their own thread safety 
+	pCell_to_eat->flag_for_removal();
+	pCell_to_eat->remove_all_attached_cells();
 	
 	return; 
 }
