@@ -148,7 +148,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		
 		#pragma omp critical(tcell)
 		{
-		std::cout << "\t\t\t\t" << pCell << " is dead of a T cell at " << pCell->position << std::endl; 
+		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
 		}
 		
 		// induce death 

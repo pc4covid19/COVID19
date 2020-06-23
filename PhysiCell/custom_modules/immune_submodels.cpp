@@ -380,7 +380,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
-		#pragma omp critical(T_cell_mechanics) 
+		#pragma omp critical
 		{ cells_to_move_from_edge.push_back( pCell ); }
 		// replace_out_of_bounds_cell( pCell, 10.0 );
 		// return; 
@@ -512,7 +512,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true &&  
 			UniformRandom()<macrophage_probability_of_phagocytosis )
 		{
-			#pragma omp critical(macrophage_eat)
+			// #pragma omp critical(macrophage_eat)
 			{
 				// remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
@@ -614,7 +614,7 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
 			UniformRandom()<neutrophil_probability_of_phagocytosis)
 		{
-			#pragma omp critical(neutrophil_eat)
+			// #pragma omp critical(neutrophil_eat)
 			{
 				// remove_all_adhesions( pTestCell ); // debug 
 				pCell->ingest_cell( pTestCell ); 
