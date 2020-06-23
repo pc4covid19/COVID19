@@ -743,8 +743,6 @@ void Cell::update_position( double dt )
 	previous_velocity = velocity; 
 	
 	velocity[0]=0; velocity[1]=0; velocity[2]=0;
-	// #pragma omp critical
-	//{update_voxel_in_container();}
 	if(get_container()->underlying_mesh.is_position_valid(position[0],position[1],position[2]))
 	{
 		updated_current_mechanics_voxel_index=get_container()->underlying_mesh.nearest_voxel_index( position );
@@ -778,10 +776,8 @@ void Cell::update_voxel_in_container()
 		// check if this agent has a valid voxel index, if so, remove it from previous voxel
 		if( get_current_mechanics_voxel_index() >= 0)
 		{
-			// #pragma omp critical
 			{get_container()->remove_agent_from_voxel(this, get_current_mechanics_voxel_index());}
 		}
-		// #pragma omp critical
 		{get_container()->add_agent_to_outer_voxel(this);}
 		// std::cout<<"cell out of boundary..."<< __LINE__<<" "<<ID<<std::endl;
 		current_mechanics_voxel_index=-1;
@@ -796,7 +792,6 @@ void Cell::update_voxel_in_container()
 	// update mesh indices (if needed)
 	if(updated_current_mechanics_voxel_index!= get_current_mechanics_voxel_index())
 	{
-		// #pragma omp critical
 		{
 			container->remove_agent_from_voxel(this, get_current_mechanics_voxel_index());
 			container->add_agent_to_voxel(this, updated_current_mechanics_voxel_index);
@@ -1127,7 +1122,7 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 	{ return; } 
 		
 	// make this thread safe 
-	#pragma omp critical(ingest)
+	#pragma omp critical
 	{
 		bool volume_was_zero = false; 
 		if( pCell_to_eat->phenotype.volume.total < 1e-15 )
@@ -1228,17 +1223,6 @@ void Cell::lyse_cell( void )
 	{ return; } 	
 	
 	// flag for removal 
-	/*
-	#pragma omp critical(lyse_cell)
-	{
-		bool volume_was_zero = false; 
-		if( phenotype.volume.total < 1e-15 )
-		{ volume_was_zero = true; }
-	
-		if( volume_was_zero == false )
-		{ flag_for_removal(); }
-	}
-	*/
 	flag_for_removal(); // should be safe now 
 	
 	// mark it as dead 
@@ -2270,7 +2254,7 @@ int Cell_State::number_of_attached_cells( void )
 
 void Cell::attach_cell( Cell* pAddMe )
 {
-	#pragma omp critical(attach)
+	#pragma omp critical
 	{
 		bool already_attached = false; 
 		for( int i=0 ; i < state.attached_cells.size() ; i++ )
@@ -2287,7 +2271,7 @@ void Cell::attach_cell( Cell* pAddMe )
 
 void Cell::detach_cell( Cell* pRemoveMe )
 {
-	#pragma omp critical(detach)
+	#pragma omp critical
 	{
 		bool found = false; 
 		int i = 0; 
@@ -2311,7 +2295,6 @@ void Cell::detach_cell( Cell* pRemoveMe )
 
 void Cell::remove_all_attached_cells( void )
 {
-	#pragma omp critical(remove_all_attached_cells)
 	{
 		// remove self from any attached cell's list. 
 		for( int i = 0; i < state.attached_cells.size() ; i++ )
