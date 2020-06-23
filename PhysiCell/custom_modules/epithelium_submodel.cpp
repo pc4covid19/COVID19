@@ -146,7 +146,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		// detach all attached cells 
 		// remove_all_adhesions( pCell ); 
 		
-		#pragma omp critical(tcell)
+		#pragma omp critical
 		{
 		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
 		}

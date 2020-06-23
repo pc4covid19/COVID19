@@ -166,7 +166,7 @@ void replace_out_of_bounds_cell( Cell* pC , double tolerance )
 	position[1] += Yrange * UniformRandom(); 
 	position[2] += Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
 	
-	#pragma omp critical(kill_cell_on_edge)
+	#pragma omp critical
 	{
 		// std::cout << "moving cell from edge " << pC << " " << pC->type_name << std::endl; 
 		// create a new cell of same type 
@@ -235,7 +235,7 @@ void move_out_of_bounds_cell( Cell* pC , double tolerance )
 	position[1] += Yrange * UniformRandom(); 
 	position[2] += Zrange * UniformRandom() + parameters.doubles("immune_z_offset"); 
 
-	#pragma omp critical(move_cell_on_edge)
+	#pragma omp critical
 	{
 		// create a new cell of same type 
 		Cell* pNewCell = create_cell( get_cell_definition(pC->type_name) ); 
@@ -363,7 +363,7 @@ void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype&
 	standard_elastic_contact_function( pC1,p1, pC2, p2, dt );
 	
 	// increase contact time of cell you are attacking 
-	#pragma omp critical(Tcell_contact)
+	#pragma omp critical
 	{ pC2->custom_data["TCell_contact_time"] += dt; }
 	
 	return;
@@ -1133,7 +1133,7 @@ void keep_immune_cells_off_edge( void )
 			// pNewCell->custom_data = pC->custom_data; // enable in next testing 
 			
 			// new: delete that cell (or flag for removal) 
-			#pragma omp critical(kill_cell_on_edge)
+			#pragma omp critical
 			{
 				// pC->remove_all_attached_cells(); 
 				pC->die(); 
