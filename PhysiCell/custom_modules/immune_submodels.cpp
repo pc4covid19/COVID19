@@ -371,12 +371,25 @@ void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype&
 
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
 	
 	return; 
 }
 
 void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
+
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
@@ -385,22 +398,7 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// replace_out_of_bounds_cell( pCell, 10.0 );
 		// return; 
 	}	
-	
-	// if I'm dead, don't bother 
-	if( phenotype.death.dead == true )
-	{
-		// the cell death functions don't automatically turn off custom functions, 
-		// since those are part of mechanics. 
 		
-		// detach all attached cells 
-		// remove_all_adhesions( pCell ); 
-		
-		// Let's just fully disable now. 
-		pCell->functions.custom_cell_rule = NULL; 
-		pCell->functions.contact_function = NULL; 
-		return; 
-	}	
-	
 	// if I am not adhered to a cell, turn motility on 
 	if( pCell->state.neighbors.size() == 0 )
 	{ phenotype.motility.is_motile = true; }
@@ -471,6 +469,13 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
 	static int debris_index = microenvironment.find_density_index( "debris");
+
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
 			
 	// determine bias_direction for macrophage based on "eat me" signals and chemokine
 	double sensitivity_chemokine = pCell->custom_data["sensitivity_to_chemokine_chemotaxis"];
@@ -542,6 +547,13 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
+
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
@@ -571,6 +583,13 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	double sensitivity_chemokine = pCell->custom_data["sensitivity_to_chemokine_chemotaxis"];
 	double sensitivity_eat_me = pCell->custom_data["sensitivity_to_eat_me_chemotaxis"];
 	
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
+
 	pCell->phenotype.motility.migration_bias_direction = sensitivity_chemokine*pCell->nearest_gradient(chemokine_index)+sensitivity_eat_me*pCell->nearest_gradient(debris_index);
 	normalize( &( phenotype.motility.migration_bias_direction) );
 	
@@ -650,6 +669,13 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	if( phenotype.death.dead == true )
+	{
+		this->functions.update_phenotype = NULL;
+		this->functions.custom_cell_rule = NULL; 
+		return; 
+	}
+
 	// bounds check 
 	if( check_for_out_of_bounds( pCell , 10.0 ) )
 	{ 
