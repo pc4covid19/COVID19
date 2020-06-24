@@ -373,8 +373,8 @@ void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 	
@@ -385,8 +385,8 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 
@@ -472,8 +472,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 			
@@ -549,8 +549,8 @@ void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 
@@ -585,8 +585,8 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 
@@ -671,8 +671,8 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	if( phenotype.death.dead == true )
 	{
-		this->functions.update_phenotype = NULL;
-		this->functions.custom_cell_rule = NULL; 
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
 		return; 
 	}
 
