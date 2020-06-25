@@ -375,9 +375,11 @@ void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
-	
+
 	return; 
 }
 
@@ -387,6 +389,8 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
 
@@ -474,6 +478,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
 			
@@ -551,6 +557,8 @@ void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
 
@@ -587,6 +595,8 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
 
@@ -673,6 +683,8 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		pCell->functions.update_phenotype = NULL;
 		pCell->functions.custom_cell_rule = NULL; 
+		
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}
 

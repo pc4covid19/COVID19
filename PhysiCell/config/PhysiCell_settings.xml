@@ -334,7 +334,9 @@
 				<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
 				<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double">0.8254</infected_cell_chemokine_secretion_rate>
-				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>				
+				<infected_cell_chemokine_secretion_activated units="none" type="double">0</infected_cell_chemokine_secretion_activated>
+				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>
+					
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min">0.0</TCell_contact_time>
