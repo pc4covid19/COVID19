@@ -629,19 +629,26 @@
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
 			
-			<perecentage_tissue_vascularized units="1/min" type="double">8.8</perecentage_tissue_vascularized>			
+			<perecentage_tissue_vascularized units="percentage" type="double"
+				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>			
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 			
-			<apoptotic_epithelium_color type="string" description="">black</apoptotic_epithelium_color>
-			<apoptotic_immune_color type="string" description="">rosybrown</apoptotic_immune_color>
+			<apoptotic_epithelium_color type="string" 
+				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
+			<apoptotic_immune_color type="string" 
+				description="apoptotic immune cell color">rosybrown</apoptotic_immune_color>
 		
-			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
-			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>
-			<Macrophage_color type="string" description="">lime</Macrophage_color>
-			<activated_macrophage_color type="string" description="color of activated macrophage">fuchsia</activated_macrophage_color>
-			<Neutrophil_color type="string" description="">cyan</Neutrophil_color>
+<!---			<lung_epithelium_color type="string" 
+				description="lung epithelium color">blue</lung_epithelium_color> -->
+			<CD8_Tcell_color type="string" 
+				description="CD8 T cell color">red</CD8_Tcell_color>
+			<Macrophage_color type="string" 
+				description="macrophage color">lime</Macrophage_color>
+			<activated_macrophage_color type="string" 
+				description="color of activated macrophage">fuchsia</activated_macrophage_color>
+			<Neutrophil_color type="string" description="neutrophil color">cyan</Neutrophil_color>
 		
 	</user_parameters>
 	

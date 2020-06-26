@@ -362,7 +362,6 @@ void create_infiltrating_macrophage(void)
 	return;
 }
 
-
 void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
 {
 	// std::cout << pC1 << " " << pC1->type_name 
