@@ -630,14 +630,14 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	int n = 0; 
 	Cell* pTestCell = neighbors[n]; 
 
-	double neutrophil_probability_of_phagocytosis = pCell->custom_data["neutrophil_probability_of_phagocytosis"];
+	double probability_of_phagocytosis = pCell->custom_data["phagocytosis_rate"] * dt; 
 
 	while( n < neighbors.size() )
 	{
 		pTestCell = neighbors[n]; 
 		// if it is not me and the target is dead 
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
-			UniformRandom()<neutrophil_probability_of_phagocytosis)
+			UniformRandom() < probability_of_phagocytosis)
 		{
 			// #pragma omp critical(neutrophil_eat)
 			{

@@ -309,47 +309,73 @@
 				<viral_protein>0</viral_protein>
 				<assembled_virion>0</assembled_virion>
 				
-				<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
-				<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
-				<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
-				<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
+				<virion_uncoating_rate type="double" units="1/min" 
+					description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
+				<uncoated_to_RNA_rate type="double" units="1/min" 
+					description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
+				<protein_synthesis_rate type="double" units="1/min" 
+					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
+				<virion_assembly_rate type="double" units="1/min" 
+					description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
  
 				<!-- virus adsorption and export -->
-				<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
+				<virion_export_rate type="double" units="1/min" 
+					description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
 
 				<!-- ACE2 receptor trafficking --> 
-				<unbound_external_ACE2>1000</unbound_external_ACE2>
-				<bound_external_ACE2>0</bound_external_ACE2>
-				<unbound_internal_ACE2>0</unbound_internal_ACE2>
-				<bound_internal_ACE2>0</bound_internal_ACE2>
+				<unbound_external_ACE2 type="double" units="none"
+					description="initial number of unbound ACE2 receptors on surface">1000</unbound_external_ACE2>
+				<bound_external_ACE2 type="double" units="none"
+					description="initial number of bound ACE2 receptors on surface">0</bound_external_ACE2>
+				<unbound_internal_ACE2 type="double" units="none"
+					description="initial number of internalized unbound ACE2 receptors">0</unbound_internal_ACE2>
+				<bound_internal_ACE2 type="double" units="none"
+					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
-				<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
-				<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
-				<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.001</ACE2_cargo_release_rate> 
-				<ACE2_recycling_rate type="double" units="1/min" description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
+				<ACE2_binding_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
+				<ACE2_endocytosis_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
+				<ACE2_cargo_release_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus cargo release rate">0.001</ACE2_cargo_release_rate> 
+				<ACE2_recycling_rate type="double" units="1/min" 
+					description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
 				
 				<!-- cell virus response --> 
-				<max_infected_apoptosis_rate type="double" units="1/min" description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
-				<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max> <!-- 500 debug -->
-				<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
-				<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
-				<infected_cell_chemokine_secretion_rate units="1/min" type="double">0.8254</infected_cell_chemokine_secretion_rate>
-				<infected_cell_chemokine_secretion_activated units="none" type="double">0</infected_cell_chemokine_secretion_activated>
-				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>
+				<max_infected_apoptosis_rate type="double" units="1/min" 
+					description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
+				<max_apoptosis_half_max type="double" units="virion" 
+					description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max> <!-- 500 debug -->
+				<apoptosis_hill_power type="double" units="none" 
+					description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
+				<virus_fraction_released_at_death type="double" units="none" 
+					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
+				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
+					description="rate that infected cells secrete chemokine">0.8254</infected_cell_chemokine_secretion_rate>
+				<debris_secretion_rate units="1/min" type="double"
+					description="rate that dead cells release debris">0.8254</debris_secretion_rate>
 				
-				<!-- for the immune model --> 
-				<TCell_contact_time type="double" units="min">0.0</TCell_contact_time>
-				<cell_attachment_rate units="1/min">0</cell_attachment_rate>
-				<cell_attachment_lifetime units="min">0</cell_attachment_lifetime>
-				
-				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold> <!-- 50 -->
-				<max_attachment_distance units="micron">15</max_attachment_distance>
-				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
-<!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
-				<relative_maximum_volume units="dimensionless">1.8</relative_maximum_volume>
-				
-<!-- these can be unified -->
+				<infected_cell_chemokine_secretion_activated units="none" type="double"
+					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
 
+				<!-- for the immune model --> 
+				<TCell_contact_time type="double" units="min"
+					description="tracks total contact time with CD8 T cells">0.0</TCell_contact_time>
+				<cell_attachment_rate units="1/min" type="double"
+					description="the rate at which the cell attaches to cells in contact">0</cell_attachment_rate>
+				<cell_attachment_lifetime units="min" type="double"
+					description="the mean duration of a cell-cell attachment">0</cell_attachment_lifetime>
+				
+				<TCell_contact_death_threshold units="min" type="double"
+					description="threshold CD8 T cell contact time to trigger apoptosis">50</TCell_contact_death_threshold> <!-- 50 -->
+				<max_attachment_distance units="micron" type="double"
+					desription="max distance at which to form a cell-cell attachment">15</max_attachment_distance>
+				<elastic_attachment_coefficient units="1/min" type="double"
+					description="elastic coefficient for cell-cell attachment">0.01</elastic_attachment_coefficient>
+<!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
+				<relative_maximum_volume units="dimensionless" type="double"
+					description="max tolerated volume (relative to normal volume) before triggering apoptosis">1.8</relative_maximum_volume>
+				
 				<!-- more immmune cell parameters  -->
 				<phagocytosis_rate units="1/min" type="double" 
 					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
@@ -357,32 +383,14 @@
 					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
 				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
 					description="relative sensitivity to chemokine in chemotaxis">0</sensitivity_to_chemokine_chemotaxis> 
-				<activated_immune_cell units="dimensionless" type="double" 
-					description="used internally to track activation state">0.0</activated_immune_cell>
 
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed>
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
 					description="rate of secreting pro-inflamatory cytokine after activation">0.8524</activated_cytokine_secretion_rate>
 
-
-<!-- generalize -->
-				<activated_macrophage_speed units="micron/min" type="double">0.4</activated_macrophage_speed>
-				<activated_macrophage_secretion_rate units="1/min" type="double">0.8254</activated_macrophage_secretion_rate>
-				<macrophage_probability_of_phagocytosis units="dimensionless" type="double">1</macrophage_probability_of_phagocytosis>
-				
-<!-- remove -->
-				<activated_cell_chemokine_uptake_rate units="1/min" type="double">0.0510</activated_cell_chemokine_uptake_rate>
-				<activated_cell_cytokine_uptake_rate units="1/min" type="double">0.0018</activated_cell_cytokine_uptake_rate>
-
-
-				<activated_macrophage units="dimensionless" type="double">0.0</activated_macrophage>
-
-				<!-- neutrophil-->
-				<activated_neutrophil_speed units="micron/min" type="double">0.4</activated_neutrophil_speed>
-				<normal_neutrophil_speed units="micron/min" type="double">19</normal_neutrophil_speed>
-				<neutrophil_probability_of_phagocytosis units="dimensionless" type="double">0.7</neutrophil_probability_of_phagocytosis>
-
+				<activated_immune_cell units="dimensionless" type="double" 
+					description="used internally to track activation state">0.0</activated_immune_cell>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
