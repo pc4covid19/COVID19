@@ -65,6 +65,7 @@ void create_infiltrating_immune_cell_initial( Cell_Definition* pCD );
 
 void create_infiltrating_Tcell( void ); 
 void create_infiltrating_neutrophil( void );
+void create_infiltrating_macrophage( void );
 
 void immune_cell_recruitment( double dt ); 
 

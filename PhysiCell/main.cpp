@@ -267,13 +267,16 @@ int main( int argc, char* argv[] )
 	
 	extern int recruited_neutrophils; 
 	extern int recruited_Tcells; 
+	extern int recruited_macrophages; 
 	
 	std::cout << std::endl; 
+	std::cout << "recruited macrophges: " << recruited_macrophages << std::endl; 
 	std::cout << "recruited neutrophils: " << recruited_neutrophils << std::endl; 
-	std::cout << "recruited T cells: " << recruited_Tcells << std::endl << std::endl; 
-	
+	std::cout << "recruited T cells: " << recruited_Tcells << std::endl << std::endl; 	
 	recruited_neutrophils = 0; 
 	recruited_Tcells = 0; 
+	recruited_macrophages = 0; 
+
 	for( int n =0 ; n < (*all_cells).size() ; n++ )
 	{
 		Cell* pC = (*all_cells)[n]; 
@@ -281,7 +284,11 @@ int main( int argc, char* argv[] )
 		{ recruited_neutrophils++; }
 		if( pC->type == 3 )
 		{ recruited_Tcells++; }
+		if( pC->type == 4 )
+		{ recruited_macrophages++; }
+
 	}
+	std::cout << "remaining macrophages: " << recruited_macrophages << std::endl; 
 	std::cout << "remaining neutrophils: " << recruited_neutrophils << std::endl; 
 	std::cout << "remaining T cells: " << recruited_Tcells << std::endl; 
 	
