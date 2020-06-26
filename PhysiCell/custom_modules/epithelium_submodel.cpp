@@ -47,7 +47,7 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	double P = pCell->custom_data[nP];
 
-	staitc int nR = pCell->custom_data.find_variable_index( "viral_RNA");
+	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
 	double R = pCell->custom_data[nR];
 
 
@@ -80,6 +80,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static int debris_index = microenvironment.find_density_index( "debris");
+	
 	pCell->is_movable = false; 
 	
 	// if I'm dead, don't bother 

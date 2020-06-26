@@ -45,6 +45,8 @@ void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype&
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt ); 
 void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt ); 
 
+void immune_cell_motility_direction( Cell* pCell, Phenotype& phenotype , double dt );
+
 void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt ); 
 void macrophage_mechanics( Cell* pCell, Phenotype& phenotype, double dt ); 
 

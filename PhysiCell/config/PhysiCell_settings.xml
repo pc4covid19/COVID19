@@ -336,7 +336,6 @@
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double">0.8254</infected_cell_chemokine_secretion_rate>
 				<infected_cell_chemokine_secretion_activated units="none" type="double">0</infected_cell_chemokine_secretion_activated>
 				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>
-					
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min">0.0</TCell_contact_time>
@@ -349,15 +348,34 @@
 <!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
 				<relative_maximum_volume units="dimensionless">1.8</relative_maximum_volume>
 				
-				<!-- macrophage -->
+<!-- these can be unified -->
+
+				<!-- more immmune cell parameters  -->
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">0</sensitivity_to_chemokine_chemotaxis> 
+				<activated_immune_cell units="dimensionless" type="double" 
+					description="used internally to track activation state">0.0</activated_immune_cell>
+
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0.8524</activated_cytokine_secretion_rate>
+
+
+<!-- generalize -->
 				<activated_macrophage_speed units="micron/min" type="double">0.4</activated_macrophage_speed>
 				<activated_macrophage_secretion_rate units="1/min" type="double">0.8254</activated_macrophage_secretion_rate>
 				<macrophage_probability_of_phagocytosis units="dimensionless" type="double">1</macrophage_probability_of_phagocytosis>
 				
+<!-- remove -->
 				<activated_cell_chemokine_uptake_rate units="1/min" type="double">0.0510</activated_cell_chemokine_uptake_rate>
 				<activated_cell_cytokine_uptake_rate units="1/min" type="double">0.0018</activated_cell_cytokine_uptake_rate>
-				<sensitivity_to_eat_me_chemotaxis units="dimensionless" type="double">1.0</sensitivity_to_eat_me_chemotaxis>
-				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double">0</sensitivity_to_chemokine_chemotaxis> <!-- 1 --> 
+
+
 				<activated_macrophage units="dimensionless" type="double">0.0</activated_macrophage>
 
 				<!-- neutrophil-->
@@ -487,6 +505,11 @@
 
 		<cell_definition name="neutrophil" parent_type="immune" ID="5">
 			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">1.44e-3</death_rate> <!-- 5.31667e-05 --> 
+					</model> 
+				</death>
 				<motility>  
 					<speed units="micron/min">19</speed>
 					<migration_bias>0.911</migration_bias>
