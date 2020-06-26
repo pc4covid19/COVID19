@@ -303,11 +303,16 @@
 			</phenotype>
 			<custom_data>  
 				<!-- for internal viral dynamics --> 
-				<virion units="virions">0</virion>
-				<uncoated_virion units="virions">0</uncoated_virion>
-				<viral_RNA>0</viral_RNA>
-				<viral_protein>0</viral_protein>
-				<assembled_virion>0</assembled_virion>
+				<virion units="virions" type="double"
+					description="endocytosed virions">0</virion>
+				<uncoated_virion units="virions" type="double"
+					description="uncoated endocytosed virions">0</uncoated_virion>
+				<viral_RNA units="RNA" type="double"
+					description="total (functional) viral RNA copies">0</viral_RNA>
+				<viral_protein units="protein" type="double"
+					description="total assembled sets of viral protein">0</viral_protein>
+				<assembled_virion uints="virions" type="double"
+					description="total assembled virions">0</assembled_virion>
 				
 				<virion_uncoating_rate type="double" units="1/min" 
 					description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
