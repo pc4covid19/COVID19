@@ -448,6 +448,19 @@
 						</chemotaxis>
 					</options>
 				</motility>
+
+				<secretion>
+					<substrate name="pro-inflammatory cytokine">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+					<substrate name="chemokine">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+					<substrate name="debris">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+				</secretion>
+
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -461,18 +474,17 @@
 					<total units="micron^3">478</total>
 					<nuclear units="micron^3">47.8</nuclear>
 				</volume>
-<!--				
+	
 				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">1</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
+					<substrate name="debris">
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 				</secretion>
--->				
+
 			</phenotype>
 			<custom_data>
 				<cell_attachment_rate units="1/min">0.2</cell_attachment_rate> <!-- 0.2 --> 
-				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime> <!-- 8.5 --> 
+				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime> <!-- 8.5 -->
 			</custom_data>
 		</cell_definition>
 		
@@ -503,16 +515,20 @@
 					<nuclear units="micron^3">485</nuclear>
 				</volume>
 				
-<!--				
-				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">1</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
-					</substrate> 	
-				</secretion>				
--->				
 			</phenotype>
 			<custom_data>
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">1.0</sensitivity_to_chemokine_chemotaxis> 
+
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0.8524</activated_cytokine_secretion_rate>
+
 			</custom_data>
 		</cell_definition>		
 
@@ -537,20 +553,31 @@
 						</chemotaxis>
 					</options>
 				</motility>
+
 				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">0.8254</secretion_rate>
-					</substrate>
 					<substrate name="virion">
 						<uptake_rate units="1/min">0.001</uptake_rate>
 					</substrate> 	
 				</secretion>
+
 				<volume>
 					<total units="micron^3">1437</total>
 					<nuclear units="micron^3">143.7</nuclear>
 				</volume>
 			</phenotype>
 			<custom_data>
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">1.0</sensitivity_to_chemokine_chemotaxis> 
+
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0</activated_cytokine_secretion_rate>
+
 			</custom_data>
 		</cell_definition>
 		
