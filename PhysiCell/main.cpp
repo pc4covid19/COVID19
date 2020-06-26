@@ -269,10 +269,17 @@ int main( int argc, char* argv[] )
 	extern int recruited_Tcells; 
 	extern int recruited_macrophages; 
 	
+	extern double first_macrophage_recruitment_time;
+	extern double first_neutrophil_recruitment_time; 
+	extern double first_CD8_T_cell_recruitment_time; 
+
 	std::cout << std::endl; 
-	std::cout << "recruited macrophges: " << recruited_macrophages << std::endl; 
-	std::cout << "recruited neutrophils: " << recruited_neutrophils << std::endl; 
-	std::cout << "recruited T cells: " << recruited_Tcells << std::endl << std::endl; 	
+	std::cout << "recruited macrophges: " << recruited_macrophages << " starting at time " 
+		<< first_macrophage_recruitment_time <<	std::endl; 
+	std::cout << "recruited neutrophils: " << recruited_neutrophils << " starting at time " 
+		<< first_neutrophil_recruitment_time << std::endl; 
+	std::cout << "recruited T cells: " << recruited_Tcells << " starting at time "
+		<< first_CD8_T_cell_recruitment_time << std::endl << std::endl; 	
 	recruited_neutrophils = 0; 
 	recruited_Tcells = 0; 
 	recruited_macrophages = 0; 

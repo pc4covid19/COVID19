@@ -835,6 +835,10 @@ int recruited_Tcells = 0;
 int recruited_neutrophils = 0; 
 int recruited_macrophages = 0; 
 
+double first_macrophage_recruitment_time = 9e9; 
+double first_neutrophil_recruitment_time = 9e9; 
+double first_CD8_T_cell_recruitment_time = 9e9; 
+
 void immune_cell_recruitment( double dt )
 {
 	static int proinflammatory_cytokine_index = 
@@ -886,6 +890,9 @@ void immune_cell_recruitment( double dt )
 		
 		if( number_of_new_cells )
 		{
+			if( t_immune < first_macrophage_recruitment_time )
+			{ first_macrophage_recruitment_time = t_immune; }
+
 			std::cout << "\tRecruiting " << number_of_new_cells << " macrophages ... " << std::endl; 
 			
 			for( int n = 0; n < number_of_new_cells ; n++ )
@@ -926,6 +933,9 @@ void immune_cell_recruitment( double dt )
 		
 		if( number_of_new_cells )
 		{
+			if( t_immune < first_neutrophil_recruitment_time )
+			{ first_neutrophil_recruitment_time = t_immune; }
+
 			std::cout << "\tRecruiting " << number_of_new_cells << " neutrophils ... " << std::endl; 
 			
 			for( int n = 0; n < number_of_new_cells ; n++ )
@@ -966,6 +976,9 @@ void immune_cell_recruitment( double dt )
 		
 		if( number_of_new_cells )
 		{
+			if( t_immune < first_CD8_T_cell_recruitment_time )
+			{ first_CD8_T_cell_recruitment_time = t_immune; }
+			
 			std::cout << "\tRecruiting " << number_of_new_cells << " CD8 T cells ... " << std::endl; 
 
 			for( int n = 0; n < number_of_new_cells ; n++ )
