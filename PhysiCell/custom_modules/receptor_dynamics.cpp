@@ -104,7 +104,7 @@ std::cout << "receptor : " << __LINE__ << " "
 		// dump any excess back into the microenvironment
 		static double one_virion_to_density = 1.0 / microenvironment.mesh.dV; 
 		// this needs omp critical because 2 cells writing to 1 voxel is not thread safe 
-		#pragma omp critical(excess_binding)
+		#pragma omp critical
 		{
 			pCell->nearest_density_vector()[nV_external] += excess_binding * one_virion_to_density; 
 		}

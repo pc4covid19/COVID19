@@ -397,7 +397,7 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	if( pCell->phenotype.death.dead == false && pCell->type == Macrophage_type )
 	{
 		std::string color = parameters.strings("Macrophage_color");  
-		if( pCell->custom_data["activated_macrophage" ] > 0.5 )
+		if( pCell->custom_data["activated_immune_cell" ] > 0.5 )
 		{ color = parameters.strings("activated_macrophage_color"); }
 		
 		output[0] = color; 

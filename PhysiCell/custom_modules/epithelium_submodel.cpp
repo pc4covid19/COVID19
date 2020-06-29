@@ -46,12 +46,26 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	double P = pCell->custom_data[nP];
+
+	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
+	double R = pCell->custom_data[nR];
+
+
 	
-	// warning hardcoded 
-	if( phenotype.death.dead == false && P > 0.001 )
+	if( R >= 1.00 - 1e-16 ) 
 	{
-		phenotype.secretion.secretion_rates[chemokine_index] = 
-			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+		pCell->custom_data["infected_cell_chemokine_secretion_activated"] = 1.0; 
+	}
+
+	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
+	{
+		double rate = P; 
+		rate /= pCell->custom_data["max_apoptosis_half_max"];
+		if( rate > 1.0 )
+		{ rate = 1.0; }
+		rate *= pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+
+		phenotype.secretion.secretion_rates[chemokine_index] = rate; 
 		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
 	}
 	
@@ -66,6 +80,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static int debris_index = microenvironment.find_density_index( "debris");
+	
 	pCell->is_movable = false; 
 	
 	// if I'm dead, don't bother 
@@ -78,6 +94,8 @@ void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
 		pCell->functions.contact_function = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}	
 	
@@ -146,9 +164,9 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		// detach all attached cells 
 		// remove_all_adhesions( pCell ); 
 		
-		#pragma omp critical(tcell)
+		#pragma omp critical
 		{
-		std::cout << "\t\t\t\t" << pCell << " is dead of a T cell at " << pCell->position << std::endl; 
+		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
 		}
 		
 		// induce death 

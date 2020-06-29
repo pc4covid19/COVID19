@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>4</omp_num_threads>
+		<omp_num_threads>6</omp_num_threads>
 	</parallel> 
 
 	<options>
@@ -270,7 +270,7 @@
 				
 				<motility>  
 					<speed units="micron/min">4</speed>
-					<persistence_time units="min">1</persistence_time>
+					<persistence_time units="min">5</persistence_time>
 					<migration_bias units="dimensionless">.5</migration_bias>
 					
 					<options>
@@ -303,66 +303,99 @@
 			</phenotype>
 			<custom_data>  
 				<!-- for internal viral dynamics --> 
-				<virion units="virions">0</virion>
-				<uncoated_virion units="virions">0</uncoated_virion>
-				<viral_RNA>0</viral_RNA>
-				<viral_protein>0</viral_protein>
-				<assembled_virion>0</assembled_virion>
+				<virion units="virions" type="double"
+					description="endocytosed virions">0</virion>
+				<uncoated_virion units="virions" type="double"
+					description="uncoated endocytosed virions">0</uncoated_virion>
+				<viral_RNA units="RNA" type="double"
+					description="total (functional) viral RNA copies">0</viral_RNA>
+				<viral_protein units="protein" type="double"
+					description="total assembled sets of viral protein">0</viral_protein>
+				<assembled_virion uints="virions" type="double"
+					description="total assembled virions">0</assembled_virion>
 				
-				<virion_uncoating_rate type="double" units="1/min" description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
-				<uncoated_to_RNA_rate type="double" units="1/min" description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
-				<protein_synthesis_rate type="double" units="1/min" description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
-				<virion_assembly_rate type="double" units="1/min" description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
+				<virion_uncoating_rate type="double" units="1/min" 
+					description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
+				<uncoated_to_RNA_rate type="double" units="1/min" 
+					description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
+				<protein_synthesis_rate type="double" units="1/min" 
+					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
+				<virion_assembly_rate type="double" units="1/min" 
+					description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
  
 				<!-- virus adsorption and export -->
-				<virion_export_rate type="double" units="1/min" description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
+				<virion_export_rate type="double" units="1/min" 
+					description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
 
 				<!-- ACE2 receptor trafficking --> 
-				<unbound_external_ACE2>1000</unbound_external_ACE2>
-				<bound_external_ACE2>0</bound_external_ACE2>
-				<unbound_internal_ACE2>0</unbound_internal_ACE2>
-				<bound_internal_ACE2>0</bound_internal_ACE2>
+				<unbound_external_ACE2 type="double" units="none"
+					description="initial number of unbound ACE2 receptors on surface">1000</unbound_external_ACE2>
+				<bound_external_ACE2 type="double" units="none"
+					description="initial number of bound ACE2 receptors on surface">0</bound_external_ACE2>
+				<unbound_internal_ACE2 type="double" units="none"
+					description="initial number of internalized unbound ACE2 receptors">0</unbound_internal_ACE2>
+				<bound_internal_ACE2 type="double" units="none"
+					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
-				<ACE2_binding_rate type="double" units="1/min" description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
-				<ACE2_endocytosis_rate type="double" units="1/min" description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
-				<ACE2_cargo_release_rate type="double" units="1/min" description="ACE2 receptor-virus cargo release rate">0.001</ACE2_cargo_release_rate> 
-				<ACE2_recycling_rate type="double" units="1/min" description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
+				<ACE2_binding_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
+				<ACE2_endocytosis_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
+				<ACE2_cargo_release_rate type="double" units="1/min" 
+					description="ACE2 receptor-virus cargo release rate">0.001</ACE2_cargo_release_rate> 
+				<ACE2_recycling_rate type="double" units="1/min" 
+					description="ACE2 receptor recycling rate">0.01</ACE2_recycling_rate> 
 				
 				<!-- cell virus response --> 
-				<max_infected_apoptosis_rate type="double" units="1/min" description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
-				<max_apoptosis_half_max type="double" units="virion" description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max> <!-- 500 debug -->
-				<apoptosis_hill_power type="double" units="none" description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
-				<virus_fraction_released_at_death type="double" units="none" description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
-				<infected_cell_chemokine_secretion_rate units="1/min" type="double">0.8254</infected_cell_chemokine_secretion_rate>
-				<debris_secretion_rate units="1/min" type="double">0.8254</debris_secretion_rate>				
+				<max_infected_apoptosis_rate type="double" units="1/min" 
+					description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
+				<max_apoptosis_half_max type="double" units="virion" 
+					description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max> <!-- 500 debug -->
+				<apoptosis_hill_power type="double" units="none" 
+					description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
+				<virus_fraction_released_at_death type="double" units="none" 
+					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
+				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
+					description="rate that infected cells secrete chemokine">0.8254</infected_cell_chemokine_secretion_rate>
+				<debris_secretion_rate units="1/min" type="double"
+					description="rate that dead cells release debris">0.8254</debris_secretion_rate>
 				
+				<infected_cell_chemokine_secretion_activated units="none" type="double"
+					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
+
 				<!-- for the immune model --> 
-				<TCell_contact_time type="double" units="min">0.0</TCell_contact_time>
-				<cell_attachment_rate units="1/min">0</cell_attachment_rate>
-				<cell_attachment_lifetime units="min">0</cell_attachment_lifetime>
+				<TCell_contact_time type="double" units="min"
+					description="tracks total contact time with CD8 T cells">0.0</TCell_contact_time>
+				<cell_attachment_rate units="1/min" type="double"
+					description="the rate at which the cell attaches to cells in contact">0</cell_attachment_rate>
+				<cell_attachment_lifetime units="min" type="double"
+					description="the mean duration of a cell-cell attachment">0</cell_attachment_lifetime>
 				
-				<TCell_contact_death_threshold units="min">50</TCell_contact_death_threshold> <!-- 50 -->
-				<max_attachment_distance units="micron">15</max_attachment_distance>
-				<elastic_attachment_coefficient units="1/min">0.01</elastic_attachment_coefficient>
+				<TCell_contact_death_threshold units="min" type="double"
+					description="threshold CD8 T cell contact time to trigger apoptosis">50</TCell_contact_death_threshold> <!-- 50 -->
+				<max_attachment_distance units="micron" type="double"
+					desription="max distance at which to form a cell-cell attachment">15</max_attachment_distance>
+				<elastic_attachment_coefficient units="1/min" type="double"
+					description="elastic coefficient for cell-cell attachment">0.01</elastic_attachment_coefficient>
 <!--				<maximum_tolerated_ingested_debris units="micron^3">3000</maximum_tolerated_ingested_debris> -->
-				<relative_maximum_volume units="dimensionless">1.8</relative_maximum_volume>
+				<relative_maximum_volume units="dimensionless" type="double"
+					description="max tolerated volume (relative to normal volume) before triggering apoptosis">1.8</relative_maximum_volume>
 				
-				<!-- macrophage -->
-				<activated_macrophage_speed units="micron/min" type="double">0.4</activated_macrophage_speed>
-				<activated_macrophage_secretion_rate units="1/min" type="double">0.8254</activated_macrophage_secretion_rate>
-				<macrophage_probability_of_phagocytosis units="dimensionless" type="double">1</macrophage_probability_of_phagocytosis>
-				
-				<activated_cell_chemokine_uptake_rate units="1/min" type="double">0.0510</activated_cell_chemokine_uptake_rate>
-				<activated_cell_cytokine_uptake_rate units="1/min" type="double">0.0018</activated_cell_cytokine_uptake_rate>
-				<sensitivity_to_eat_me_chemotaxis units="dimensionless" type="double">1.0</sensitivity_to_eat_me_chemotaxis>
-				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double">0</sensitivity_to_chemokine_chemotaxis> <!-- 1 --> 
-				<activated_macrophage units="dimensionless" type="double">0.0</activated_macrophage>
+				<!-- more immmune cell parameters  -->
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">0</sensitivity_to_chemokine_chemotaxis> 
 
-				<!-- neutrophil-->
-				<activated_neutrophil_speed units="micron/min" type="double">0.4</activated_neutrophil_speed>
-				<normal_neutrophil_speed units="micron/min" type="double">19</normal_neutrophil_speed>
-				<neutrophil_probability_of_phagocytosis units="dimensionless" type="double">0.7</neutrophil_probability_of_phagocytosis>
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0.8524</activated_cytokine_secretion_rate>
 
+				<activated_immune_cell units="dimensionless" type="double" 
+					description="used internally to track activation state">0.0</activated_immune_cell>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
@@ -403,7 +436,7 @@
 				</death>
 				<motility>  
 					<speed units="micron/min">4</speed>
-					<persistence_time units="min">1</persistence_time>
+					<persistence_time units="min">5</persistence_time>
 					<migration_bias units="dimensionless">0.5</migration_bias>
 					<options>
 						<enabled>true</enabled>
@@ -415,6 +448,19 @@
 						</chemotaxis>
 					</options>
 				</motility>
+
+				<secretion>
+					<substrate name="pro-inflammatory cytokine">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+					<substrate name="chemokine">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+					<substrate name="debris">
+						<uptake_rate units="1/min">1</uptake_rate>
+					</substrate> 	
+				</secretion>
+
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -428,18 +474,17 @@
 					<total units="micron^3">478</total>
 					<nuclear units="micron^3">47.8</nuclear>
 				</volume>
-<!--				
+	
 				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">1</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
+					<substrate name="debris">
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 				</secretion>
--->				
+
 			</phenotype>
 			<custom_data>
 				<cell_attachment_rate units="1/min">0.2</cell_attachment_rate> <!-- 0.2 --> 
-				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime> <!-- 8.5 --> 
+				<cell_attachment_lifetime units="min">8.5</cell_attachment_lifetime> <!-- 8.5 -->
 			</custom_data>
 		</cell_definition>
 		
@@ -452,7 +497,7 @@
 					</model> 
 				</death>
 				<motility>  
-					<migration_bias>0.5</migration_bias>
+					<migration_bias>0.99</migration_bias> <!-- 0.5 -->
 					<persistence_time>5</persistence_time>
 					<options>
 						<enabled>true</enabled>
@@ -470,24 +515,33 @@
 					<nuclear units="micron^3">485</nuclear>
 				</volume>
 				
-<!--				
-				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">1</secretion_rate>
-						<secretion_target units="substrate density">1</secretion_target>
-					</substrate> 	
-				</secretion>				
--->				
 			</phenotype>
 			<custom_data>
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">0.0</sensitivity_to_chemokine_chemotaxis> <!-- 1 -->
+
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0.8524</activated_cytokine_secretion_rate>
+
 			</custom_data>
 		</cell_definition>		
 
 		<cell_definition name="neutrophil" parent_type="immune" ID="5">
 			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">1.44e-3</death_rate> <!-- 5.31667e-05 --> 
+					</model> 
+				</death>
 				<motility>  
 					<speed units="micron/min">19</speed>
-					<migration_bias>0.911</migration_bias>
+					<migration_bias>0.99</migration_bias>  <!-- 0.91 -->
 					<persistence_time>5</persistence_time>
 					<options>
 						<enabled>true</enabled>
@@ -499,20 +553,31 @@
 						</chemotaxis>
 					</options>
 				</motility>
+
 				<secretion>
-					<substrate name="pro-inflammatory cytokine">
-						<secretion_rate units="1/min">0.8254</secretion_rate>
-					</substrate>
 					<substrate name="virion">
 						<uptake_rate units="1/min">0.001</uptake_rate>
 					</substrate> 	
 				</secretion>
+
 				<volume>
 					<total units="micron^3">1437</total>
 					<nuclear units="micron^3">143.7</nuclear>
 				</volume>
 			</phenotype>
 			<custom_data>
+				<phagocytosis_rate units="1/min" type="double" 
+					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to debris in chemotaxis">0.0</sensitivity_to_debris_chemotaxis> <!-- 1 -->
+				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
+					description="relative sensitivity to chemokine in chemotaxis">1.0</sensitivity_to_chemokine_chemotaxis> 
+
+				<activated_speed units="micron/min" type="double" 
+					description="speed after activation">0.4</activated_speed>
+				<activated_cytokine_secretion_rate units="1/min" type="double" 
+					description="rate of secreting pro-inflamatory cytokine after activation">0</activated_cytokine_secretion_rate>
+
 			</custom_data>
 		</cell_definition>
 		
@@ -523,45 +588,67 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		<!-- example parameters from the template --> 
-
-		<div_ACE2 type="divider" description="--ACE2 receptor model initialization--"/>
-		<!--
-			<ACE2_receptors_per_cell type="double" units="dimensionless" description="number of ACE2 receptors per cell">1000</ACE2_receptors_per_cell> --> <!-- not used? --> 
 		
 		<div_immune type="divider" description="--Immune activation parameters--"/>
 			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">10</immune_dt> 
 			
-			<immune_z_offset type="double" units="micron" description="immune cell position over the epithelium">0</immune_z_offset>
-			
-			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
-			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
-			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+			<immune_z_offset type="double" units="micron" 
+				description="immune cell position over the epithelium">0</immune_z_offset>
 
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3">0.2</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
-			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3">0.4</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
+			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max macrophage recruitment rate (for saturated signal)">4e-9</macrophage_max_recruitment_rate> <!-- 8e-9 debug -->
+			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
+			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract macrophages">0.3</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
+
+			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max neutrophil recruitment rate (for saturated signal)">4e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
+			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+
+			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract CD8 T cells">0.2</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
+			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract CD8 T cells">0.4</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
-			<multiplicity_of_infection type="double" units="none" description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
-			<use_single_infected_cell type="bool" units="none" description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
+			<multiplicity_of_infection type="double" units="none" 
+				description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
+			<use_single_infected_cell type="bool" units="none" 
+				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			
-			<number_of_CD8_Tcells type="int" units="none" description="initial number of CD8 T cells">0</number_of_CD8_Tcells>
-			<number_of_macrophages type="int" units="none" description="initial number of macrophages">50</number_of_macrophages>
-			<number_of_neutrophils type="int" units="none" description="initial number of neutrophils">0</number_of_neutrophils>
+			<number_of_CD8_Tcells type="int" units="none" 
+				description="initial number of CD8 T cells">0</number_of_CD8_Tcells>
+			<number_of_macrophages type="int" units="none" 
+				description="initial number of macrophages">50</number_of_macrophages>
+			<number_of_neutrophils type="int" units="none" 
+				description="initial number of neutrophils">0</number_of_neutrophils>
 			
-			<perecentage_tissue_vascularized units="1/min" type="double">8.8</perecentage_tissue_vascularized>			
+			<perecentage_tissue_vascularized units="percentage" type="double"
+				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>			
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 			
-			<apoptotic_epithelium_color type="string" description="">black</apoptotic_epithelium_color>
-			<apoptotic_immune_color type="string" description="">rosybrown</apoptotic_immune_color>
+			<apoptotic_epithelium_color type="string" 
+				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
+			<apoptotic_immune_color type="string" 
+				description="apoptotic immune cell color">rosybrown</apoptotic_immune_color>
 		
-			<lung_epithelium_color type="string" description="">blue</lung_epithelium_color>
-			<CD8_Tcell_color type="string" description="">red</CD8_Tcell_color>
-			<Macrophage_color type="string" description="">lime</Macrophage_color>
-			<activated_macrophage_color type="string" description="color of activated macrophage">fuchsia</activated_macrophage_color>
-			<Neutrophil_color type="string" description="">cyan</Neutrophil_color>
+<!---			<lung_epithelium_color type="string" 
+				description="lung epithelium color">blue</lung_epithelium_color> -->
+			<CD8_Tcell_color type="string" 
+				description="CD8 T cell color">red</CD8_Tcell_color>
+			<Macrophage_color type="string" 
+				description="macrophage color">lime</Macrophage_color>
+			<activated_macrophage_color type="string" 
+				description="color of activated macrophage">fuchsia</activated_macrophage_color>
+			<Neutrophil_color type="string" description="neutrophil color">cyan</Neutrophil_color>
 		
 	</user_parameters>
 	
