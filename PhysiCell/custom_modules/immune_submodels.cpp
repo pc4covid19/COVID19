@@ -460,19 +460,23 @@ void immune_cell_motility_direction( Cell* pCell, Phenotype& phenotype , double 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
 	static int debris_index = microenvironment.find_density_index( "debris");
 
+	// if not activated, chemotaxis along debris 
 
-	// determine bias_direction for macrophage based on "eat me" signals and chemokine
-	// this needs to be in migration bias direction so it's not overwritten by built-in chemotaxis 
-	double sensitivity_chemokine = pCell->custom_data["sensitivity_to_chemokine_chemotaxis"];
-	double sensitivity_to_debris = pCell->custom_data["sensitivity_to_debris_chemotaxis"];
+	phenotype.motility.migration_bias_direction = pCell->nearest_gradient(debris_index);
+	normalize( &phenotype.motility.migration_bias_direction ); 
+	if( pCell->custom_data["activated_immune_cell"] < 0.5 )
+	{ return; }
 
-	pCell->phenotype.motility.migration_bias_direction = pCell->nearest_gradient(chemokine_index);
-	pCell->phenotype.motility.migration_bias_direction *= sensitivity_chemokine; 
+	// if activated, follow the weighted direction 
 
-	axpy( &(pCell->phenotype.motility.migration_bias_direction), sensitivity_to_debris , pCell->nearest_gradient(debris_index) );
-
-//	pCell->phenotype.motility.migration_bias_direction = sensitivity_chemokine*pCell->nearest_gradient(chemokine_index)+sensitivity_eat_me*pCell->nearest_gradient(debris_index);
-
+	phenotype.motility.migration_bias_direction *= pCell->custom_data["sensitivity_to_debris_chemotaxis"];
+	
+	std::vector<double> gradC = pCell->nearest_gradient(chemokine_index);
+	normalize( &gradC ); 
+	gradC *= pCell->custom_data["sensitivity_to_chemokine_chemotaxis"];
+	
+	phenotype.motility.migration_bias_direction += gradC; 
+	
 	normalize( &( phenotype.motility.migration_bias_direction) );
 
 	return; 
