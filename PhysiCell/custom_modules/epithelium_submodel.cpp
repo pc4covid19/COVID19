@@ -42,15 +42,19 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 	}
 	
+/*
+	// cell secretion belongs in viral response 
+	
 	// if I am dead, make sure to still secrete the chemokine 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	double P = pCell->custom_data[nP];
+	
+	static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 
+	double AV = pCell->custom_data[nAV]; 
 
 	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
 	double R = pCell->custom_data[nR];
-
-
 	
 	if( R >= 1.00 - 1e-16 ) 
 	{
@@ -59,7 +63,7 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
 	{
-		double rate = P; 
+		double rate = AV; // P; 
 		rate /= pCell->custom_data["max_apoptosis_half_max"];
 		if( rate > 1.0 )
 		{ rate = 1.0; }
@@ -68,6 +72,7 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		phenotype.secretion.secretion_rates[chemokine_index] = rate; 
 		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
 	}
+*/	
 	
 	// if I am dead, don't bother executing this function again 
 	if( phenotype.death.dead == true )

@@ -457,6 +457,12 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 
 void immune_cell_motility_direction( Cell* pCell, Phenotype& phenotype , double dt )
 {
+	if( phenotype.death.dead == true )
+	{
+		phenotype.motility.migration_speed = 0.0; 
+		return;
+	}
+	
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
 	static int debris_index = microenvironment.find_density_index( "debris");
 
@@ -478,6 +484,15 @@ void immune_cell_motility_direction( Cell* pCell, Phenotype& phenotype , double 
 	phenotype.motility.migration_bias_direction += gradC; 
 	
 	normalize( &( phenotype.motility.migration_bias_direction) );
+	
+/*	
+	#pragma omp critical
+	{
+		std::cout << phenotype.motility.migration_speed << " : " << pCell->custom_data["sensitivity_to_debris_chemotaxis"] 
+			<< " " << pCell->custom_data["sensitivity_to_chemokine_chemotaxis"] << " : [" << phenotype.motility.migration_bias_direction << "] vs [" 
+			<< pCell->nearest_gradient(chemokine_index) << "]" << std::endl; 
+	}
+*/	
 
 	return; 
 }
@@ -489,6 +504,12 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
 	static int debris_index = microenvironment.find_density_index( "debris");
+	
+	// no apoptosis until activation (resident macrophages in constant number for homeostasis) 
+	if( pCell->custom_data["activated_immune_cell"] < 0.5 )
+	{ phenotype.death.rates[apoptosis_index] = 0.0; }
+	else
+	{ phenotype.death.rates[apoptosis_index] = pCD->phenotype.death.rates[apoptosis_index]; } 
 
 	if( phenotype.death.dead == true )
 	{

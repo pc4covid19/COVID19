@@ -105,7 +105,7 @@
 	</options>	
 	
 	<save>
-		<folder>output</folder> <!-- use . for root --> 
+		<folder>output1</folder> <!-- use . for root --> 
 
 		<full_data>
 			<interval units="min">60</interval>
@@ -356,7 +356,7 @@
 				<virus_fraction_released_at_death type="double" units="none" 
 					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
-					description="rate that infected cells secrete chemokine">1</infected_cell_chemokine_secretion_rate>
+					description="max rate that infected cells secrete chemokine">1</infected_cell_chemokine_secretion_rate>
 				<debris_secretion_rate units="1/min" type="double"
 					description="rate that dead cells release debris">1</debris_secretion_rate>
 				
@@ -513,7 +513,7 @@
 					</model> 
 				</death>
 				<motility>  
-					<migration_bias>0.7</migration_bias> 
+					<migration_bias>0.99</migration_bias> 
 					<persistence_time>5</persistence_time>
 					<options>
 						<enabled>true</enabled>
@@ -541,7 +541,7 @@
 					description="relative sensitivity to chemokine in chemotaxis">10.0</sensitivity_to_chemokine_chemotaxis> <!-- 1 -->
 
 				<activated_speed units="micron/min" type="double" 
-					description="speed after activation">0.4</activated_speed>
+					description="speed after activation">1</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
 					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
 
