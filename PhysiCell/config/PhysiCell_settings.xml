@@ -105,7 +105,7 @@
 	</options>	
 	
 	<save>
-		<folder>output1</folder> <!-- use . for root --> 
+		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
 			<interval units="min">60</interval>
@@ -350,7 +350,7 @@
 				<max_infected_apoptosis_rate type="double" units="1/min" 
 					description="maximum rate of cell apoptosis due to viral infection">0.001</max_infected_apoptosis_rate>
 				<max_apoptosis_half_max type="double" units="virion" 
-					description="viral load at which cells reach half max apoptosis rate">500</max_apoptosis_half_max> <!-- 500 -->
+					description="viral load at which cells reach half max apoptosis rate">250</max_apoptosis_half_max> <!-- 500 -->
 				<apoptosis_hill_power type="double" units="none" 
 					description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
 				<virus_fraction_released_at_death type="double" units="none" 
@@ -529,7 +529,11 @@
 				<volume>
 					<total units="micron^3">4849</total>
 					<nuclear units="micron^3">485</nuclear>
+
+					<cytoplasmic_biomass_change_rate units="1/min">0.045</cytoplasmic_biomass_change_rate> 
+					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
 				</volume>
+				
 				
 			</phenotype>
 			<custom_data>
@@ -555,6 +559,7 @@
 						<death_rate units="1/min">8.9e-4</death_rate>  
 					</model> 
 				</death>
+				
 				<motility>  
 					<speed units="micron/min">19</speed>
 					<migration_bias>0.91</migration_bias>  
@@ -579,6 +584,9 @@
 				<volume>
 					<total units="micron^3">1437</total>
 					<nuclear units="micron^3">143.7</nuclear>
+					
+					<cytoplasmic_biomass_change_rate units="1/min">0.045</cytoplasmic_biomass_change_rate> 
+					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
 				</volume>
 			</phenotype>
 			<custom_data>
@@ -626,11 +634,11 @@
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+				description="max CD8 T cell recruitment rate (for saturated signal)">1e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract CD8 T cells">0.2</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
+				description="min concentration to attract CD8 T cells">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract CD8 T cells">0.4</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
+				description="saturating concentration to attract CD8 T cells">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
