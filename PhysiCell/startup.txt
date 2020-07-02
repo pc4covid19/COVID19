@@ -1,0 +1,699 @@
+Using config file ./config/PhysiCell_settings.xml ... 
+0
+dc? 0
+User parameters in XML config file: 
+Bool parameters:: 
+use_single_infected_cell: 0 [none]
+
+Int parameters:: 
+random_seed: 0 [dimensionless]
+number_of_CD8_Tcells: 0 [none]
+number_of_macrophages: 50 [none]
+number_of_neutrophils: 0 [none]
+
+Double parameters:: 
+div_immune: 0 [dimensionless]
+immune_dt: 10 [min]
+immune_z_offset: 0 [micron]
+macrophage_max_recruitment_rate: 4e-09 [cells/min/micron^3]
+macrophage_recruitment_min_signal: 0.1 [substrate/micron^3]
+macrophage_recruitment_saturation_signal: 0.3 [substrate/micron^3]
+neutrophil_max_recruitment_rate: 4e-09 [cells/min/micron^3]
+neutrophil_recruitment_min_signal: 0.1 [substrate/micron^3]
+neutrophil_recruitment_saturation_signal: 0.3 [substrate/micron^3]
+CD8_Tcell_max_recruitment_rate: 4e-09 [cells/min/micron^3]
+CD8_Tcell_recruitment_min_signal: 0.2 [substrate/micron^3]
+CD8_Tcell_recruitment_saturation_signal: 0.4 [substrate/micron^3]
+div_initialization: 0 [dimensionless]
+multiplicity_of_infection: 0.1 [none]
+perecentage_tissue_vascularized: 8.8 [percentage]
+div_colors: 0 [dimensionless]
+
+String parameters:: 
+color_variable: assembled_virion [dimensionless]
+apoptotic_epithelium_color: black [dimensionless]
+apoptotic_immune_color: rosybrown [dimensionless]
+CD8_Tcell_color: red [dimensionless]
+Macrophage_color: lime [dimensionless]
+activated_macrophage_color: fuchsia [dimensionless]
+Neutrophil_color: cyan [dimensionless]
+
+
+which boundaries?
+0 0 0 0 0 0
+
+Microenvironment summary: microenvironment: 
+
+Mesh information: 
+type: uniform Cartesian
+Domain: [-400,400] micron x [-400,400] micron x [-10,10] micron
+   resolution: dx = 20 micron
+   voxels: 1600
+   voxel faces: 0
+   volume: 1.28e+07 cubic micron
+Densities: (6 total)
+   virion:
+     units: virion/micron^3
+     diffusion coefficient: 2.5 micron^2 / min
+     decay rate: 0 min^-1
+     diffusion length scale: 1.58114e+06 micron
+     initial condition: 0 virion/micron^3
+     boundary condition: 0 virion/micron^3 (enabled: false)
+   assembled virion:
+     units: virion/micron^3
+     diffusion coefficient: 2.5 micron^2 / min
+     decay rate: 0 min^-1
+     diffusion length scale: 1.58114e+06 micron
+     initial condition: 0 virion/micron^3
+     boundary condition: 0 virion/micron^3 (enabled: false)
+   interferon 1:
+     units: mol/micron^3
+     diffusion coefficient: 555.56 micron^2 / min
+     decay rate: 0.0102 min^-1
+     diffusion length scale: 233.381 micron
+     initial condition: 0 mol/micron^3
+     boundary condition: 0 mol/micron^3 (enabled: false)
+   pro-inflammatory cytokine:
+     units: mol/micron^3
+     diffusion coefficient: 555.56 micron^2 / min
+     decay rate: 0.0102 min^-1
+     diffusion length scale: 233.381 micron
+     initial condition: 0 mol/micron^3
+     boundary condition: 0 mol/micron^3 (enabled: false)
+   chemokine:
+     units: mol/micron^3
+     diffusion coefficient: 555.56 micron^2 / min
+     decay rate: 0.0102 min^-1
+     diffusion length scale: 233.381 micron
+     initial condition: 0 mol/micron^3
+     boundary condition: 0 mol/micron^3 (enabled: false)
+   debris:
+     units: mol/micron^3
+     diffusion coefficient: 555.56 micron^2 / min
+     decay rate: 0.0102 min^-1
+     diffusion length scale: 233.381 micron
+     initial condition: 0 mol/micron^3
+     boundary condition: 0 mol/micron^3 (enabled: false)
+
+Processing default ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+1 * grad( chemokine )
+Processing lung epithelium ... 
+	Inheriting from type default ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+Processing immune ... 
+	Inheriting from type default ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+1 * grad( chemokine )
+Processing CD8 Tcell ... 
+	Inheriting from type immune ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+1 * grad( chemokine )
+Processing macrophage ... 
+	Inheriting from type immune ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+1 * grad( debris )
+Processing neutrophil ... 
+	Inheriting from type immune ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+Note: Overriding to set cell motility to 2D based on microenvironment domain settings ... 
+1 * grad( debris )
+The following submodels are registered: 
+=======================================
+Submodel: CD8 Tcell model (Version 0.0.1)
+	microenvironment variables: 
+		virion
+		interferon 1
+		pro-inflammatory cytokine
+		chemokine
+	cell variables: 
+	functions: 
+		main: NULL
+		phenotype: 4676512
+		mechanics: 4701840
+
+Submodel: macrophage model (Version 0.0.1)
+	microenvironment variables: 
+		virion
+		interferon 1
+		pro-inflammatory cytokine
+		chemokine
+	cell variables: 
+	functions: 
+		main: NULL
+		phenotype: 4679216
+		mechanics: 4702752
+
+Submodel: neutrophil model (Version 0.0.1)
+	microenvironment variables: 
+		virion
+		interferon 1
+		pro-inflammatory cytokine
+		chemokine
+	cell variables: 
+	functions: 
+		main: NULL
+		phenotype: 4676976
+		mechanics: 4703328
+
+Submodel: receptor dynamics (Version 0.2.0)
+	microenvironment variables: 
+		virion
+		assembled virion
+	cell variables: 
+		unbound_external_ACE2
+		bound_external_ACE2
+		unbound_internal_ACE2
+		bound_internal_ACE2
+		ACE2_binding_rate
+		ACE2_endocytosis_rate
+		ACE2_cargo_release_rate
+		ACE2_recycling_rate
+	functions: 
+		main: 4667520
+		phenotype: NULL
+		mechanics: NULL
+
+Submodel: internal viral replication dynamics (Version 0.2.0)
+	microenvironment variables: 
+	cell variables: 
+		virion
+		uncoated_virion
+		viral_RNA
+		viral_protein
+		assembled_virion
+		virion_uncoating_rate
+		uncoated_to_RNA_rate
+		protein_synthesis_rate
+		virion_assembly_rate
+		virion_export_rate
+	functions: 
+		main: NULL
+		phenotype: 4657536
+		mechanics: NULL
+
+Submodel: internal viral response (Version 0.2.0)
+	microenvironment variables: 
+	cell variables: 
+		max_infected_apoptosis_rate
+		max_apoptosis_half_max
+		apoptosis_hill_power
+	functions: 
+		main: NULL
+		phenotype: 4663472
+		mechanics: NULL
+
+Submodel: epithelium model (Version 0.0.1)
+	microenvironment variables: 
+		virion
+		interferon 1
+		pro-inflammatory cytokine
+		chemokine
+	cell variables: 
+	functions: 
+		main: NULL
+		phenotype: 4706832
+		mechanics: 4706352
+
+
+0 :: type:0 name: default
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: false in 2D)
+		speed: 4 micron/min
+		bias: 0.7 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(chemokine) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0 1/min
+		cell_attachment_lifetime: 0 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.167 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 1 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+1 :: type:1 name: lung epithelium
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: false in 2D)
+		speed: 4 micron/min
+		bias: 0.7 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(chemokine) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0 1/min
+		cell_attachment_lifetime: 0 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.167 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 1 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+2 :: type:2 name: immune
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0.0005 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: true in 2D)
+		speed: 4 micron/min
+		bias: 0.7 
+		persistence time: 5 min
+		chemotaxis (enabled: true)
+			along 1 * grad(chemokine) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0 1/min
+		cell_attachment_lifetime: 0 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.167 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 1 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+3 :: type:3 name: CD8 Tcell
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0.00028 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: true in 2D)
+		speed: 4 micron/min
+		bias: 0.7 
+		persistence time: 5 min
+		chemotaxis (enabled: true)
+			along 1 * grad(chemokine) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0.2 1/min
+		cell_attachment_lifetime: 8.5 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.167 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 1 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+4 :: type:4 name: macrophage
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0.00021 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: true in 2D)
+		speed: 4 micron/min
+		bias: 0.7 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(debris) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0 1/min
+		cell_attachment_lifetime: 0 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.167 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 1 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+5 :: type:5 name: neutrophil
+	 cycle model: Flow cytometry model (separated) (code=6)
+		Phase 0: G0/G1
+		Phase 1: S
+		Phase 2: G2
+		Phase 3: M
+		Cycle transitions: 
+		-----------------
+		G0/G1 --> S w mean duration inf min
+		S --> G2 w mean duration 480.001 min
+		G2 --> M w mean duration 240 min
+		M --> G0/G1 w mean duration 59.9999 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0.00089 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 516.001 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+	motility (enabled: true in 2D)
+		speed: 19 micron/min
+		bias: 0.91 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(debris) 
+	custom data: 
+		virion: 0 virions
+		uncoated_virion: 0 virions
+		viral_RNA: 0 RNA
+		viral_protein: 0 protein
+		assembled_virion: 0 
+		virion_uncoating_rate: 0.01 1/min
+		uncoated_to_RNA_rate: 0.01 1/min
+		protein_synthesis_rate: 0.01 1/min
+		virion_assembly_rate: 0.01 1/min
+		virion_export_rate: 0.01 1/min
+		unbound_external_ACE2: 1000 none
+		bound_external_ACE2: 0 none
+		unbound_internal_ACE2: 0 none
+		bound_internal_ACE2: 0 none
+		ACE2_binding_rate: 0.001 1/min
+		ACE2_endocytosis_rate: 0.01 1/min
+		ACE2_cargo_release_rate: 0.001 1/min
+		ACE2_recycling_rate: 0.01 1/min
+		max_infected_apoptosis_rate: 0.001 1/min
+		max_apoptosis_half_max: 500 virion
+		apoptosis_hill_power: 1 none
+		virus_fraction_released_at_death: 0 none
+		infected_cell_chemokine_secretion_rate: 1 1/min
+		debris_secretion_rate: 1 1/min
+		infected_cell_chemokine_secretion_activated: 0 none
+		TCell_contact_time: 0 min
+		cell_attachment_rate: 0 1/min
+		cell_attachment_lifetime: 0 min
+		TCell_contact_death_threshold: 50 min
+		max_attachment_distance: 15 micron
+		elastic_attachment_coefficient: 0.01 1/min
+		relative_maximum_volume: 1.8 dimensionless
+		phagocytosis_rate: 0.117 1/min
+		sensitivity_to_debris_chemotaxis: 1 dimensionless
+		sensitivity_to_chemokine_chemotaxis: 10 dimensionless
+		activated_speed: 0.4 micron/min
+		activated_cytokine_secretion_rate: 0 1/min
+		activated_immune_cell: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+Placing 279 virions ... 
+Using PhysiCell version 1.7.1
+	Please cite DOI: 10.1371/journal.pcbi.1005991
+	Project website: http://PhysiCell.MathCancer.org
+
+See ALL_CITATIONS.txt for this list.
+current simulated time: 0 min (max: 14400 min)
+total agents: 2843
+interval wall time: 0 days, 0 hours, 0 minutes, and 2.95e-05 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 3.84e-05 seconds 
+
+
+Using method diffusion_decay_solver__constant_coefficients_LOD_2D (2D LOD with Thomas Algorithm) ... 
+
+Warning and FYI: Very small vectors are normalized to 0 vector
+
+current simulated time: 60 min (max: 14400 min)
+total agents: 2843
+interval wall time: 0 days, 0 hours, 0 minutes, and 4.83686 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 4.8369 seconds 
+
+current simulated time: 120 min (max: 14400 min)
+total agents: 2843
+interval wall time: 0 days, 0 hours, 0 minutes, and 7.85623 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 12.6931 seconds 
+

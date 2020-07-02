@@ -11,7 +11,7 @@ ifdef PHYSICELL_CPP
 	CC := $(PHYSICELL_CPP)
 endif
 
-ARCH := native # best auto-tuning
+ARCH := core-avx2 # best auto-tuning
 # ARCH := core2 # a reasonably safe default for most CPUs since 2007
 # ARCH := corei7
 # ARCH := corei7-avx # earlier i7 
@@ -30,7 +30,7 @@ ARCH := native # best auto-tuning
 # ARCH := nocona #64-bit pentium 4 or later 
 
 # CFLAGS := -march=$(ARCH) -Ofast -s -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
-CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
+CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11 
 
 COMPILE_COMMAND := $(CC) $(CFLAGS) 
 
@@ -175,11 +175,9 @@ data-cleanup:
 FOLDER := output
 FRAMERATE := 24
 movie:
-	#copy $(FOLDER)/snap*.jpg .
-	mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.avi	
-	# mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.mp4 -of mpeg
-	ffmpeg -i out.avi -vcodec libx264 -pix_fmt yuv420p -strict -2 -acodec aac out.mp4
-	ffmpeg -r 24 -f image2 -i snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -acodec aac out1.mp4
+#	mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.avi	
+#	ffmpeg -i out.avi out.mp4 
+	ffmpeg -r $(FRAMERATE) -f image2 -i snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -tune animation -crf 15 -acodec aac out.mp4
 	#del snap*.jpg
 # archival 
 	

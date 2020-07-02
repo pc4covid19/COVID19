@@ -70,16 +70,15 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	phenotype.death.rates[apoptosis_model_index] = base_death_rate + additional_death_rate; 
 	
 	// if we're infected, secrete a chemokine for the immune model
-	static int nA = pCell->custom_data.find_variable_index( "assembled_virion" ); 	
-	double A = pCell->custom_data[nA]; 
+	static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 	
+	double AV = pCell->custom_data[nAV]; 
 	
 	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	double P = pCell->custom_data[nP];
 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	
-//	if( A > 0.9999999 )
-	// warning hardcoded 
+/* old 
 	if( P > 0.001 )
 	{
 		phenotype.secretion.secretion_rates[chemokine_index] = 
@@ -89,6 +88,36 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	else
 	{
 		phenotype.secretion.secretion_rates[chemokine_index] = 0.0;
+	}
+*/	
+	
+	// if I am dead, make sure to still secrete the chemokine 
+	
+	// static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
+	// static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
+	// double P = pCell->custom_data[nP];
+	
+	// static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 
+	// double AV = pCell->custom_data[nAV]; 
+
+	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
+	double R = pCell->custom_data[nR];
+	
+	if( R >= 1.00 - 1e-16 ) 
+	{
+		pCell->custom_data["infected_cell_chemokine_secretion_activated"] = 1.0; 
+	}
+
+	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
+	{
+		double rate = AV; 
+		rate /= pCell->custom_data["max_apoptosis_half_max"];
+		if( rate > 1.0 )
+		{ rate = 1.0; }
+		rate *= pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+
+		phenotype.secretion.secretion_rates[chemokine_index] = rate; 
+		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
 	}
 	
 	return; 

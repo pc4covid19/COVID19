@@ -6,6 +6,14 @@ std::string epithelium_submodel_version = "0.0.1";
 
 Submodel_Information epithelium_submodel_info; 
 
+void epithelium_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2, double dt )
+{
+	// elastic adhesions 
+	standard_elastic_contact_function( pC1,p1, pC2, p2, dt );
+	
+	return; 
+}
+
 void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	static int debris_index = microenvironment.find_density_index( "debris");
@@ -29,23 +37,42 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	if( phenotype.death.dead == true )
 	{
 		// detach all attached cells 
-		remove_all_adhesions( pCell ); 
+		// remove_all_adhesions( pCell ); 
 		
 		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 	}
+	
+/*
+	// cell secretion belongs in viral response 
 	
 	// if I am dead, make sure to still secrete the chemokine 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	double P = pCell->custom_data[nP];
 	
-	// warning hardcoded 
-	if( phenotype.death.dead == false && P > 0.001 )
+	static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 
+	double AV = pCell->custom_data[nAV]; 
+
+	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
+	double R = pCell->custom_data[nR];
+	
+	if( R >= 1.00 - 1e-16 ) 
 	{
-		phenotype.secretion.secretion_rates[chemokine_index] = 
-			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+		pCell->custom_data["infected_cell_chemokine_secretion_activated"] = 1.0; 
+	}
+
+	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
+	{
+		double rate = AV; // P; 
+		rate /= pCell->custom_data["max_apoptosis_half_max"];
+		if( rate > 1.0 )
+		{ rate = 1.0; }
+		rate *= pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
+
+		phenotype.secretion.secretion_rates[chemokine_index] = rate; 
 		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 
 	}
+*/	
 	
 	// if I am dead, don't bother executing this function again 
 	if( phenotype.death.dead == true )
@@ -58,6 +85,8 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
 void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static int debris_index = microenvironment.find_density_index( "debris");
+	
 	pCell->is_movable = false; 
 	
 	// if I'm dead, don't bother 
@@ -65,19 +94,25 @@ void epithelium_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		// the cell death functions don't automatically turn off custom functions, 
 		// since those are part of mechanics. 
-		remove_all_adhesions( pCell ); 
+		// remove_all_adhesions( pCell ); 
 		
 		// Let's just fully disable now. 
 		pCell->functions.custom_cell_rule = NULL; 
+		pCell->functions.contact_function = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		return; 
 	}	
 	
+	// this is now part of contact_function 
+	/*
 	// if I'm adhered to something ... 
 	if( pCell->state.neighbors.size() > 0 )
 	{
 		// add the elastic forces 
 		extra_elastic_attachment_mechanics( pCell, phenotype, dt );
 	}
+	*/
 	return; 
 }
 
@@ -117,6 +152,7 @@ void epithelium_submodel_setup( void )
 	pCD = find_cell_definition( "lung epithelium" ); 
 	pCD->functions.update_phenotype = epithelium_submodel_info.phenotype_function;
 	pCD->functions.custom_cell_rule = epithelium_submodel_info.mechanics_function;
+	pCD->functions.contact_function = epithelium_contact_function; 
 	
 	return;
 }
@@ -131,11 +167,11 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 	{
 		// make sure to get rid of all adhesions! 
 		// detach all attached cells 
-		remove_all_adhesions( pCell ); 
+		// remove_all_adhesions( pCell ); 
 		
-		#pragma omp critical(tcell)
+		#pragma omp critical
 		{
-		std::cout << "\t\t\t\t" << pCell << " is dead of a T cell at " << pCell->position << std::endl; 
+		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
 		}
 		
 		// induce death 

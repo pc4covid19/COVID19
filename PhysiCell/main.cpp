@@ -117,7 +117,7 @@ int main( int argc, char* argv[] )
 	setup_tissue();
 	
 	/* test space */
-
+	
 	/* Users typically stop modifying here. END USERMODS */ 
 	
 	// set MultiCellDS save options 
@@ -206,6 +206,11 @@ int main( int argc, char* argv[] )
 			// receptor dynamics 
 			
 			receptor_dynamics_main_model( diffusion_dt );
+			
+			// detach dead cells 
+			// detach_all_dead_cells( diffusion_dt );
+			
+			cells_to_move_from_edge.clear();
 		
 			// run PhysiCell 
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
@@ -213,6 +218,8 @@ int main( int argc, char* argv[] )
 			/*
 			  Custom add-ons could potentially go here. 
 			*/
+			
+			process_tagged_cells_on_edge(); 
 			
 			move_exported_to_viral_field(); 
 			
@@ -256,5 +263,41 @@ int main( int argc, char* argv[] )
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 
 	BioFVM::display_stopwatch_value( std::cout , BioFVM::runtime_stopwatch_value() ); 
 
+
+	
+	extern int recruited_neutrophils; 
+	extern int recruited_Tcells; 
+	extern int recruited_macrophages; 
+	
+	extern double first_macrophage_recruitment_time;
+	extern double first_neutrophil_recruitment_time; 
+	extern double first_CD8_T_cell_recruitment_time; 
+
+	std::cout << std::endl; 
+	std::cout << "recruited macrophges: " << recruited_macrophages << " starting at time " 
+		<< first_macrophage_recruitment_time <<	std::endl; 
+	std::cout << "recruited neutrophils: " << recruited_neutrophils << " starting at time " 
+		<< first_neutrophil_recruitment_time << std::endl; 
+	std::cout << "recruited T cells: " << recruited_Tcells << " starting at time "
+		<< first_CD8_T_cell_recruitment_time << std::endl << std::endl; 	
+	recruited_neutrophils = 0; 
+	recruited_Tcells = 0; 
+	recruited_macrophages = 0; 
+
+	for( int n =0 ; n < (*all_cells).size() ; n++ )
+	{
+		Cell* pC = (*all_cells)[n]; 
+		if( pC->type == 5 )
+		{ recruited_neutrophils++; }
+		if( pC->type == 3 )
+		{ recruited_Tcells++; }
+		if( pC->type == 4 )
+		{ recruited_macrophages++; }
+
+	}
+	std::cout << "remaining macrophages: " << recruited_macrophages << std::endl; 
+	std::cout << "remaining neutrophils: " << recruited_neutrophils << std::endl; 
+	std::cout << "remaining T cells: " << recruited_Tcells << std::endl; 
+	
 	return 0; 
 }
