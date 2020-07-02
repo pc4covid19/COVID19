@@ -634,7 +634,7 @@
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max CD8 T cell recruitment rate (for saturated signal)">1e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract CD8 T cells">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3"
