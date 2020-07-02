@@ -742,11 +742,6 @@ void Cell::update_position( double dt )
 	
 	previous_velocity = velocity; 
 	
-	
-	static int nVel = custom_data.find_vector_variable_index( "velocity" ); // done 
-	if( nVel > -1 )
-	{ custom_data.vector_variables[nVel].value = velocity; }
-	
 	velocity[0]=0; velocity[1]=0; velocity[2]=0;
 	if(get_container()->underlying_mesh.is_position_valid(position[0],position[1],position[2]))
 	{

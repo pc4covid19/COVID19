@@ -103,14 +103,6 @@ void create_cell_types( void )
 	   This is a good place to set custom functions. 
 	*/ 
 	
-	// add velocity to each cell def (for now)
-	
-	for( int m = 0; m < cell_definitions_by_index.size() ; m++ )
-	{
-		std::vector<double> vel = {0,0,0}; 
-		cell_definitions_by_index[m]->custom_data.add_vector_variable("velocity", vel); 
-	}
-	
 	// register the submodels 
 	// (which ensures that the cells have all the internal variables they need) 
 	
