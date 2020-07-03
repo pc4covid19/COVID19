@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string epithelium_submodel_version = "0.0.1"; 
+std::string epithelium_submodel_version = "0.1.0"; 
 
 Submodel_Information epithelium_submodel_info; 
 

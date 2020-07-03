@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">14400</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">8640</max_time> <!-- 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -286,16 +286,16 @@
 
 				<secretion>
 					<substrate name="interferon 1">
-						<secretion_target units="substrate density">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_target units="substrate density">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
 					<substrate name="chemokine">
-						<secretion_target units="substrate density">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
 					<substrate name="debris">
-						<secretion_target units="substrate density">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
 				</secretion>
 
@@ -328,13 +328,13 @@
 					description="rate at which a virion is exported from a live cell">0.01</virion_export_rate> 
 
 				<!-- ACE2 receptor trafficking --> 
-				<unbound_external_ACE2 type="double" units="none"
+				<unbound_external_ACE2 type="double" units="receptors"
 					description="initial number of unbound ACE2 receptors on surface">1000</unbound_external_ACE2>
-				<bound_external_ACE2 type="double" units="none"
+				<bound_external_ACE2 type="double" units="receptors"
 					description="initial number of bound ACE2 receptors on surface">0</bound_external_ACE2>
-				<unbound_internal_ACE2 type="double" units="none"
+				<unbound_internal_ACE2 type="double" units="receptors"
 					description="initial number of internalized unbound ACE2 receptors">0</unbound_internal_ACE2>
-				<bound_internal_ACE2 type="double" units="none"
+				<bound_internal_ACE2 type="double" units="receptors"
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
@@ -620,25 +620,25 @@
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">4e-9</macrophage_max_recruitment_rate> <!-- 8e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">4e-9</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract macrophages">0.3</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">4e-9</neutrophil_max_recruitment_rate> <!-- 8e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">4e-9</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-8 debug -->
+				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-9 debug -->
 			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract CD8 T cells">0.3</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
+				description="min concentration to attract CD8 T cells">0.4</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
 			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract CD8 T cells">0.5</CD8_Tcell_recruitment_saturation_signal> <!-- 0.5 debug -->
+				description="saturating concentration to attract CD8 T cells">0.7</CD8_Tcell_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 

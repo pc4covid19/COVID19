@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string internal_virus_replication_version = "0.2.0"; 
+std::string internal_virus_replication_version = "0.3.0"; 
 
 Submodel_Information internal_viral_dynamics_info; 
 
