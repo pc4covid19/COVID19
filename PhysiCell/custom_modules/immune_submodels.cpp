@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string immune_submodels_version = "0.1.0"; 
+std::string immune_submodels_version = "0.1.1"; 
 // Submodel_Information Immune_submodels_info; // not needed for now 
 
 Submodel_Information CD8_submodel_info; 
@@ -542,6 +542,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{ return; } 
 	
 	double probability_of_phagocytosis = pCell->custom_data["phagocytosis_rate"] * dt; 
+	double max_phagocytosis_volume = pCell->custom_data["phagocytosis_relative_target_cutoff_size" ] * pCD->phenotype.volume.total; 
  
 	int n = 0; 
 	Cell* pTestCell = neighbors[n]; 
@@ -550,7 +551,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		pTestCell = neighbors[n]; 
 		// if it is not me and not a macrophage 
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true &&  
-			UniformRandom() < probability_of_phagocytosis )
+			UniformRandom() < probability_of_phagocytosis && 
+			pTestCell->phenotype.volume.total < max_phagocytosis_volume )
 		{
 			{
 				pCell->ingest_cell( pTestCell ); 
@@ -635,13 +637,15 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	Cell* pTestCell = neighbors[n]; 
 
 	double probability_of_phagocytosis = pCell->custom_data["phagocytosis_rate"] * dt; 
-
+	double max_phagocytosis_volume = pCell->custom_data["phagocytosis_relative_target_cutoff_size" ] * pCD->phenotype.volume.total; 
+	
 	while( n < neighbors.size() )
 	{
 		pTestCell = neighbors[n]; 
 		// if it is not me and the target is dead 
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true && 
-			UniformRandom() < probability_of_phagocytosis)
+			UniformRandom() < probability_of_phagocytosis && 
+			pTestCell->phenotype.volume.total < max_phagocytosis_volume )
 		{
 			// #pragma omp critical(neutrophil_eat)
 			{

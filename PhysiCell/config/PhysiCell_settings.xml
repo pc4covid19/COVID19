@@ -384,6 +384,8 @@
 				<!-- more immmune cell parameters  -->
 				<phagocytosis_rate units="1/min" type="double" 
 					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
+				<phagocytosis_relative_target_cutoff_size unit="dimensionless" type="double"
+					desription="do not phagocytose anything over this size (relative to cell's volume)">1.1</phagocytosis_relative_target_cutoff_size>
 				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
 					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
 				<sensitivity_to_chemokine_chemotaxis units="dimensionless" type="double" 
@@ -530,7 +532,7 @@
 					<total units="micron^3">4849</total>
 					<nuclear units="micron^3">485</nuclear>
 
-					<cytoplasmic_biomass_change_rate units="1/min">0.045</cytoplasmic_biomass_change_rate> 
+					<cytoplasmic_biomass_change_rate units="1/min">0.01</cytoplasmic_biomass_change_rate> 
 					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
 				</volume>
 				
