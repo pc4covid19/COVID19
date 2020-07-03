@@ -13,10 +13,18 @@ class Submodel_Information
  public:
 	std::string name; 
 	std::string version;
-	void(*main_function)(Cell*,Phenotype&,double); 
+	
+	// for use in the main program call 
+	void(*main_function)(double); 
+	
+	// for use in cell phenotype functions 
+	void(*phenotype_function)(Cell*,Phenotype&,double); 
+	// for use in cell custom / mechanics functions 
+	void(*mechanics_function)(Cell*,Phenotype&,double); 
+	
 	
 	std::vector< std::string > microenvironment_variables; 
-	std::vector< std::string > cell_variables; // custom data  
+	std::vector< std::string > cell_variables; // custom data and parameters  
 	
 	Submodel_Information( void ); 
 	
@@ -28,12 +36,14 @@ class Submodel_Information
 class Submodel_Registry
 {
  private:
-	std::vector<Submodel_Information*> submodels; 
  public:  
+	std::vector<Submodel_Information*> submodels; 
 	void register_model( Submodel_Information& model ); 
 	void display( std::ostream& os ); 
 	
 };
+
+void execute_all_submodel_main_functions( double dt );
 
 extern Submodel_Registry submodel_registry; 
 

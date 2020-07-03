@@ -82,7 +82,6 @@ Death_Parameters apoptosis_parameters, necrosis_parameters;
 
 Cycle_Model flow_cytometry_cycle_model, flow_cytometry_separated_cycle_model; 
 
-	
 void standard_Ki67_positive_phase_entry_function( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// the cell wants to double its volume 
@@ -565,6 +564,14 @@ void standard_volume_update_function( Cell* pCell, Phenotype& phenotype, double 
 	return; 
 }
 
+void basic_volume_model( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	
+	
+	
+	return; 
+}
+
 void standard_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double dt)
 {
 	if( pCell->functions.add_cell_basement_membrane_interactions )
@@ -815,6 +822,57 @@ void update_cell_and_death_parameters_O2_based( Cell* pCell, Phenotype& phenotyp
 	// now, update the necrosis rate 
 	
 	pCell->phenotype.death.rates[necrosis_index] = multiplier * pCell->parameters.max_necrosis_rate; 
+	
+	// check for deterministic necrosis 
+	
+	if( pCell->parameters.necrosis_type == PhysiCell_constants::deterministic_necrosis && multiplier > 1e-16 )
+	{ pCell->phenotype.death.rates[necrosis_index] = 9e99; } 
+	
+	return; 
+}
+
+void chemotaxis_function( Cell* pCell, Phenotype& phenotype , double dt )
+{
+	// bias direction is gradient for the indicated substrate 
+	phenotype.motility.migration_bias_direction = pCell->nearest_gradient(phenotype.motility.chemotaxis_index);
+	// move up or down gradient based on this direction 
+	phenotype.motility.migration_bias_direction *= phenotype.motility.chemotaxis_direction; 
+
+	// normalize 
+	normalize( &( phenotype.motility.migration_bias_direction ) );
+	
+	return;
+}
+
+void standard_elastic_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
+{
+	if( pC1->position.size() != 3 || pC2->position.size() != 3 )
+	{
+		#pragma omp critical
+		{
+			std::cout << "what?! " << std::endl
+			<< pC1 << " : " << pC1->type << " " << pC1->type_name << " " << pC1->position << std::endl 
+			<< pC2 << " : " << pC2->type << " " << pC2->type_name << " " << pC2->position << std::endl ;
+		}
+		return; 
+	}
+	
+	std::vector<double> displacement = pC2->position;
+	displacement -= pC1->position; 
+	axpy( &(pC1->velocity) , p1.mechanics.attachment_elastic_constant , displacement ); 
+	return; 
+}
+
+void evaluate_interactions( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	if( pCell->functions.contact_function == NULL )
+	{ return; }
+	
+	for( int n = 0; n < pCell->state.attached_cells.size() ; n++ )
+	{
+		pCell->functions.contact_function( pCell, phenotype , 
+			pCell->state.attached_cells[n] , pCell->state.attached_cells[n]->phenotype , dt ); 
+	}
 	
 	return; 
 }

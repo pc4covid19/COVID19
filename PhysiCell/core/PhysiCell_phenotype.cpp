@@ -543,7 +543,9 @@ Volume::Volume()
 	fluid = fluid_fraction * total; 
 	solid = total-fluid; 
 	
-	nuclear = 540.0; 
+	nuclear = 540.0;
+
+	
 	nuclear_fluid = fluid_fraction * nuclear; 
 	nuclear_solid = nuclear - nuclear_fluid;
 
@@ -669,9 +671,15 @@ Mechanics::Mechanics()
 	relative_maximum_adhesion_distance = 1.25; 
 	// maximum_adhesion_distance = 0.0; 
 	
+	
+	relative_maximum_attachment_distance = relative_maximum_adhesion_distance;
+	relative_detachment_distance = relative_maximum_adhesion_distance;
+	maximum_number_of_attachments = 12;
+	attachment_elastic_constant = 0.01; 
+	maximum_attachment_rate = 1.0; 
+	
 	return; 
 }
-
 
 // new on July 29, 2018
 // change the ratio without changing the repulsion strength or equilibrium spacing 
@@ -784,6 +792,9 @@ Motility::Motility()
 	// update_migration_bias_direction = NULL; 
 	
 	motility_vector.resize( 3 , 0.0 ); 
+	
+	chemotaxis_index = 0; 
+	chemotaxis_direction = 1; 
 	
 	return; 
 }
@@ -1087,8 +1098,6 @@ void Phenotype::sync_to_microenvironment( Microenvironment* pMicroenvironment )
 
 	return; 
 }
-
-
 
 };
 

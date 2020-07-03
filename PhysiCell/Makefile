@@ -11,7 +11,7 @@ ifdef PHYSICELL_CPP
 	CC := $(PHYSICELL_CPP)
 endif
 
-ARCH := native # best auto-tuning
+ARCH := core-avx2 # best auto-tuning
 # ARCH := core2 # a reasonably safe default for most CPUs since 2007
 # ARCH := corei7
 # ARCH := corei7-avx # earlier i7 
@@ -30,7 +30,7 @@ ARCH := native # best auto-tuning
 # ARCH := nocona #64-bit pentium 4 or later 
 
 # CFLAGS := -march=$(ARCH) -Ofast -s -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
-CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
+CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11 
 
 COMPILE_COMMAND := $(CC) $(CFLAGS) 
 
@@ -45,7 +45,7 @@ PhysiCell_pugixml.o PhysiCell_settings.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o
+PhysiCell_custom_module_OBJECTS := custom.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o immune_submodels.o epithelium_submodel.o
 
 pugixml_OBJECTS := pugixml.o
 
@@ -151,17 +151,14 @@ internal_viral_response.o: ./custom_modules/internal_viral_response.cpp
 
 receptor_dynamics.o: ./custom_modules/receptor_dynamics.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/receptor_dynamics.cpp
+	
+immune_submodels.o: ./custom_modules/immune_submodels.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/immune_submodels.cpp 
+	
+epithelium_submodel.o: ./custom_modules/epithelium_submodel.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/epithelium_submodel.cpp 
 
 # cleanup
-
-reset:
-	rm -f *.cpp 
-	cp ./sample_projects/Makefile-default Makefile 
-	rm -f ./custom_modules/*
-	touch ./custom_modules/empty.txt 
-	touch ALL_CITATIONS.txt 
-	rm ALL_CITATIONS.txt 
-	cp ./config/PhysiCell_settings-backup.xml ./config/PhysiCell_settings.xml 
 	
 clean:
 	rm -f *.o
@@ -175,6 +172,13 @@ data-cleanup:
 	mkdir ./output
 	touch ./output/empty.txt
 	
+FOLDER := output
+FRAMERATE := 24
+movie:
+#	mencoder "mf://snapshot*.jpg" -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000:mbd=2:trell -mf fps=$(FRAMERATE):type=jpg -nosound -o out.avi	
+#	ffmpeg -i out.avi out.mp4 
+	ffmpeg -r $(FRAMERATE) -f image2 -i snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -tune animation -crf 15 -acodec aac out.mp4
+	#del snap*.jpg
 # archival 
 	
 checkpoint: 

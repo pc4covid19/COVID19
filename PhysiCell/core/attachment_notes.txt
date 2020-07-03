@@ -1,0 +1,30 @@
+attachment notes:
+
+the following functions automatically detach cells:
+
+delete_cell
+ingest_cell (on target cell)
+lyse_cell 
+
+divide 
+
+
+// copy, assignment ? 
+
+
+evaluated once every dt_mechanics in 
+
+PhysiCell_container.cpp
+using: 
+void evaluate_interactions( Cell*, Phenotype& , double ); 
+
+
+contact functions: 
+void f( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt );
+
+C1 is the cell, and C2 is the cell it's interacting with. 
+Don't forget that C2 will also execute this function. 
+Best practice: If C1 <--> C2, read/write C2, adn write C1. The other half of hte interaction comes from teh call by C2.
+Best practice: If C1 --> C2 (C1 acts on C2, but C2 does not act on C1), let C1 peform the action, but use an OMP critical (if the function is not thread safe). 
+
+
