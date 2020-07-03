@@ -1,5 +1,5 @@
 # COVID19 tissue simulator 
-**Version:** 0.3.0
+**Version:** 0.3.1
 
 **Release date:** 3 July 2020
 
@@ -46,15 +46,18 @@ See changes.md for the full change log.
 * * * 
 
 ## Release summary: 
+### 0.3.1:
+This release improves parameter estimates for digestion of phagocytosed material and has an immune model refinement to prevent runaway macrophage death. 
+
 ### 0.3.0:
-This release incorporates major v2 model feedback and adds the first immune submoel. 
-
-
-
+This release incorporates major v2 model feedback and adds the first immune submodel. 
 
 **NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
 
 ### New features and changes:
+#### 0.3.1: 
++ Refined macrophage and neutrophil models and parameters for phagocytosis. (Upgrade from immune submodel 0.1.0 to 0.1.1.) 
+
 #### 0.3.0:
 + Refactored modular design to include refinements from immune model. 
 
@@ -65,7 +68,7 @@ This release incorporates major v2 model feedback and adds the first immune subm
 + Upgrade to PhysiCell Version 1.7.2beta to improve multithreaded performance, add new cell-cell interaction features, and fix concurrency issues on some platforms. 
 
 ### Bugfixes 
-#### 0.2.0: 
+#### 0.3.0: 
 + None. 
 
 ### Notices for intended changes that may affect backwards compatibility:
