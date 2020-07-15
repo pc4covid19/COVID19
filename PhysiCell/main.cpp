@@ -83,6 +83,8 @@
 using namespace BioFVM;
 using namespace PhysiCell;
 
+std::string COVID19_version = "0.3.2"; 
+
 int main( int argc, char* argv[] )
 {
 	// load and parse settings file(s)
@@ -162,6 +164,8 @@ int main( int argc, char* argv[] )
 	}
 	
 	// main loop 
+
+	std::cout << std::endl << std::endl << "***** This is COVID19 integrated version " << COVID19_version << ". *****" << std::endl << std::endl; 
 	
 	try 
 	{		

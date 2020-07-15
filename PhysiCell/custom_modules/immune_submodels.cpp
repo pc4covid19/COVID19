@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string immune_submodels_version = "0.1.1"; 
+std::string immune_submodels_version = "0.1.2"; 
 // Submodel_Information Immune_submodels_info; // not needed for now 
 
 Submodel_Information CD8_submodel_info; 
@@ -523,7 +523,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// make changes to volume change rate??
 
 	// if too much debris, comit to apoptosis 	
-	
+
+/* // remove in v 3.2 	
 	double relative_volume = ( phenotype.volume.total/pCD->phenotype.volume.total ); 
 	if( relative_volume > pCell->custom_data[ "relative_maximum_volume" ] )
 	{
@@ -533,6 +534,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		
 		return;
 	}
+*/
 
 	// check for cells to eat 
 	std::vector<Cell*> neighbors = pCell->cells_in_my_container(); 
@@ -540,10 +542,12 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// at least one of the cells is pCell 
 	if( neighbors.size() < 2 )
 	{ return; } 
-	
+		
 	double probability_of_phagocytosis = pCell->custom_data["phagocytosis_rate"] * dt; 
+/* // remove in v 3.2 
 	double max_phagocytosis_volume = pCell->custom_data["phagocytosis_relative_target_cutoff_size" ] * pCD->phenotype.volume.total; 
- 
+ */
+
 	int n = 0; 
 	Cell* pTestCell = neighbors[n]; 
 	while( n < neighbors.size() )
@@ -551,8 +555,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		pTestCell = neighbors[n]; 
 		// if it is not me and not a macrophage 
 		if( pTestCell != pCell && pTestCell->phenotype.death.dead == true &&  
-			UniformRandom() < probability_of_phagocytosis && 
-			pTestCell->phenotype.volume.total < max_phagocytosis_volume )
+			UniformRandom() < probability_of_phagocytosis ) // && // remove in v 3.2 
+//			pTestCell->phenotype.volume.total < max_phagocytosis_volume ) / remove in v 3.2 
 		{
 			{
 				pCell->ingest_cell( pTestCell ); 

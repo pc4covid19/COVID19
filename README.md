@@ -1,7 +1,7 @@
 # COVID19 tissue simulator 
-**Version:** 0.3.1
+**Version:** 0.3.2
 
-**Release date:** 3 July 2020
+**Release date:** 15 July 2020
 
 ## Overview
 This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium with an initial immune reaction. It is being rapidly prototyped and refined with community support (see below).
@@ -29,6 +29,8 @@ The model includes a basic pharmacodynamic response (to assembled virions) to ca
 
 **make data-cleanup**  : clears out all simulation data 
 
+**make reset**         : reset to default settings (restores config file)
+
 ### More references 
 
 **Preprint:**      https://doi.org/10.1101/2020.04.02.019075 
@@ -42,53 +44,5 @@ The model includes a basic pharmacodynamic response (to assembled virions) to ca
 **Latest info:**   follow [@PhysiCell](https://twitter.com/PhysiCell) and [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
 
 See changes.md for the full change log. 
-
-* * * 
-
-## Release summary: 
-### 0.3.1:
-This release improves parameter estimates for digestion of phagocytosed material and has an immune model refinement to prevent runaway macrophage death. 
-
-### 0.3.0:
-This release incorporates major v2 model feedback and adds the first immune submodel. 
-
-**NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
-
-### New features and changes:
-#### 0.3.1: 
-+ Refined macrophage and neutrophil models and parameters for phagocytosis. (Upgrade from immune submodel 0.1.0 to 0.1.1.) 
-
-#### 0.3.0:
-+ Refactored modular design to include refinements from immune model. 
-
-+ First integration of new immune submodel. 
-
-+ Upgrade to PhysiCell Version 1.7.1, allowing use of XML-based cell definitions to define the behavior of immune cell types. 
-
-+ Upgrade to PhysiCell Version 1.7.2beta to improve multithreaded performance, add new cell-cell interaction features, and fix concurrency issues on some platforms. 
-
-### Bugfixes 
-#### 0.3.0: 
-+ None. 
-
-### Notices for intended changes that may affect backwards compatibility:
- 
-+ None.  
-
-### Planned future improvements: 
- 
-+ Continue to vet model biology with collaborators. 
-
-+ Add lymph node module. 
-
-+ Add tissue damage models. 
-
-+ Integrate SBML support for submodels.  
-
-+ Refine viral replication model. 
-
-+ Refine immune model (including more cell types and improved parameter estimates).
-
-+ Add interferon response model. 
 
 * * * 
