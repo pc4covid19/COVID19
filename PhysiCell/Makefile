@@ -11,7 +11,7 @@ ifdef PHYSICELL_CPP
 	CC := $(PHYSICELL_CPP)
 endif
 
-ARCH := core-avx2 # best auto-tuning
+ARCH := native # best auto-tuning 
 # ARCH := core2 # a reasonably safe default for most CPUs since 2007
 # ARCH := corei7
 # ARCH := corei7-avx # earlier i7 
