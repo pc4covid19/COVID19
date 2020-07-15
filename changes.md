@@ -29,6 +29,8 @@ The model includes a basic pharmacodynamic response (to assembled virions) to ca
 
 **make data-cleanup**  : clears out all simulation data 
 
+**make reset**         : reset to default settings (restores config file)
+
 ### More references 
 
 **Preprint:**      https://doi.org/10.1101/2020.04.02.019075 
@@ -60,6 +62,8 @@ This release incorporates major v2 model feedback and adds the first immune subm
 ### New features and changes:
 #### 0.3.2: 
 + Removed macrophage rules to (1) check size of target cells prior to phagocytosis and (2) trigger apoptosis if exceeding a tolerance. (Upgrade from immune submodel 0.1.1 to 0.1.2.)
+
+* Added "make reset" rule to restore the default configuration file (from PhysiCell_settings.xml-default)
 
 #### 0.3.1: 
 + Refined macrophage and neutrophil models and parameters for phagocytosis. (Upgrade from immune submodel 0.1.0 to 0.1.1.) 
@@ -98,8 +102,6 @@ This release incorporates major v2 model feedback and adds the first immune subm
 + Add interferon response model. 
 
 * * * 
-
-
 
 # COVID19 tissue simulator 
 **Version:** 0.3.1

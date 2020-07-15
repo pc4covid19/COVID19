@@ -171,6 +171,9 @@ data-cleanup:
 	rm -rf ./output
 	mkdir ./output
 	touch ./output/empty.txt
+
+reset:
+	cp ./config/PhysiCell_settings.xml-default ./config/PhysiCell_settings.xml 
 	
 FOLDER := output
 FRAMERATE := 24
