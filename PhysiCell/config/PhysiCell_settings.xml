@@ -363,6 +363,16 @@
 				<infected_cell_chemokine_secretion_activated units="none" type="double"
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
 				
+				<interferon_secretion_rate_via_infection type="double" units="1/min" 
+					description="Type-1 interferon secretion rate for infected cells">1</interferon_secretion_rate_via_infection>
+				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">10</interferon_secretion_rate_via_paracrine>
+				<interferon_max_response_threshold type="double" units="dimensionless" 
+					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
+				<interferon_activation type="double" units="dimensionless"
+					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
+				<interferon_max_virus_inhibition type="double" units="dimensionless"
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min"
@@ -789,6 +799,9 @@
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
+			
+			<epithelial_opacity type="double" description="opacity of epithelial cells">1.0</epithelial_opacity>
+			<non_epithelial_opacity type="double" description="opacity of non-epithelial cells">0.7</non_epithelial_opacity>
 			
 			<apoptotic_epithelium_color type="string" 
 				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>

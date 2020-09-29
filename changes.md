@@ -1,4 +1,104 @@
 # COVID19 tissue simulator 
+**Version:** 0.4.0
+
+**Release date:** 30 September 2020
+
+## Overview
+This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium with an initial immune reaction. It is being rapidly prototyped and refined with community support (see below).
+
+In this model, SARS-CoV-2 (coronavirus / COVID19) infects a single cell, or a solution of virions is administered to the extracellular space. The virus is uncoated to explose viral RNA, which synthesizes viral proteins that are assembled into a virion. Assembled virions are exported to the environment, where they can diffuse and infect other cells. In the extracellular space, virions adhere to ACE2 receptors and get internalized through endocytosis. Internalized ACE2 receptors release their virus cargo and are recycled back to the surface. 
+
+Resident macrophages ingest apototic cells and release a pro-inflammatory cytokine that recruits additional macrophages, neutrophils, and CD8+ T cells. CD8+ T cells chemotax towards cytokines released by infected cells and adhere. Cumulative CD8+ T cell contact time can induce apoptosis in infectd cells. Activated macrophages and neutrophils chemotaxis chemotax along chemokine and debris gradients and continue to phagocytose dead cells. Neutrophils also absorb free (extracellular) virus. 
+
+The model includes a basic pharmacodynamic response (to assembled virions) to cause cell apoptosis. Apoptosed cells release some or all of their internal contents, notably including virions.
+
+### Caveats and disclaimers: 
+**This model is under active development using rapid prototyping:**
+* It has not been peer reviewed. 
+* It is intended to drive basic scientific research and public education at this stage. 
+* **It cannot be used for public policy decisions.**
+* **It cannot be used for individual medical decisions.**
+
+**This model will be continually refined with input from the community, particularly experts in infectious diseases. The validation state will be updated as this progresses.**
+
+### Key makefile rules:
+
+**make**               : compiles the project.
+ 
+**make clean**         : removes all .o files and the executable, so that the next "make" recompiles the entire project 
+
+**make data-cleanup**  : clears out all simulation data 
+
+**make reset**         : reset to default settings (restores config file)
+
+### More references 
+
+**Preprint:**      https://doi.org/10.1101/2020.04.02.019075 
+
+**Model details:** https://github.com/MathCancer/COVID19/wiki/About 
+
+**Homepage:**      http://covid19.PhysiCell.org
+
+**Support:**       https://sourceforge.net/p/physicell/tickets/
+
+**Latest info:**   follow [@PhysiCell](https://twitter.com/PhysiCell) and [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
+
+See changes.md for the full change log. 
+
+* * * 
+
+## Release summary: 
+### 0.4.0:
+This release incorporates major v3 model feedback and adds: 
++ The first systemtic immune model (???? v0.1.0) that models immune cell expansion and trafficking to/from the local tissue model. 
+
++ An updated immune submodel (immune_submodels v0.2.0) that includes more macrophage states, dendritic cells, and immune cell trafficking to/from a systemic immune model 
+
++ An improved virus-ACE2 receptor binding model (receptor_dynamics v0.3.0) that disallows partial cell infection (only integer virus-receptor binding pairs are allowed). 
+
++ The first models of interferon signaling (internal_viral_response v0.3.0)
+
++ The first detailed model of infected cell pyroptosis (internal_viral_response v0.3.0) 
+
+**NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
+
+### New features and changes:
+#### 0.4.0:
++ Updated immune submodel to v0.2.0 to include ... 
+
++ Added systemic immune model v0.1.0 to include ... 
+
++ Updated infected cell responses to v0.3.0 to include interferon signaling: infected cells secrete interferon. Any epithelial cell secretes interferon if it senses interferon. Reading interferon causes cells to inhibit viral protein synthesis 
+
++ SVG plots now have user-specified opacity for epithelial and non-epithelial cells. 
+
+
+
+### Bugfixes 
+#### 0.4.0: 
++ None. 
+
+### Notices for intended changes that may affect backwards compatibility:
+ 
++ None.  
+
+### Planned future improvements: 
+ 
++ Continue to vet model biology with collaborators. 
+
++ Add lymph node module. (in process v4) 
+
++ Add tissue damage models. (in process v4-v5)
+
++ Integrate SBML support for submodels (v5?)
+
++ Refine viral replication model (v5?) 
+
++ Refine immune model (including more cell types and improved parameter estimates) (in process v4)
+
++ Add interferon response model (in process v4-v5)
+
+* * * 
 **Version:** 0.3.2
 
 **Release date:** 15 July 2020

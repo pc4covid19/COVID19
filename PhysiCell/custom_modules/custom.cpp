@@ -460,17 +460,20 @@ bool Write_SVG_circle_opacity( std::ostream& os, double center_x, double center_
 //
 void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice , double time, std::vector<std::string> (*cell_coloring_function)(Cell*) )
 {
-	double X_lower = M.mesh.bounding_box[0];
-	double X_upper = M.mesh.bounding_box[3];
+	static double X_lower = M.mesh.bounding_box[0];
+	static double X_upper = M.mesh.bounding_box[3];
  
-	double Y_lower = M.mesh.bounding_box[1]; 
-	double Y_upper = M.mesh.bounding_box[4]; 
+	static double Y_lower = M.mesh.bounding_box[1]; 
+	static double Y_upper = M.mesh.bounding_box[4]; 
 
-	double plot_width = X_upper - X_lower; 
-	double plot_height = Y_upper - Y_lower; 
+	static double plot_width = X_upper - X_lower; 
+	static double plot_height = Y_upper - Y_lower; 
 
-	double font_size = 0.025 * plot_height; // PhysiCell_SVG_options.font_size; 
-	double top_margin = font_size*(.2+1+.2+.9+.5 ); 
+	static double font_size = 0.025 * plot_height; // PhysiCell_SVG_options.font_size; 
+	static double top_margin = font_size*(.2+1+.2+.9+.5 ); 
+	
+	static double epithelial_opacity = parameters.doubles("epithelial_opacity");
+	static double non_epithelial_opacity = parameters.doubles("non_epithelial_opacity"); 
 
 	// open the file, write a basic "header"
 	std::ofstream os( filename , std::ios::out );
@@ -595,8 +598,8 @@ void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice 
    
 			double plot_radius = sqrt( r*r - z*z ); 
 
-			Write_SVG_circle( os, (pC->position)[0]-X_lower, (pC->position)[1]-Y_lower, 
-				plot_radius , 0.5, Colors[1], Colors[0] ); 
+			Write_SVG_circle_opacity( os, (pC->position)[0]-X_lower, (pC->position)[1]-Y_lower, 
+				plot_radius , 0.5, Colors[1], Colors[0] , epithelial_opacity ); 
 	/*
 			// plot the nucleus if it, too intersects z = 0;
 			if( fabs(z) < rn && PhysiCell_SVG_options.plot_nuclei == true )
@@ -633,7 +636,7 @@ void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice 
 			double plot_radius = sqrt( r*r - z*z ); 
 
 			Write_SVG_circle_opacity( os, (pC->position)[0]-X_lower, (pC->position)[1]-Y_lower, 
-				plot_radius , 0.5, Colors[1], Colors[0] , 0.7 ); 
+				plot_radius , 0.5, Colors[1], Colors[0] , non_epithelial_opacity ); 
 /*
 			// plot the nucleus if it, too intersects z = 0;
 			if( fabs(z) < rn && PhysiCell_SVG_options.plot_nuclei == true )

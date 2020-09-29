@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string receptor_model_version = "0.2.0"; 
+std::string receptor_model_version = "0.3.0"; 
 
 Submodel_Information receptor_dynamics_info; 
 
