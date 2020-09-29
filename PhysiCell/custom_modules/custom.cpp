@@ -357,6 +357,8 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type; 
 	static int Macrophage_type = get_cell_definition( "macrophage" ).type; 
 	static int Neutrophil_type = get_cell_definition( "neutrophil" ).type; 
+	static int DC_type = get_cell_definition( "DC" ).type; 
+	static int CD4_Tcell_type = get_cell_definition( "CD4 Tcell" ).type; 
 	
 	// start with white 
 	
@@ -393,12 +395,27 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 		output[3] = output[0];
 		return output; 
 	}
+	
+	// (Adrianne) adding CD4 T cell colouring
+	if( pCell->phenotype.death.dead == false && pCell->type == CD4_Tcell_type )
+	{
+		output[0] = parameters.strings("CD4_Tcell_color");  
+		output[2] = output[0];
+		output[3] = output[0];
+		return output; 
+	}
 
 	if( pCell->phenotype.death.dead == false && pCell->type == Macrophage_type )
 	{
 		std::string color = parameters.strings("Macrophage_color");  
 		if( pCell->custom_data["activated_immune_cell" ] > 0.5 )
 		{ color = parameters.strings("activated_macrophage_color"); }
+		
+		// (Adrianne) added colours to show when macrophages are exhausted and when they are hyperactivated
+		if( pCell->phenotype.volume.total> pCell->custom_data["threshold_macrophage_volume"] )// macrophage exhausted
+		{ color = parameters.strings("exhausted_macrophage_color"); }
+		else if( pCell->custom_data["ability_to_phagocytose_infected_cell"] == 1)// macrophage has been activated to kill infected cells by T cell
+		{ color = parameters.strings("hyperactivated_macrophage_color"); }
 		
 		output[0] = color; 
 		output[2] = output[0];
@@ -409,6 +426,19 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	if( pCell->phenotype.death.dead == false && pCell->type == Neutrophil_type )
 	{
 		output[0] = parameters.strings("Neutrophil_color");  
+		output[2] = output[0];
+		output[3] = output[0];
+		return output; 
+	}
+	
+	//(Adrianne) adding colour for DCs
+	if( pCell->phenotype.death.dead == false && pCell->type == DC_type )
+	{
+		std::string color = parameters.strings("DC_color");  
+		if( pCell->custom_data["activated_immune_cell" ] > 0.5 )
+		{ color = parameters.strings("activated_DC_color"); }
+	
+		output[0] = color; 
 		output[2] = output[0];
 		output[3] = output[0];
 		return output; 
