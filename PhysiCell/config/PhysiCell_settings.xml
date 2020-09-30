@@ -105,7 +105,7 @@
 	</options>	
 	
 	<save>
-		<folder>output</folder> <!-- use . for root --> 
+		<folder>output4</folder> <!-- use . for root --> 
 
 		<full_data>
 			<interval units="min">60</interval>
@@ -143,7 +143,7 @@
 
 		<variable name="interferon 1" units="mol/micron^3" ID="2">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">25</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
@@ -364,9 +364,11 @@
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">1</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
+<!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">10</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
+<!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
 				<interferon_activation type="double" units="dimensionless"
@@ -800,8 +802,8 @@
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 			
-			<epithelial_opacity type="double" description="opacity of epithelial cells">1.0</epithelial_opacity>
-			<non_epithelial_opacity type="double" description="opacity of non-epithelial cells">0.7</non_epithelial_opacity>
+			<epithelial_opacity type="double" description="opacity of epithelial cells">0.25</epithelial_opacity>
+			<non_epithelial_opacity type="double" description="opacity of non-epithelial cells">0.8</non_epithelial_opacity>
 			
 			<apoptotic_epithelium_color type="string" 
 				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
