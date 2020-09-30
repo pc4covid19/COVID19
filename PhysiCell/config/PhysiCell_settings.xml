@@ -105,7 +105,7 @@
 	</options>	
 	
 	<save>
-		<folder>output4</folder> <!-- use . for root --> 
+		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
 			<interval units="min">60</interval>
@@ -364,10 +364,10 @@
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -802,7 +802,7 @@
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 			
-			<epithelial_opacity type="double" description="opacity of epithelial cells">0.25</epithelial_opacity>
+			<epithelial_opacity type="double" description="opacity of epithelial cells">0.65</epithelial_opacity>
 			<non_epithelial_opacity type="double" description="opacity of non-epithelial cells">0.8</non_epithelial_opacity>
 			
 			<apoptotic_epithelium_color type="string" 
