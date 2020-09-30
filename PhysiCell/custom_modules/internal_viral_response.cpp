@@ -144,7 +144,12 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	phenotype.secretion.secretion_rates[nINF1] = pCell->custom_data["interferon_activation"]; 
 	phenotype.secretion.secretion_rates[nINF1] *= pCell->custom_data["max_interferon_secretion_rate_via_paracrine"]; 
 	if( R >= 1.0 - 1e-16 ) // if there is at least 1 complete set of uncoated viral RNA
-	{ phenotype.secretion.secretion_rates[nINF1] += pCell->custom_data["interferon_secretion_rate_via_infection"]; } 
+	{
+		double scaled_RNA = R / ( pCell->custom_data["interferon_viral_RNA_threshold"] + 1e-32 );
+		if( scaled_RNA > 1 )
+		{ scaled_RNA = 1.0; }
+		phenotype.secretion.secretion_rates[nINF1] += pCell->custom_data["interferon_secretion_rate_via_infection"] * scaled_RNA; 
+	} 
 	
 	// // now the interferon response 
 	// // // protein_synthesis_rate = protein_synthesis_rate_0 * ( 1 - interferon_activation * interferon_max_virus_inhibition ) 
