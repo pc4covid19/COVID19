@@ -143,7 +143,7 @@
 
 		<variable name="interferon 1" units="mol/micron^3" ID="2">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">25</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
@@ -362,7 +362,22 @@
 				
 				<infected_cell_chemokine_secretion_activated units="none" type="double"
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
-
+				
+				<interferon_secretion_rate_via_infection type="double" units="1/min" 
+					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
+<!-- 0.01 to slow pread, 0.1 to halt --> 					
+				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
+<!-- 0.1 to slow spread, 1 to halt --> 					
+				<interferon_max_response_threshold type="double" units="dimensionless" 
+					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
+				<interferon_activation type="double" units="dimensionless"
+					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
+				<interferon_max_virus_inhibition type="double" units="dimensionless"
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
+				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
+					description="infected cell interferon secretion saturates at this viral RNA level">2</interferon_viral_RNA_threshold>
+				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min"
 					description="tracks total contact time with CD8 T cells">0.0</TCell_contact_time>
@@ -377,7 +392,28 @@
 					desription="max distance at which to form a cell-cell attachment">15</max_attachment_distance>
 				<elastic_attachment_coefficient units="1/min" type="double"
 					description="elastic coefficient for cell-cell attachment">0.01</elastic_attachment_coefficient>
-
+		<!-- (Adrianne) custom variables added for V4 -->
+				<!-- (Adrianne) add variable to track how long to next phagocytosis event for macrophages and neutrophils -->
+				<time_to_next_phagocytosis units="min" type="double"
+					description="time it takes for the apoptotic material to be phagocytosed">0</time_to_next_phagocytosis>
+				<!-- (Adrianne) add variable for how quickly material is internalised by macrophages/neutrophils, may eventually want this to relate to cell volume change -->
+				<material_internalisation_rate units="micron/min" type="double" 
+					desription="rate material is ingested by phagocyte">1</material_internalisation_rate>
+				<!-- (Adrianne) adding a threshold for the volume of macrophage. If volume exceeds this threshold the cell becomes "exhausted" and doesn't phagocytose, needs supporting reason for choice -->
+				<threshold_macrophage_volume units="micron" type="double" 
+					desription="Threshold volume for macrophage exhaustion">6500</threshold_macrophage_volume>
+				<!-- (Adrianne) adding a threshold for the volume of neutrophil. If volume exceeds this threshold the cell becomes "exhausted" and doesn't phagocytose, chosen as 1.1 times the volume -->
+				<threshold_neutrophil_volume units="micron" type="double" 
+					desription="Threshold volume for neutrophil exhaustion">1581</threshold_neutrophil_volume>
+				<!-- (adrianne) death rate of exhausted macrophages is 5x faster than death rate in activated macrophages, need a motivation for this death rate from the literature --> 
+				<exhausted_macrophage_death_rat units="1/min" type="double" 
+					desription="Threshold volume for neutrophil exhaustion">0.01</exhausted_macrophage_death_rat>
+				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be able to phagocytose infected cells --> 
+				<ability_to_phagocytose_infected_cell units="dimensionless" type="int"
+					description="Boolean for whether macrophages can phagocytose infected cells">0</ability_to_phagocytose_infected_cell>
+				<!-- (adrianne) time (mins) after DC activation when it will leave tissue, assigned uniform random variable at activation--> 
+				<time_of_DC_departure units="min" type="double"
+					description="Time DC leaves tissue after activation">0</time_of_DC_departure>
 <!--
 				<relative_maximum_volume units="dimensionless" type="double"
 					description="max tolerated volume (relative to normal volume) before triggering apoptosis">1.8</relative_maximum_volume>
@@ -386,7 +422,10 @@
 				<!-- more immmune cell parameters  -->
 				<phagocytosis_rate units="1/min" type="double" 
 					desription="rate of phagocytosing a nearby target">0.167</phagocytosis_rate>
-
+				
+				
+				
+				
 <!-- 					
 				<phagocytosis_relative_target_cutoff_size unit="dimensionless" type="double"
 					desription="do not phagocytose anything over this size (relative to cell's volume)">1.1</phagocytosis_relative_target_cutoff_size>
@@ -515,7 +554,6 @@
 		<cell_definition name="macrophage" parent_type="immune" ID="4">
 			<phenotype>
 				<death>
-					<!-- death is about 5x slower --> 
 					<model code="100" name="apoptosis"> 
 						<death_rate units="1/min">2.1e-4</death_rate>  
 					</model> 
@@ -612,6 +650,84 @@
 
 			</custom_data>
 		</cell_definition>
+	<!-- (Adrianne) adding a new cell type: dendritic cells -->	
+		<cell_definition name="DC" parent_type="immune" ID="6">
+			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">8.9e-4</death_rate>  
+					</model> 
+				</death>
+				
+				<motility>  
+					<speed units="micron/min">2</speed>
+					<migration_bias>0.7</migration_bias>  
+					<persistence_time>5</persistence_time>
+					<options>
+						<enabled>true</enabled>
+						<use_2D>true</use_2D>					
+						<chemotaxis>
+							<enabled>true</enabled>
+							<substrate>chemokine</substrate>  
+							<direction>1</direction>							
+						</chemotaxis>
+					</options>
+				</motility>
+
+				<secretion>
+					<substrate name="virion">
+						<uptake_rate units="1/min">0.1</uptake_rate> <!-- 0.001 --> 
+					</substrate> 	
+				</secretion>
+
+				<volume>
+					<total units="micron^3">1767</total>
+					<nuclear units="micron^3">176.7</nuclear> <!-- not sure yet -->
+					
+					<cytoplasmic_biomass_change_rate units="1/min">0.045</cytoplasmic_biomass_change_rate> 
+					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
+				</volume>
+			</phenotype>
+			<custom_data>
+			</custom_data>
+		</cell_definition>
+		
+	<!-- (Adrianne) adding a new cell type: CD4 T cells -->	
+		<cell_definition name="CD4 Tcell" parent_type="immune" ID="7">
+			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">2.8e-4</death_rate> 
+					</model> 
+				</death>			
+			
+				<motility>
+					<migration_bias units="dimensionless">0.70</migration_bias>
+					<options>
+						<enabled>true</enabled>
+						<use_2D>true</use_2D>
+						<chemotaxis>
+							<enabled>true</enabled>
+							<substrate>chemokine</substrate>
+							<direction>1</direction>
+						</chemotaxis>
+					</options>
+				</motility>
+				<volume>
+					<total units="micron^3">478</total>
+					<nuclear units="micron^3">47.8</nuclear>
+				</volume>
+	
+				<secretion>
+					<substrate name="debris">
+						<uptake_rate units="1/min">0</uptake_rate>
+					</substrate> 	
+				</secretion>
+
+			</phenotype>
+			<custom_data>
+			</custom_data>
+		</cell_definition>
 		
 	</cell_definitions>
 	
@@ -655,17 +771,41 @@
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			
 			<number_of_CD8_Tcells type="int" units="none" 
-				description="initial number of CD8 T cells">0</number_of_CD8_Tcells>
+				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" 
 				description="initial number of macrophages">50</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
-			
+		<!-- (Adrianne) initial number of DCs in the lung -->
+			<number_of_DCs type="int" units="none" 
+				description="initial number of Dendritic Cells">28</number_of_DCs> 
+		<!-- (Adrianne) initial number of CD4 T cells in the lung -->
+			<number_of_CD4_Tcells type="int" units="none" 
+				description="initial number of CD4 Tcells in tissue">0</number_of_CD4_Tcells> 
+		<!-- (Adrianne) New CD8 proliferation rate (G0G1 TO S PHASE) after interaction with DCS-->	
+			<DC_induced_CD8_proliferation type="double" units="cells/min/micron^3"
+				description="DC induced CD8 proliferation rate">0.00208</DC_induced_CD8_proliferation> <!-- currently an arbitrary choice -->
+		<!-- (Adrianne) New attachment rate of CD8s after interaction with DCS-->	
+			<DC_induced_CD8_attachment type="double" units="cells/min/micron^3"
+				description="DC induced CD8 attachement rate">0.6</DC_induced_CD8_attachment><!-- currently an arbitrary choice -->
+		<!-- (Adrianne) departure rate of DCs ** need to put Tarun's model value here -->
+			<departure_rate_of_DCs type="double" units="cells/min/micron^3"
+				description="Departure rate of activated DCs">0.001</departure_rate_of_DCs>
+		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
+			<virions_needed_for_DC_activation type="int" units="virions"
+				descriptions="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
+		<!-- (Adrianne) multiple of the radii of the two immune cells interacting to check they are close enough-->		
+		<epsilon_distance type="double" units="dimensionless"
+				descriptions="Multiple of interaction distance for immune cells">1.75</epsilon_distance>
+				
 			<perecentage_tissue_vascularized units="percentage" type="double"
 				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>			
 
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
+			
+			<epithelial_opacity type="double" description="opacity of epithelial cells">0.65</epithelial_opacity>
+			<non_epithelial_opacity type="double" description="opacity of non-epithelial cells">0.8</non_epithelial_opacity>
 			
 			<apoptotic_epithelium_color type="string" 
 				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
@@ -676,11 +816,24 @@
 				description="lung epithelium color">blue</lung_epithelium_color> -->
 			<CD8_Tcell_color type="string" 
 				description="CD8 T cell color">red</CD8_Tcell_color>
+			<CD4_Tcell_color type="string" 
+				description="CD8 T cell color">orange</CD4_Tcell_color>
 			<Macrophage_color type="string" 
-				description="macrophage color">lime</Macrophage_color>
+				description="macrophage color">rgb(35,139,69)</Macrophage_color>
 			<activated_macrophage_color type="string" 
-				description="color of activated macrophage">fuchsia</activated_macrophage_color>
+				description="color of activated macrophage">lime</activated_macrophage_color> <!-- old: fuschia -->
+		<!-- (Adrianne) added a macrophage exhaustion colouring - when macrophages have eaten above their threshold and are exhausted -->
+			<exhausted_macrophage_color type="string" 
+				description="color of exhausted macrophage">rgb(116,196,118)</exhausted_macrophage_color><!-- old: purple -->
+		<!-- (Adrianne) added a macrophage hyperactived colouring - when macrophages have interacted with T cell and beoome hyperactivated and can kill infected cells -->
+			<hyperactivated_macrophage_color type="string" 
+				description="color of hyperactivated macrophage">rgb(168,221,181)</hyperactivated_macrophage_color><!--old: paleturquoise -->
 			<Neutrophil_color type="string" description="neutrophil color">cyan</Neutrophil_color>
+		<!-- (Adrianne) adding DC color for naive and active  -->
+			<DC_color type="string" 
+				description="DC color">rgb(129,15,124)</DC_color>
+			<activated_DC_color type="string" 
+				description="DC color">deeppink</activated_DC_color>
 		
 	</user_parameters>
 	

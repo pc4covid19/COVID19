@@ -43,6 +43,8 @@ void Submodel_Information::register_model( void )
 		
 	}
 	
+	
+	
 	// make sure that hte microenvironment has all the necessary variables 
 	for( int n = 0 ; n < microenvironment_variables.size() ; n++ )
 	{
