@@ -757,12 +757,24 @@
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 
-			<CD8_Tcell_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max CD8 T cell recruitment rate (for saturated signal)">4e-9</CD8_Tcell_max_recruitment_rate> <!-- 4e-9 debug -->
-			<CD8_Tcell_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract CD8 T cells">0.4</CD8_Tcell_recruitment_min_signal> <!-- 0.3 debug -->
-			<CD8_Tcell_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract CD8 T cells">0.7</CD8_Tcell_recruitment_saturation_signal> <!-- 0.7 debug -->
+			<!-- (Michael) added parameters for external_immune-->
+			<TC_death_rate type="double" units="cells/min"
+				description="TC death rate">0.0000014</TC_death_rate>
+			<max_activation_TC type="double" units="cells/min"
+				description="max activation TC">0.003</max_activation_TC>
+			<half_max_activation_TC type="double" units="cells"
+				description="half max activation TC">2000</half_max_activation_TC>
+			<max_clearance_TC type="double" units="cells/min"
+				description="max clearance TC">0.0005</max_clearance_TC>
+			<half_max_clearance_TC type="double" units="cells"
+				description="half max clearance TC">1</half_max_clearance_TC>
+			<TC_population_threshold type="double" units="cells"
+				description="TC population threshold">10</TC_population_threshold>
+			<T_Cell_Recruitment type="double" units="cells/min"
+				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
+			<DM_decay type="double" units="cells/min"
+				description="DM decay rate">0.00035</DM_decay>
+			<!-- (Michael) added parameters for external_immune-->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
