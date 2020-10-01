@@ -62,7 +62,7 @@ void external_immune_model( double dt )
 	int j;
 	
 	// TC update
-	double dR_TC = dC * Tc0 / immunevolume ;
+	double dR_TC = dC * Tc0;
 
 /* 	// DM Tc recruitment
 	double dR_TCD = pT1 * C[0]/immunevolume * C[1]/immunevolume / ( C[0]/immunevolume + pT2/immunevolume) ;
@@ -79,18 +79,18 @@ void external_immune_model( double dt )
 	
 	
 
-	x[0][0] = DM/0.01; 
+	x[0][0] = DM/0.09; 
 	x[0][1] = TC; //initial values
 	x[0][2] = TH1; //initial values
 	x[0][3] = TH2; //initial values
-	x[0][4] = TCt/0.01;
-	x[0][5] = Tht/0.01;
+	x[0][4] = TCt/0.09;
+	x[0][5] = Tht/0.09;
 	
     for(j = 0; j < 4; j++){
 		f[j][0] = {-dDm*x[j][0]/immunevolume}; //define function
-        f[j][1] = {dR_TC-dC*x[j][1]/immunevolume+pT1*x[j][0]*x[j][1]/immunevolume/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/immunevolume/(x[j][0]+dT2)};
-		f[j][2] = {sTh1*x[j][2]/(1+x[j][3])+pTh1*DM*x[j][2]*x[j][2]/((1+x[j][3])*(1+x[j][3]))-dTh1*DM*x[j][2]*x[j][2]*x[j][2]/(1+x[j][3])-mTh*x[j][2]}; //define function
-		f[j][3] = {sTh2*x[j][3]/(1+x[j][3])+pTh2*(1+x[j][2])*DM*x[j][3]*x[j][3]/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //define function
+        f[j][1] = {dR_TC-dC*x[j][1]+pT1*x[j][0]*x[j][1]/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)};
+		f[j][2] = {sTh1*x[j][2]/((1+x[j][3])*(1+x[j][3]))+pTh1*x[j][0]*x[j][2]*x[j][2]/((1+x[j][3])*(1+x[j][3]))-dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2]/(1+x[j][3])-mTh*x[j][2]}; //define function
+		f[j][3] = {sTh2*x[j][3]/(1+x[j][3])+pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3]/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //define function
 		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //define function
 		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //define function
         if (j== 0 || j==1){
@@ -113,12 +113,12 @@ void external_immune_model( double dt )
 
 	//std::cout << dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6) << std::endl; 
 
-	DM=(x[0][0]+dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6))*0.01;
+	DM=(x[0][0]+dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6))*0.09;
 	TC=x[0][1]+dt*(f[0][1]/6+f[1][1]/3+f[2][1]/3+f[3][1]/6);
 	TH1=x[0][2]+dt*(f[0][2]/6+f[1][2]/3+f[2][2]/3+f[3][2]/6); //detirmine n+1
 	TH2=x[0][3]+dt*(f[0][3]/6+f[1][3]/3+f[2][3]/3+f[3][3]/6); //detirmine n+1
-	TCt=(x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6))*0.01;
-	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*0.01;
+	TCt=(x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6))*0.09;
+	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*0.09;
 	
 	return; 
 }

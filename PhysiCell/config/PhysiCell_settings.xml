@@ -761,17 +761,17 @@
 			<TC_death_rate type="double" units="cells/min"
 				description="TC death rate">0.0000014</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
-				description="max activation TC">0.0024</max_activation_TC>
+				description="max activation TC">0.003</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
 				description="half max activation TC">2000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.0007</max_clearance_TC>
+				description="max clearance TC">0.0005</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">10</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
-				description="T cell recruitment rate to tissue">0.0001</T_Cell_Recruitment>
+				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<!-- (Michael) added parameters for external_immune-->
