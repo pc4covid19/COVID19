@@ -833,11 +833,14 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type;
 	
 	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
-	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom()<0.005)
+	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom()<0.002)
 	{
+		extern double DM; //declare existance of DC lymph
 		// (Adrianne) DC leaves the tissue and so we lyse that DC
 		std::cout<<"DC leaves tissue"<<std::endl;
 		pCell->lyse_cell(); 
+		#pragma omp critical 
+		{ DM++; } // add one
 		return;
 		
 	}
@@ -1297,35 +1300,12 @@ void immune_cell_recruitment( double dt )
 			{ create_infiltrating_neutrophil(); }
 		}
 		
-		// CD8 Tcell recruitment 
-		static double CD8_Tcell_recruitment_rate = parameters.doubles( "CD8_Tcell_max_recruitment_rate" ); 
-		static double TC_min_signal = parameters.doubles( "CD8_Tcell_recruitment_min_signal" ); 
-		static double TC_sat_signal = parameters.doubles( "CD8_Tcell_recruitment_saturation_signal" ); 
-		static double TC_max_minus_min = TC_sat_signal - TC_min_signal; 
+		// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
 		
-		total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
-		total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - TC_min_signal ); 
-			dRate /= TC_max_minus_min; 
-			// crop to [0,1] 
-			if( dRate > 1 ) 
-			{ dRate = 1; } 
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate; 
-		}	
-		// multiply by dV and rate_max 
-		total_scaled_signal = total_rate; 
+		extern double TCt; 
 		
-		total_rate *= microenvironment.mesh.dV; 
-		total_rate *= CD8_Tcell_recruitment_rate; 
-		
-		// expected number of new neutrophils 
-		number_of_new_cells = (int) round( total_rate * elapsed_time ); 
+		number_of_new_cells = (int) floor( TCt ); 
+		TCt=TCt-number_of_new_cells;
 		recruited_Tcells += number_of_new_cells;		
 		
 		if( number_of_new_cells )
@@ -1339,40 +1319,12 @@ void immune_cell_recruitment( double dt )
 			{ create_infiltrating_Tcell(); }
 		}
 		
-		t_last_immune = t_immune; 
-		t_next_immune = t_immune + dt_immune; 
 		
+		// CD4 recruitment (Michael) changed to take floor of ODE value
+		extern double Tht; 
 		
-		// (Adrianne) CD4 T cell recruitment - *** This section will be changed to be Tarun's model so I've left recruitment parameters to be CD8 cell parameters**
-		static double CD4_Tcell_recruitment_rate = parameters.doubles( "CD8_Tcell_max_recruitment_rate" ); 
-		static double CD4TC_min_signal = parameters.doubles( "CD8_Tcell_recruitment_min_signal" ); 
-		static double CD4TC_sat_signal = parameters.doubles( "CD8_Tcell_recruitment_saturation_signal" ); 
-		static double CD4TC_max_minus_min = CD4TC_sat_signal - CD4TC_min_signal; 
-		
-		
-		total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
-		total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - CD4TC_min_signal ); 
-			dRate /= CD4TC_max_minus_min; 
-			// crop to [0,1] 
-			if( dRate > 1 ) 
-			{ dRate = 1; } 
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate; 
-		}	
-		// multiply by dV and rate_max 
-		total_scaled_signal = total_rate; 
-		
-		total_rate *= microenvironment.mesh.dV; 
-		total_rate *= CD4_Tcell_recruitment_rate; 
-		
-		// expected number of new neutrophils 
-		number_of_new_cells = (int) round( total_rate * elapsed_time ); 
+		number_of_new_cells = (int) floor( Tht );
+		Tht=Tht-number_of_new_cells;
 		recruited_CD4Tcells += number_of_new_cells;		
 		
 		if( number_of_new_cells )
@@ -1385,9 +1337,6 @@ void immune_cell_recruitment( double dt )
 			for( int n = 0; n < number_of_new_cells ; n++ )
 			{ create_infiltrating_CD4Tcell(); }
 		}
-		
-		t_last_immune = t_immune; 
-		t_next_immune = t_immune + dt_immune; 
 		
 		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be CD8 cell parameters**
 		static double DC_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
