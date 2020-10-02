@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">8640</max_time> <!-- 5 days * 24 h * 60 min -->
+		<max_time units="min">14400</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -761,13 +761,13 @@
 			<TC_death_rate type="double" units="cells/min"
 				description="TC death rate">0.0000014</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
-				description="max activation TC">0.003</max_activation_TC>
+				description="max activation TC">0.0018</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
-				description="half max activation TC">2000</half_max_activation_TC>
+				description="half max activation TC">550</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
 				description="max clearance TC">0.0005</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
-				description="half max clearance TC">1</half_max_clearance_TC>
+				description="half max clearance TC">60</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">10</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
