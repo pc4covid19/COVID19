@@ -1244,17 +1244,28 @@ void immune_cell_recruitment( double dt )
 		total_rate *= macrophage_recruitment_rate; 
 
 		// expected number of new neutrophils 
-		int number_of_new_cells = (int) round( total_rate * elapsed_time ); 
-		recruited_macrophages += number_of_new_cells;
+		double number_of_new_cells_prob = total_rate * elapsed_time ; 
+		// recruited_DCs += number_of_new_cells;		
 		
-		if( number_of_new_cells )
+		int number_of_new_cells_int = floor( number_of_new_cells_prob );
+	    double alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+		
+		//STOCHASTIC PORTION		
+	    
+	    if( UniformRandom()< alpha )
+	    {
+			number_of_new_cells_int++;
+	    }
+		recruited_macrophages += number_of_new_cells_int;
+		
+		if( number_of_new_cells_int )
 		{
 			if( t_immune < first_macrophage_recruitment_time )
 			{ first_macrophage_recruitment_time = t_immune; }
 
-			std::cout << "\tRecruiting " << number_of_new_cells << " macrophages ... " << std::endl; 
+			std::cout << "\tRecruiting " << number_of_new_cells_int << " macrophages ... " << std::endl; 
 			
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < number_of_new_cells_int ; n++ )
 			{ create_infiltrating_macrophage(); }
 		}
 		
@@ -1286,17 +1297,28 @@ void immune_cell_recruitment( double dt )
 		total_rate *= neutrophil_recruitment_rate; 
 
 		// expected number of new neutrophils 
-		number_of_new_cells = (int) round( total_rate * elapsed_time ); 
-		recruited_neutrophils += number_of_new_cells;
+		number_of_new_cells_prob = total_rate * elapsed_time ; 
+		// recruited_DCs += number_of_new_cells;		
 		
-		if( number_of_new_cells )
+		number_of_new_cells_int = floor( number_of_new_cells_prob );
+	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+		
+		//STOCHASTIC PORTION		
+	    
+	    if( UniformRandom()< alpha )
+	    {
+			number_of_new_cells_int++;
+	    }
+		recruited_neutrophils += number_of_new_cells_int;
+		
+		if( number_of_new_cells_int )
 		{
 			if( t_immune < first_neutrophil_recruitment_time )
 			{ first_neutrophil_recruitment_time = t_immune; }
 
-			std::cout << "\tRecruiting " << number_of_new_cells << " neutrophils ... " << std::endl; 
+			std::cout << "\tRecruiting " << number_of_new_cells_int << " neutrophils ... " << std::endl; 
 			
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < number_of_new_cells_int ; n++ )
 			{ create_infiltrating_neutrophil(); }
 		}
 		
@@ -1304,7 +1326,7 @@ void immune_cell_recruitment( double dt )
 		
 		extern double TCt; 
 		
-		number_of_new_cells = (int) floor( TCt ); 
+		int number_of_new_cells = (int) floor( TCt ); 
 		TCt=TCt-number_of_new_cells;
 		recruited_Tcells += number_of_new_cells;		
 		
@@ -1338,7 +1360,7 @@ void immune_cell_recruitment( double dt )
 			{ create_infiltrating_CD4Tcell(); }
 		}
 		
-		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be CD8 cell parameters**
+		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**
 		static double DC_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
 		static double DC_min_signal = parameters.doubles( "macrophage_recruitment_min_signal" ); 
 		static double DC_sat_signal = parameters.doubles( "macrophage_recruitment_saturation_signal" ); 
@@ -1366,17 +1388,28 @@ void immune_cell_recruitment( double dt )
 		total_rate *= DC_recruitment_rate; 
 		
 		// expected number of new neutrophils 
-		number_of_new_cells = (int) round( total_rate * elapsed_time ); 
-		recruited_DCs += number_of_new_cells;		
+		number_of_new_cells_prob = total_rate * elapsed_time ; 
+		// recruited_DCs += number_of_new_cells;		
 		
-		if( number_of_new_cells )
+		number_of_new_cells_int = floor( number_of_new_cells_prob );
+	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+		
+		//STOCHASTIC PORTION		
+	    
+	    if( UniformRandom()< alpha )
+	    {
+			number_of_new_cells_int++;
+	    }
+		recruited_DCs += number_of_new_cells_int;
+		
+		if( number_of_new_cells_int )
 		{
 			if( t_immune < first_DC_recruitment_time )
 			{ first_DC_recruitment_time = t_immune; }
 			
-			std::cout << "\tRecruiting " << number_of_new_cells << " DCs ... " << std::endl; 
+			std::cout << "\tRecruiting " << number_of_new_cells_int << " DCs ... " << std::endl; 
 
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < number_of_new_cells_int ; n++ )
 			{ create_infiltrating_DC(); }
 		}
 		

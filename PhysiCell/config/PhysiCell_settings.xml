@@ -767,7 +767,7 @@
 			<max_clearance_TC type="double" units="cells/min"
 				description="max clearance TC">0.00069</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
-				description="half max clearance TC">60</half_max_clearance_TC>
+				description="half max clearance TC">200</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">10</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"

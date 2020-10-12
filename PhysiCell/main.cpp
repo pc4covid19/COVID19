@@ -294,7 +294,7 @@ int main( int argc, char* argv[] )
 	extern double first_CD8_T_cell_recruitment_time; 
 
 	std::cout << std::endl; 
-	std::cout << "recruited macrophges: " << recruited_macrophages << " starting at time " 
+	std::cout << "recruited macrophages: " << recruited_macrophages << " starting at time " 
 		<< first_macrophage_recruitment_time <<	std::endl; 
 	std::cout << "recruited neutrophils: " << recruited_neutrophils << " starting at time " 
 		<< first_neutrophil_recruitment_time << std::endl; 
