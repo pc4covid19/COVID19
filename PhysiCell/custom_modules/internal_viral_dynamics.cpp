@@ -30,6 +30,9 @@ void internal_virus_model_setup( void )
 	internal_viral_dynamics_info.cell_variables.push_back( "protein_synthesis_rate" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "virion_assembly_rate" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "virion_export_rate" ); 
+	internal_viral_dynamics_info.cell_variables.push_back( "max_RNA_replication_rate" ); 
+	internal_viral_dynamics_info.cell_variables.push_back( "RNA_replication_half" ); 
+	internal_viral_dynamics_info.cell_variables.push_back( "basal_RNA_degradation_rate" ); 
 
 	// submodel_registry.register_model( internal_viral_dynamics_info ); 
 	internal_viral_dynamics_info.register_model();
@@ -88,8 +91,13 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 
 	// convert uncoated virus to usable mRNA 
 	double dR = dt * pCell->custom_data["uncoated_to_RNA_rate"] * pCell->custom_data[nUV]; 
-	if( dR > pCell->custom_data[nUV] )
-	{ dR = pCell->custom_data[nUV]; }
+  // RNA replication post uncoated to RNA calc
+	dR += dt * pCell->custom_data["max_RNA_replication_rate"] * pCell->custom_data[nR] /
+              (pCell->custom_data[nR] + pCell->custom_data["RNA_replication_half"]);
+  // RNA degradation
+  dR -= dt * pCell->custom_data["basal_RNA_degradation_rate"] * pCell->custom_data[nR];
+	// if( dR > pCell->custom_data[nUV] )
+	// { dR = pCell->custom_data[nUV]; }
 	pCell->custom_data[nUV] -= dR; 
 	pCell->custom_data[nR] += dR; 
 	
