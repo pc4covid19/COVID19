@@ -176,6 +176,25 @@
 			<initial_condition units="mol/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
+		
+		<!-- tissue damage model -->
+		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="6">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<decay_rate units="1/min">1.02e-2</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
+
+		<variable name="collagen" units="mol/micron^3" ID="7">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
+				<decay_rate units="1/min">1.02e-2</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
 
 		<options>
 			<calculate_gradients>true</calculate_gradients>
@@ -296,7 +315,14 @@
 					</substrate> 	
 					<substrate name="debris">
 						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
+					</substrate>
+						<substrate name="anti-inflammatory cytokine">
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
+					</substrate> 
+						<substrate name="collagen">
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
+						
 				</secretion>
 
 				<molecular />
@@ -329,7 +355,6 @@
 					description="degradation of RNA">0.01</basal_RNA_degradation_rate>
         <RNA_replication_half units="virions" type="double"
 					description="virion count at which RNA replication at half max">200</RNA_replication_half>
-
  
 				<!-- virus adsorption and export -->
 				<virion_export_rate type="double" units="1/min" 
@@ -451,6 +476,12 @@
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
+					
+				<!-- tissue damage model -->
+				<antiinflammatory_cytokine_secretion_rate units="1/min" type="double" 
+					description="secretion rate of anti-inflammatory from infected epithelium cell">0</antiinflammatory_cytokine_secretion_rate>
+				<collagen_secretion_rate units="1/min" type="double" 
+					description="secretion rate of collagen from fibroblast">0</collagen_secretion_rate>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
@@ -736,6 +767,41 @@
 			<custom_data>
 			</custom_data>
 		</cell_definition>
+		<!-- tissue damage --> 
+		<cell_definition name="fibroblast" parent_type="immune" ID="8">
+			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">2.8e-4</death_rate> <!-- 5e-4 --> 
+					</model> 
+				</death>
+				<motility>  
+					<speed units="micron/min">4</speed>
+					<persistence_time units="min">5</persistence_time>
+					<migration_bias units="dimensionless">0.70</migration_bias>
+					<options>
+						<enabled>true</enabled>
+						<use_2D>true</use_2D>
+						<chemotaxis>
+							<enabled>true</enabled>
+							<substrate>anti-inflammatory cytokine</substrate>
+							<direction>1</direction>
+						</chemotaxis>
+					</options>
+				</motility>
+
+				<secretion>
+					<substrate name="anti-inflammatory cytokine">
+						<uptake_rate units="1/min">0.01</uptake_rate>
+					</substrate> 	
+					<substrate name="collagen">
+						<uptake_rate units="1/min">0</uptake_rate>
+					</substrate> 	
+				</secretion>
+			</phenotype>
+			<custom_data>
+			</custom_data>
+		</cell_definition>
 		
 	</cell_definitions>
 	
@@ -773,7 +839,7 @@
 			<half_max_activation_TC type="double" units="cells"
 				description="half max activation TC">2000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.00069</max_clearance_TC>
+				description="max clearance TC">0.0007</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">200</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
@@ -783,6 +849,13 @@
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<!-- (Michael) added parameters for external_immune-->
+			
+			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max fibroblast cell recruitment rate (for saturated signal)">0</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
+			<fibroblast_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract fibroblast cells">0.1</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
+			<fibroblast_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract fibroblast cells">0.4</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
@@ -796,6 +869,8 @@
 				description="initial number of macrophages">0</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
+			<number_of_fibroblast type="int" units="none"
+				description="initial number of fibroblast cells">0</number_of_fibroblast>	
 		<!-- (Adrianne) initial number of DCs in the lung -->
 			<number_of_DCs type="int" units="none" 
 				description="initial number of Dendritic Cells">0</number_of_DCs> 
@@ -854,6 +929,8 @@
 				description="DC color">rgb(129,15,124)</DC_color>
 			<activated_DC_color type="string" 
 				description="DC color">deeppink</activated_DC_color>
+			<fibroblast_color type="string"
+				description="fibroblast cell color">orange</fibroblast_color>
 		
 	</user_parameters>
 	
