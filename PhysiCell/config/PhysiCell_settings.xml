@@ -191,7 +191,7 @@
 		</variable>
 		
 		<!-- tissue damage model -->
-		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="6">
+		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -200,7 +200,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="collagen" units="mol/micron^3" ID="7">
+		<variable name="collagen" units="mol/micron^3" ID="8">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
