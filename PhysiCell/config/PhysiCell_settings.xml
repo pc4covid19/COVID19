@@ -440,7 +440,7 @@
 					description="initial concentration external IL-18">0</external_IL_18>	
 
 				<cytoplasmic_volume type="double" units="a.u. of volume"
-					description="cytoplasmic cell volume">1</cytoplasmic_volume>
+					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
 		<!-- (Sara & Fiona) flags for different cell death modes-->		
 				<cell_pyroptosis_flag type="int" units="dimensionless"
 					description="bool for pyropotosis">0</cell_pyroptosis_flag>

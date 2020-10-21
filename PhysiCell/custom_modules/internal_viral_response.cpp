@@ -339,11 +339,16 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 
 	//Update cytoplasmic volume (updated backward)
 	pCell->custom_data[volume_c] = pCell->custom_data[volume_c]/(1-dt * k_vol_c * g_gsdmd);
-	
+
+	// (Yafei) need to update the real radius 
+	phenotype.volume.total = pCell->custom_data[volume_c]; 
+
 	//Temporary: "super fast" apoptosis occurs when cell should burst. 
 	//To do: We actually want the cell to rupture once a cytoplasmic critical volume is reached (e.g. 1.5 of initial cytoplasmic volume from in vitro data). 
 	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "apoptosis" );	
-	if( pCell->custom_data[volume_c]>1.2)
+	static double initial_total_volume = 2494;
+
+	if( pCell->custom_data[volume_c] > 1.2*initial_total_volume )
 	{
 		//std::cout<<"Pyroptotic cell burst!"<<std::endl;
 		//The cell's 'apoptosis death rate' is set to be "super high" 
