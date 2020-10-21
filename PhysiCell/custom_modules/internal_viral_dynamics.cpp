@@ -19,11 +19,14 @@ void internal_virus_model_setup( void )
 		// what microenvironment variables do I need? 
 
 		// what custom data do I need? 
+	internal_viral_dynamics_info.microenvironment_variables.push_back( "assembled virion" ); 	
+		
 	internal_viral_dynamics_info.cell_variables.push_back( "virion" ); // adhered, in process of endocytosis 
 	internal_viral_dynamics_info.cell_variables.push_back( "uncoated_virion" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "viral_RNA" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "viral_protein" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "assembled_virion" ); 
+	internal_viral_dynamics_info.cell_variables.push_back( "export_virion" ); 
 
 	internal_viral_dynamics_info.cell_variables.push_back( "virion_uncoating_rate" ); 
 	internal_viral_dynamics_info.cell_variables.push_back( "uncoated_to_RNA_rate" ); 
@@ -49,7 +52,8 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 
 	static int nUV = pCell->custom_data.find_variable_index( "uncoated_virion" ); 
 	static int nR  = pCell->custom_data.find_variable_index( "viral_RNA" ); 
-	static int nP  = pCell->custom_data.find_variable_index( "viral_protein" ); 
+	static int nP  = pCell->custom_data.find_variable_index( "viral_protein" ); 	
+	static int eP  = pCell->custom_data.find_variable_index( "export_virion" ); 
 
 /*	
 	static bool done = false; 
@@ -74,8 +78,8 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 		phenotype.molecular.internalized_total_substrates[nV_external]; 
 	// this transfer is now handled in receptor dynamics 
 */		
-	pCell->custom_data[nA_internal] = 
-		phenotype.molecular.internalized_total_substrates[nA_external]; 
+	// pCell->custom_data[nA_internal] = 
+		// phenotype.molecular.internalized_total_substrates[nA_external]; 
 		
 	// actual model goes here 
 
@@ -111,18 +115,27 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	pCell->custom_data[nA_internal] += dA; 
 	
 	// set export rate 
-	
+/*	
 	phenotype.secretion.net_export_rates[nA_external] = 
 		pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
  
 	// copy data from custom variables to "internalized variables" 
-	
-/*	
+		
 	phenotype.molecular.internalized_total_substrates[nV_external] = 
-		pCell->custom_data[nV_internal];
-*/		
+		pCell->custom_data[nV_internal];		
 	phenotype.molecular.internalized_total_substrates[nA_external] = 
 		pCell->custom_data[nA_internal];	
+*/			
+	double deP = dt * pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
+	if( deP > pCell->custom_data[nA_internal] )
+	{ deP = pCell->custom_data[nA_internal]; } 
+	pCell->custom_data[eP] += deP; 
+	pCell->custom_data[nA_internal] -= deP; 
+	//test int export
+	
+	double alpha1 = floor(pCell->custom_data[eP]);
+	pCell->nearest_density_vector()[nA_external] += alpha1 / microenvironment.mesh.dV; 
+	pCell->custom_data[eP] -= alpha1; 
 	
 	return; 
 }

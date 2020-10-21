@@ -350,7 +350,9 @@
 					description="total (functional) viral RNA copies">0</viral_RNA>
 				<viral_protein units="protein" type="double"
 					description="total assembled sets of viral protein">0</viral_protein>
-				<assembled_virion uints="virions" type="double"
+				<export_virion units="virions" type="double"
+					description="ready to export virion">0</export_virion>
+				<assembled_virion units="virions" type="double"
 					description="total assembled virions">0</assembled_virion>
 				
 				<virion_uncoating_rate type="double" units="1/min" 
