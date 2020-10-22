@@ -38,7 +38,7 @@ class Sim:
         fold_name = "viral_test_{}".format(self.name)
         os.mkdir(fold_name)
         # copy executable
-        shutil.copy("../COVID19", fold_name)
+        shutil.copy("../../../COVID19", fold_name)
         # get in there and prep the rest
         os.chdir(fold_name)
         os.mkdir(self.output)
