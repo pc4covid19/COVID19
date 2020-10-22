@@ -1,9 +1,9 @@
 import xmltodict, shutil, sys, os, subprocess, pickle
-sys.path.append('../.')
+sys.path.append('../../../')
 from pyMCDS import pyMCDS
 import numpy as np
 
-conf_file = "../config/Viral_replication_no_immune.xml"
+conf_file = "Viral_replication_no_immune.xml"
 
 class Sim:
     def __init__(self, name, config):

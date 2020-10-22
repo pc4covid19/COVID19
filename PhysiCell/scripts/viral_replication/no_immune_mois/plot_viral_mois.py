@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../.')
+sys.path.append('../../../')
 from pyMCDS import pyMCDS
 import pickle, os
 import numpy as np

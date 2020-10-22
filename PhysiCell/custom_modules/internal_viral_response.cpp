@@ -163,3 +163,27 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	return; 
 }
 
+/*
+pCell->custom_data[nA_internal] = newly assembled virion 
+phenotype.molecular.internalized_total_substrates[nA_external] = all assembled virion that is not yet exported 
+line 77 : set newly_assembled to zero 
+pCell->custom_data[nA_internal] = 0 
+line 107 - 111 : do new assembly, remove from P, add to newly assembled A 
+next: 
+add newly assembled A to all ssembled A 
+phenotype.molecular.internalized_total_substrates[nA_external] += pCell->custom_data[nA_internal]
+last: set export rate based on total assembled 
+phenotype.secretion.net_export_rates[nA_external] = 
+		pCell->custom_data["virion_export_rate" ] * phenotype.molecular.internalized_total_substrates[nA_external] ; 
+11:10
+correct logic (approximately)
+11:10
+  to do it RIGHT
+Let A accmulate 
+1. DON'T overwrite pCell->custom_data[nA_internal] as zero 
+2. transfer from P to A like normal 
+3. calculate export based on rate * dt * A
+4. discrete -- export a whole number of A 
+5. removfe that amount from A, add it to phenotype.molecular.internalized_total_substrates[nA_external]
+6. adjust phenotype.secretion.net_export_rates[nA_external] so taht dt * export_rate * phenotype.molecular.internalized_total_substrates[nA_external] = number of particles you wanted to export 
+*/

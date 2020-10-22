@@ -77,8 +77,15 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 		phenotype.molecular.internalized_total_substrates[nV_external]; 
 	// this transfer is now handled in receptor dynamics 
 */		
-	pCell->custom_data[nA_internal] = 
-		phenotype.molecular.internalized_total_substrates[nA_external]; 
+
+  /*
+  pCell->custom_data[nA_internal] = newly assembled virion 
+  phenotype.molecular.internalized_total_substrates[nA_external] = all assembled virion that is not yet exported 
+  */
+  // This resets the internal assembled virion count 
+  // so we are commenting it out 
+	// pCell->custom_data[nA_internal] = 
+	// 	phenotype.molecular.internalized_total_substrates[nA_external]; 
 		
 	// actual model goes here 
 
@@ -105,11 +112,7 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	double dP = dt * pCell->custom_data["protein_synthesis_rate"] * pCell->custom_data[nR];
 	pCell->custom_data[nP] += dP; 
 
-	// degrade mRNA 
-	
-
 	// degrade protein 
-	
 	
 	// assemble virus 
 	double dA = dt * pCell->custom_data["virion_assembly_rate"] * pCell->custom_data[nP]; 
@@ -119,9 +122,23 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	pCell->custom_data[nA_internal] += dA; 
 	
 	// set export rate 
+  double nA_export_rate = dt * pCell->custom_data["virion_export_rate"] * pCell->custom_data[nA_internal];
+  // next step is to get a discrete number here
+  // floor + a probability of exporting an additional one
+  double nA_export_count = floor( nA_export_rate );
+  // TODO: Add the stochastic additional one here to nA_export_count
+  // when doing so make sure the internal nA count doesn't drop below
+  // zero by comparing the two
+  // this is the export count to add/remove
+  pCell->custom_data[nA_internal] -= nA_export_count;
+  phenotype.molecular.internalized_total_substrates[nA_external] += nA_export_count;
+//6. adjust phenotype.secretion.net_export_rates[nA_external] so taht dt * export_rate * phenotype.molecular.internalized_total_substrates[nA_external] = number of particles you wanted to export 
+// dt * exp_rate * internal = part_to_exp
+  // is this correct at all? 
+  phenotype.secretion.net_export_rates[nA_external] = nA_export_count/dt;
 	
-	phenotype.secretion.net_export_rates[nA_external] = 
-		pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
+	// phenotype.secretion.net_export_rates[nA_external] = 
+	// 	pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
  
 	// copy data from custom variables to "internalized variables" 
 	
@@ -129,9 +146,11 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	phenotype.molecular.internalized_total_substrates[nV_external] = 
 		pCell->custom_data[nV_internal];
 */		
+
+  /* Handled above now
 	phenotype.molecular.internalized_total_substrates[nA_external] = 
 		pCell->custom_data[nA_internal];	
+  */
 	
 	return; 
 }
-	
