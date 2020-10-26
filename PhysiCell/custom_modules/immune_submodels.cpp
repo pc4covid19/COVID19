@@ -10,6 +10,7 @@ Submodel_Information Macrophage_submodel_info;
 Submodel_Information Neutrophil_submodel_info; 
 Submodel_Information DC_submodel_info; 
 Submodel_Information CD4_submodel_info;
+Submodel_Information fibroblast_submodel_info;
 
 std::vector<Cell*> cells_to_move_from_edge; 
 
@@ -378,6 +379,15 @@ void create_infiltrating_macrophage(void)
 	
 	return;
 }
+
+void create_infiltrating_fibroblast(void)
+{
+	static Cell_Definition* pCD = find_cell_definition( "fibroblast" );
+	create_infiltrating_immune_cell( pCD ); 
+	
+	return;
+}
+
 
 void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
 {
@@ -833,7 +843,7 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type;
 	
 	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
-	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom()<0.002)
+	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.002)
 	{
 		extern double DM; //declare existance of DC lymph
 		// (Adrianne) DC leaves the tissue and so we lyse that DC
@@ -985,6 +995,52 @@ void CD4_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 	return; 
 }
 
+void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	
+	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
+	static int collagen_index = microenvironment.find_density_index("collagen");
+
+	pCell->phenotype.secretion.secretion_rates[collagen_index] = pCell->custom_data["collagen_secretion_rate"]; 
+
+
+			
+	
+	if( phenotype.death.dead == true )
+	{
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
+
+        // This should be careful, as anti-inflammatory cytokine only be secreted when CD8-T cells killing infected epithelium cell rather 
+        // than epithelium cell apoptotic due to virion
+		// pCell->phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate"]; 
+		return; 
+	}
+
+	return;
+}
+
+
+void fibroblast_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
+{
+
+	// bounds check 
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{ 
+		#pragma omp critical 
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return; 
+	}	
+
+//	// death check 
+//	if( phenotype.death.dead == true ) 
+//	{ remove_all_adhesions( pCell ); }
+
+	return; 
+}
+
+
 void immune_submodels_setup( void )
 {
 	Cell_Definition* pCD;
@@ -1101,6 +1157,22 @@ void immune_submodels_setup( void )
 	pCD = find_cell_definition( "CD4 Tcell" ); 
 	pCD->functions.update_phenotype = CD4_submodel_info.phenotype_function;
 	pCD->functions.custom_cell_rule = CD4_submodel_info.mechanics_function;
+	
+	// set up fibroblast
+	fibroblast_submodel_info = CD8_submodel_info; // much shared information 
+	fibroblast_submodel_info.name = "fibroblast model"; 
+	fibroblast_submodel_info.version = immune_submodels_version; 
+	
+	fibroblast_submodel_info.main_function = NULL; 
+	fibroblast_submodel_info.phenotype_function = fibroblast_phenotype; 
+	fibroblast_submodel_info.mechanics_function = fibroblast_mechanics; 
+	
+	fibroblast_submodel_info.register_model();	
+		// set functions for the corresponding cell definition 
+	pCD = find_cell_definition( "fibroblast" ); 
+	pCD->functions.update_phenotype = fibroblast_submodel_info.phenotype_function;
+	pCD->functions.custom_cell_rule = fibroblast_submodel_info.mechanics_function;
+	
 	pCD->functions.update_migration_bias = immune_cell_motility_direction; 
 }
 
@@ -1190,18 +1262,22 @@ int recruited_Tcells = 0;
 int recruited_neutrophils = 0; 
 int recruited_macrophages = 0; 
 int recruited_CD4Tcells = 0; 
-int recruited_DCs = 0; 
+int recruited_DCs = 0;
+int recruited_fibroblasts = 0; 
 
 double first_macrophage_recruitment_time = 9e9; 
 double first_neutrophil_recruitment_time = 9e9; 
 double first_CD8_T_cell_recruitment_time = 9e9; 
 double first_CD4_T_cell_recruitment_time = 9e9; 
 double first_DC_recruitment_time = 9e9; 
+double first_fibroblast_cell_recruitment_time = 9e9;
 
 void immune_cell_recruitment( double dt )
 {
 	static int proinflammatory_cytokine_index = 
 		microenvironment.find_density_index("pro-inflammatory cytokine");
+		
+	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
 	
 	static double dt_immune = parameters.doubles( "immune_dt" ); 
 	static double t_immune = 0.0; 
@@ -1413,6 +1489,58 @@ void immune_cell_recruitment( double dt )
 			{ create_infiltrating_DC(); }
 		}
 		
+		//  fibroblast recruitment
+		static double fibroblast_recruitment_rate = parameters.doubles( "fibroblast_max_recruitment_rate" );
+		static double f_min_signal = parameters.doubles( "fibroblast_recruitment_min_signal" );
+		static double f_sat_signal = parameters.doubles( "fibroblast_recruitment_saturation_signal" );
+		static double f_max_minus_min = f_sat_signal - f_min_signal;
+
+		total_rate = 0;
+		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV
+		total_scaled_signal= 0.0;
+		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
+		{
+			// (signal(x)-signal_min)/(signal_max/signal_min)
+			double dRate = ( microenvironment(n)[antiinflammatory_cytokine_index] - f_min_signal );
+			dRate /= f_max_minus_min;
+			// crop to [0,1]
+			if( dRate > 1 )
+			{ dRate = 1; }
+			if( dRate < 0 )
+			{ dRate = 0; }
+			total_rate += dRate;
+		}
+		
+		// multiply by dV and rate_max
+		total_scaled_signal = total_rate;
+
+		total_rate *= microenvironment.mesh.dV;
+		total_rate *= fibroblast_recruitment_rate;
+		
+		// expected number of new fibroblast
+		number_of_new_cells_prob = total_rate * elapsed_time;
+		number_of_new_cells_int = floor( number_of_new_cells_prob );
+	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+		
+		//STOCHASTIC PORTION		
+	    
+	    if( UniformRandom()< alpha )
+	    {
+			number_of_new_cells_int++;
+	    }
+		recruited_fibroblasts += number_of_new_cells_int;
+		
+		if( number_of_new_cells_int )
+		{
+			if( t_immune < first_fibroblast_cell_recruitment_time )
+			{ first_fibroblast_cell_recruitment_time = t_immune; }
+
+			std::cout << "\tRecruiting " << number_of_new_cells_int << " fibroblast cells ... " << std::endl;
+
+			for( int n = 0; n < number_of_new_cells_int ; n++ )
+			{ create_infiltrating_fibroblast(); }
+		}
+		
 		t_last_immune = t_immune; 
 		t_next_immune = t_immune + dt_immune; 
 		
@@ -1431,6 +1559,7 @@ void initial_immune_cell_placement( void )
 	Cell_Definition* pN = find_cell_definition( "neutrophil" ); 
 	Cell_Definition* pDC = find_cell_definition( "DC" ); 
 	Cell_Definition* pCD4 = find_cell_definition( "CD4 Tcell" ); 
+	Cell_Definition* pF = find_cell_definition( "fibroblast" );
 	
 	// CD8+ T cells; 
 	for( int n = 0 ; n < parameters.ints("number_of_CD8_Tcells") ; n++ )
@@ -1447,7 +1576,10 @@ void initial_immune_cell_placement( void )
 	// DC	
 	for( int n = 0 ; n < parameters.ints("number_of_DCs") ; n++ )
 	{ create_infiltrating_immune_cell_initial( pDC ); }		
-	return;
+	
+	// fibroblast 	
+	for( int n = 0 ; n < parameters.ints("number_of_fibroblast") ; n++ )
+	{ create_infiltrating_immune_cell( pF ); }	
 	
 	// CD4+ T cells	
 	for( int n = 0 ; n < parameters.ints("number_of_CD4_Tcells") ; n++ )
