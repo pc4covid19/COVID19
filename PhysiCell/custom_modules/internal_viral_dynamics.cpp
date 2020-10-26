@@ -55,7 +55,8 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 
 	static int nUV = pCell->custom_data.find_variable_index( "uncoated_virion" ); 
 	static int nR  = pCell->custom_data.find_variable_index( "viral_RNA" ); 
-	static int nP  = pCell->custom_data.find_variable_index( "viral_protein" ); 
+	static int nP  = pCell->custom_data.find_variable_index( "viral_protein" ); 	
+	static int eP  = pCell->custom_data.find_variable_index( "export_virion" ); 
 
 /*	
 	static bool done = false; 

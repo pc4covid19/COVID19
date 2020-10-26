@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">8640</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">14400</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -171,6 +171,38 @@
 		<variable name="debris" units="mol/micron^3" ID="5">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<decay_rate units="1/min">1.02e-2</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
+		
+		<!-- Sara and Fiona -->
+        <!-- Pyroptosis related variables (Diffusion) -->
+
+		<variable name="pro-pyroptosis cytokine" units="mol/micron^3" ID="6">
+			<physical_parameter_set>
+			 <!-- (Sara & Fiona) pro-pyroptotic cytokine. Values copied from "chemokine". Diffusion constant is D_"chemokine"/100 to keep bystander effects local. -->
+				<diffusion_coefficient units="micron^2/min">5.56</diffusion_coefficient>
+				<decay_rate units="1/min">1.02e-2</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
+		
+		<!-- tissue damage model -->
+		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<decay_rate units="1/min">1.02e-2</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
+
+		<variable name="collagen" units="mol/micron^3" ID="8">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
@@ -296,7 +328,14 @@
 					</substrate> 	
 					<substrate name="debris">
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+					</substrate>
+						<substrate name="anti-inflammatory cytokine">
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+					</substrate> 
+						<substrate name="collagen">
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
+						
 				</secretion>
 
 				<molecular />
@@ -311,7 +350,9 @@
 					description="total (functional) viral RNA copies">0</viral_RNA>
 				<viral_protein units="protein" type="double"
 					description="total assembled sets of viral protein">0</viral_protein>
-				<assembled_virion uints="virions" type="double"
+				<export_virion units="virions" type="double"
+					description="ready to export virion">0</export_virion>
+				<assembled_virion units="virions" type="double"
 					description="total assembled virions">0</assembled_virion>
 				
 				<virion_uncoating_rate type="double" units="1/min" 
@@ -362,6 +403,57 @@
 				
 				<infected_cell_chemokine_secretion_activated units="none" type="double"
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
+					
+				<!-- (Sara & Fiona) pyroptosis initial conditions (for the Pyroptosis ODE) -->
+				<nuclear_NFkB type="double" units="a.u. of concentration"
+					description="initial nuclear NFkB concentration">0.25</nuclear_NFkB>
+
+				<inactive_NLRP3 type="double" units="a.u. of concentration"
+					description="initial concentration of inactive NLRP3">0</inactive_NLRP3>					
+
+				<active_NLRP3 type="double" units="a.u. of concentration"
+					description="initial concentration of active NLRP3">0</active_NLRP3>
+					
+				<bound_NLRP3 type="double" units="a.u. of concentration"
+					description="initial concentration of inflammasone bound">0</bound_NLRP3>					
+
+				<bound_ASC type="double" units="a.u. of concentration"
+					description="initial concentration of bound ASC">0</bound_ASC>					
+
+				<bound_caspase1 type="double" units="a.u. of concentration"
+					description="initial concentration of bound caspase1">0</bound_caspase1>
+
+				<cleaved_gasderminD type="double" units="a.u. of concentration"
+					description="initial concentration cleaved gasderminD">0</cleaved_gasderminD>	
+
+				<pro_IL_1b type="double" units="a.u. of concentration"
+					description="initial concentration pro-IL-1b">0</pro_IL_1b>	
+
+				<cytoplasmic_IL_1b type="double" units="a.u. of concentration"
+					description="initial concentration cytoplasmic IL-1b">0</cytoplasmic_IL_1b>	
+
+				<external_IL_1b type="double" units="a.u. of concentration"
+					description="initial concentration external IL-1b">0</external_IL_1b>	
+
+				<cytoplasmic_IL_18 type="double" units="a.u. of concentration"
+					description="initial concentration cytoplasmic IL-18">0</cytoplasmic_IL_18>	
+
+				<external_IL_18 type="double" units="a.u. of concentration"
+					description="initial concentration external IL-18">0</external_IL_18>	
+
+				<cytoplasmic_volume type="double" units="a.u. of volume"
+					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
+		<!-- (Sara & Fiona) flags for different cell death modes-->		
+				<cell_pyroptosis_flag type="int" units="dimensionless"
+					description="bool for pyropotosis">0</cell_pyroptosis_flag>
+				<cell_bystander_pyroptosis_flag type="int" units="dimensionless"
+					description="bool for bystander pyropotosis">0</cell_bystander_pyroptosis_flag>
+				<cell_virus_induced_apoptosis_flag type="int" units="dimensionless"
+					description="bool for bystander pyropotosis">0</cell_virus_induced_apoptosis_flag>
+		<!-- (Sara & Fiona) variable for internalised propyroptotic cytokine (IL-1b) -->
+				<internalised_pro_pyroptosis_cytokine units="none" type="double"
+					description="used internally to track pro-pyroptotic cytokine concentration">0</internalised_pro_pyroptosis_cytokine>			
+					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
 					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
@@ -443,6 +535,12 @@
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
+					
+				<!-- tissue damage model -->
+				<antiinflammatory_cytokine_secretion_rate units="1/min" type="double" 
+					description="secretion rate of anti-inflammatory from infected epithelium cell">15</antiinflammatory_cytokine_secretion_rate>
+				<collagen_secretion_rate units="1/min" type="double" 
+					description="secretion rate of collagen from fibroblast">1</collagen_secretion_rate>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
@@ -463,6 +561,10 @@
 					</options>
 				</motility>
 				<secretion>
+					<!-- (Sara & Fiona) -->
+					<substrate name="pro-pyroptosis cytokine">
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+					</substrate>
 				</secretion>
 			</phenotype>
 			<custom_data>
@@ -728,6 +830,41 @@
 			<custom_data>
 			</custom_data>
 		</cell_definition>
+		<!-- tissue damage --> 
+		<cell_definition name="fibroblast" parent_type="immune" ID="8">
+			<phenotype>
+				<death>
+					<model code="100" name="apoptosis"> 
+						<death_rate units="1/min">2.8e-4</death_rate> <!-- 5e-4 --> 
+					</model> 
+				</death>
+				<motility>  
+					<speed units="micron/min">4</speed>
+					<persistence_time units="min">5</persistence_time>
+					<migration_bias units="dimensionless">0.70</migration_bias>
+					<options>
+						<enabled>true</enabled>
+						<use_2D>true</use_2D>
+						<chemotaxis>
+							<enabled>true</enabled>
+							<substrate>anti-inflammatory cytokine</substrate>
+							<direction>1</direction>
+						</chemotaxis>
+					</options>
+				</motility>
+
+				<secretion>
+					<substrate name="anti-inflammatory cytokine">
+						<uptake_rate units="1/min">0.01</uptake_rate>
+					</substrate> 	
+					<substrate name="collagen">
+						<uptake_rate units="1/min">0</uptake_rate>
+					</substrate> 	
+				</secretion>
+			</phenotype>
+			<custom_data>
+			</custom_data>
+		</cell_definition>
 		
 	</cell_definitions>
 	
@@ -765,7 +902,7 @@
 			<half_max_activation_TC type="double" units="cells"
 				description="half max activation TC">2000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.00069</max_clearance_TC>
+				description="max clearance TC">0.0007</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">200</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
@@ -775,6 +912,13 @@
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<!-- (Michael) added parameters for external_immune-->
+			
+			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max fibroblast cell recruitment rate (for saturated signal)">4e-9</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
+			<fibroblast_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract fibroblast cells">0.1</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
+			<fibroblast_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract fibroblast cells">0.4</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
@@ -788,6 +932,8 @@
 				description="initial number of macrophages">50</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
+			<number_of_fibroblast type="int" units="none"
+				description="initial number of fibroblast cells">0</number_of_fibroblast>	
 		<!-- (Adrianne) initial number of DCs in the lung -->
 			<number_of_DCs type="int" units="none" 
 				description="initial number of Dendritic Cells">28</number_of_DCs> 
@@ -823,7 +969,15 @@
 				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
 			<apoptotic_immune_color type="string" 
 				description="apoptotic immune cell color">rosybrown</apoptotic_immune_color>
-		
+				
+		<!-- (Sara & Fiona) colours to visualise different modes of cell death -->
+			<pyroptotic_epithelium_color type="string" 
+				description="pyroptotic epithelial cell color">darkorange</pyroptotic_epithelium_color>
+			<pyroptotic_bystander_epithelium_color type="string" 
+				description="pyroptotic epithelial cell color">red</pyroptotic_bystander_epithelium_color>
+			<vi_apoptotic_epithelium_color type="string" 
+				description="pyroptotic epithelial cell color">forestgreen</vi_apoptotic_epithelium_color>
+				
 <!---			<lung_epithelium_color type="string" 
 				description="lung epithelium color">blue</lung_epithelium_color> -->
 			<CD8_Tcell_color type="string" 
@@ -846,6 +1000,8 @@
 				description="DC color">rgb(129,15,124)</DC_color>
 			<activated_DC_color type="string" 
 				description="DC color">deeppink</activated_DC_color>
+			<fibroblast_color type="string"
+				description="fibroblast cell color">orange</fibroblast_color>
 		
 	</user_parameters>
 	
