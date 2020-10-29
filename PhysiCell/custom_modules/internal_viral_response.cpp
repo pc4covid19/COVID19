@@ -215,19 +215,19 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	// Sara&Fiona: Pyroptosis code starts here.
 	
 	// Intracellular components
-	double nfkb_n = pCell->custom_data.find_variable_index( "nuclear_NFkB" ); 
-	double nlrp3_i = pCell->custom_data.find_variable_index( "inactive_NLRP3" ); 
-	double nlrp3_a = pCell->custom_data.find_variable_index( "active_NLRP3" ); 
-	double nlrp3_b = pCell->custom_data.find_variable_index( "bound_NLRP3" ); 
-	double asc_b = pCell->custom_data.find_variable_index( "bound_ASC" );
-	double caspase1_b = pCell->custom_data.find_variable_index( "bound_caspase1" );
-	double gsdmd_c = pCell->custom_data.find_variable_index( "cleaved_gasderminD" );
-	double il_1b_p = pCell->custom_data.find_variable_index( "pro_IL_1b" );
-	double il_1b_c = pCell->custom_data.find_variable_index( "cytoplasmic_IL_1b" );
-	double il_1b_e = pCell->custom_data.find_variable_index( "external_IL_1b" );
-	double il_18_c = pCell->custom_data.find_variable_index( "cytoplasmic_IL_18" );
-	double il_18_e = pCell->custom_data.find_variable_index( "external_IL_18" );
-	double volume_c = pCell->custom_data.find_variable_index( "cytoplasmic_volume" );
+	static int nfkb_n = pCell->custom_data.find_variable_index( "nuclear_NFkB" ); 
+	static int nlrp3_i = pCell->custom_data.find_variable_index( "inactive_NLRP3" ); 
+	static int nlrp3_a = pCell->custom_data.find_variable_index( "active_NLRP3" ); 
+	static int nlrp3_b = pCell->custom_data.find_variable_index( "bound_NLRP3" ); 
+	static int asc_b = pCell->custom_data.find_variable_index( "bound_ASC" );
+	static int caspase1_b = pCell->custom_data.find_variable_index( "bound_caspase1" );
+	static int gsdmd_c = pCell->custom_data.find_variable_index( "cleaved_gasderminD" );
+	static int il_1b_p = pCell->custom_data.find_variable_index( "pro_IL_1b" );
+	static int il_1b_c = pCell->custom_data.find_variable_index( "cytoplasmic_IL_1b" );
+	static int il_1b_e = pCell->custom_data.find_variable_index( "external_IL_1b" );
+	static int il_18_c = pCell->custom_data.find_variable_index( "cytoplasmic_IL_18" );
+	static int il_18_e = pCell->custom_data.find_variable_index( "external_IL_18" );
+	static int volume_c = pCell->custom_data.find_variable_index( "cytoplasmic_volume" );
 	//Not needed components (can be implicitely found via conservation laws)
 	//static double nfkb_c = pCell->custom_data.find_variable_index( "cytoplasmic_NFkB_fraction" ); 
 	//static double asc_f = pCell->custom_data.find_variable_index( "free_ASC" );
@@ -275,28 +275,28 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 
 	// System of pyroptosis equations starts here
     //Model constants (definitions could be moved to xml file)
-    double k_nfkb_ctn = 0.3;
-    double k_nfkb_ntc =  0.03;
-    double k_nlrp3_ita =  0.07;
-    double k_nlrp3_atb = 0.07;
-    double k_asc_ftb = 0.02;
-    double k_c1_ftb = 0.04;
-    double k_il1b_cte = 0.8;
-    double k_il18_cte = 0.8;
-    double k_vol_c = 0.1;
+    static double k_nfkb_ctn = 0.3;
+    static double k_nfkb_ntc =  0.03;
+    static double k_nlrp3_ita =  0.07;
+    static double k_nlrp3_atb = 0.07;
+    static double k_asc_ftb = 0.02;
+    static double k_c1_ftb = 0.04;
+    static double k_il1b_cte = 0.8;
+    static double k_il18_cte = 0.8;
+    static double k_vol_c = 0.1;
     // Decay constants
-    double d_nlrp3 = 0.002;
-    double d_il =0.004;
+    static double d_nlrp3 = 0.002;
+    static double d_il =0.004;
     // Hill function rates
-    double a_nlrp3 = 0.025;
-    double a_il1b_p = 0.007;
-    double a_gsdmd =0.08;
-    double a_il1b_c = 0.8;
-    double a_il18 = 0.8;
-    double hm_nfkb = 0.3;
-    double hm_c1 = 0.3;
-    double hex_nfkb = 2.0;
-    double hex_c1 = 2.0 ;
+    static double a_nlrp3 = 0.025;
+    static double a_il1b_p = 0.007;
+    static double a_gsdmd =0.08;
+    static double a_il1b_c = 0.8;
+    static double a_il18 = 0.8;
+    static double hm_nfkb = 0.3;
+    static double hm_c1 = 0.3;
+    static double hex_nfkb = 2.0;
+    static double hex_c1 = 2.0 ;
 	//If the inflammsome base is formed set F_ib = 0. 
 	double F_ib = 1;
 	if( pCell->custom_data[nlrp3_b] >= 1)
