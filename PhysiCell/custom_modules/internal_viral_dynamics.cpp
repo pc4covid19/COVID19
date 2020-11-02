@@ -134,7 +134,8 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	//test int export
 	
 	double alpha1 = floor(pCell->custom_data[eP]);
-	pCell->nearest_density_vector()[nA_external] += alpha1 / microenvironment.mesh.dV; 
+	#pragma omp critical
+	{ pCell->nearest_density_vector()[nA_external] += alpha1 / microenvironment.mesh.dV; }
 	pCell->custom_data[eP] -= alpha1; 
 	
 	return; 

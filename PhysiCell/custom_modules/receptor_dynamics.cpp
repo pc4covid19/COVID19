@@ -137,7 +137,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 			{
 				pCell->custom_data[nR_EU] -= 1;
 				pCell->custom_data[nR_EB] += 1;
-				pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; 
+				#pragma omp critical
+				{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
 			}
 			
 		}
@@ -199,7 +200,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 
         pCell->custom_data[nR_EU] -= alpha1;
 		pCell->custom_data[nR_EB] += alpha1;
-	    pCell->nearest_density_vector()[nV_external] -= alpha1 / microenvironment.mesh.dV;
+		#pragma omp critical
+	    { pCell->nearest_density_vector()[nV_external] -= alpha1 / microenvironment.mesh.dV; }
 	    
 	    if( UniformRandom()<= alpha2 )
 	    {
@@ -208,7 +210,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 			{
 				pCell->custom_data[nR_EU] -= 1;
 				pCell->custom_data[nR_EB] += 1;
-				pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; 
+				#pragma omp critical
+				{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
 			}
 				
 	    }
