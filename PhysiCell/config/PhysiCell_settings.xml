@@ -359,6 +359,12 @@
 					description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
 				<uncoated_to_RNA_rate type="double" units="1/min" 
 					description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
+				<max_RNA_replication_rate type="double" units="1/min" 
+					description="mRNA self replication max rate">3</max_RNA_replication_rate> 
+				<RNA_replication_half type="double" units="virions" 
+					description="mRNA self replication half max">200</RNA_replication_half> 
+				<basal_RNA_degradation_rate type="double" units="1/min" 
+					description="mRNA degradation rate">1</basal_RNA_degradation_rate> 
 				<protein_synthesis_rate type="double" units="1/min" 
 					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
 				<virion_assembly_rate type="double" units="1/min" 
