@@ -107,6 +107,9 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
               (pCell->custom_data[nR] + pCell->custom_data["RNA_replication_half"]);
   // RNA degradation
   dR -= dt * pCell->custom_data["basal_RNA_degradation_rate"] * pCell->custom_data[nR];
+  
+	if( dR < -1*pCell->custom_data[nR] )
+	{ dR = -1*pCell->custom_data[nR]; }
 	pCell->custom_data[nR] += dR; 
 	
 	// use mRNA to create viral protein 
@@ -134,7 +137,7 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	phenotype.molecular.internalized_total_substrates[nA_external] = 
 		pCell->custom_data[nA_internal];	
 */			
-	double deP = dt * pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
+	double deP = dt * pCell->custom_data["virion_export_rate"] * pCell->custom_data[nA_internal]; 
 	if( deP > pCell->custom_data[nA_internal] )
 	{ deP = pCell->custom_data[nA_internal]; } 
 	pCell->custom_data[eP] += deP; 
