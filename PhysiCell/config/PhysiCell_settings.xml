@@ -980,7 +980,7 @@
 			<pyroptotic_epithelium_color type="string" 
 				description="pyroptotic epithelial cell color">darkorange</pyroptotic_epithelium_color>
 			<pyroptotic_bystander_epithelium_color type="string" 
-				description="pyroptotic epithelial cell color">red</pyroptotic_bystander_epithelium_color>
+				description="pyroptotic epithelial cell color">darkred</pyroptotic_bystander_epithelium_color>
 			<vi_apoptotic_epithelium_color type="string" 
 				description="pyroptotic epithelial cell color">forestgreen</vi_apoptotic_epithelium_color>
 				
@@ -1007,7 +1007,7 @@
 			<activated_DC_color type="string" 
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
-				description="fibroblast cell color">orange</fibroblast_color>
+				description="fibroblast cell color">blueviolet</fibroblast_color>
 		
 	</user_parameters>
 	
