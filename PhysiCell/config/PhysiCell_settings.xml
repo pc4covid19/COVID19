@@ -364,7 +364,7 @@
 				<RNA_replication_half type="double" units="virions" 
 					description="mRNA self replication half max">200</RNA_replication_half> 
 				<basal_RNA_degradation_rate type="double" units="1/min" 
-					description="mRNA degradation rate">0.01</basal_RNA_degradation_rate> 
+					description="mRNA degradation rate">0.015</basal_RNA_degradation_rate> 
 				<protein_synthesis_rate type="double" units="1/min" 
 					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
 				<virion_assembly_rate type="double" units="1/min" 

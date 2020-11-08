@@ -148,10 +148,10 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
     //phenotype.secretion.uptake_rates[nV_external] = pCell->custom_data[nR_bind] * pCell->custom_data[nR_EU]; 
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
-	if( R> 300 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
+	if( R> 500 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
-		int cell_death_pyroptosis_probability = 0.5; 
+		double cell_death_pyroptosis_probability = 0.5; 
 		// randomise a number in 0,1 that determines the cell death mode (pyroptosis or apoptosis)
 		if(UniformRandom() < cell_death_pyroptosis_probability) 
 		{
