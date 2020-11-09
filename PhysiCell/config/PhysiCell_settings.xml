@@ -364,7 +364,7 @@
 				<RNA_replication_half type="double" units="virions" 
 					description="mRNA self replication half max">200</RNA_replication_half> 
 				<basal_RNA_degradation_rate type="double" units="1/min" 
-					description="mRNA degradation rate">0.015</basal_RNA_degradation_rate> 
+					description="mRNA degradation rate">0.01</basal_RNA_degradation_rate> 
 				<protein_synthesis_rate type="double" units="1/min" 
 					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
 				<virion_assembly_rate type="double" units="1/min" 
@@ -474,7 +474,7 @@
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
 					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
-					description="infected cell interferon secretion saturates at this viral RNA level">2</interferon_viral_RNA_threshold>
+					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min"
