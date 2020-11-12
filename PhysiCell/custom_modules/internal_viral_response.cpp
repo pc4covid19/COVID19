@@ -42,11 +42,13 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 
 	static int nV_external = microenvironment.find_density_index( "virion" ); 
 	static int nA_external = microenvironment.find_density_index( "assembled virion" ); 
+	static int chemokine_index = microenvironment.find_density_index( "chemokine" );
+	static int nINF1 = microenvironment.find_density_index( "interferon 1" );
 	
 	static int nV_internal = pCell->custom_data.find_variable_index( "virion" ); 
-	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" ); 
-	
-	static int nINF1 = microenvironment.find_density_index( "interferon 1" ); 
+	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" );
+	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 	
+	 
 	
 	// actual model goes here 
 
@@ -72,13 +74,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	phenotype.death.rates[apoptosis_model_index] = base_death_rate + additional_death_rate; 
 	
 	// if we're infected, secrete a chemokine for the immune model
-	static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 	
-	double AV = pCell->custom_data[nAV]; 
-	
-	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
-	double P = pCell->custom_data[nP];
-
-	static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
+	double AV = pCell->custom_data[nA_internal];  
 	
 /* old 
 	if( P > 0.001 )
@@ -98,9 +94,6 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
 	// static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
 	// double P = pCell->custom_data[nP];
-	
-	// static int nAV = pCell->custom_data.find_variable_index( "assembled_virion" ); 
-	// double AV = pCell->custom_data[nAV]; 
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 		
 	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
@@ -148,22 +141,18 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
     //phenotype.secretion.uptake_rates[nV_external] = pCell->custom_data[nR_bind] * pCell->custom_data[nR_EU]; 
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
-	if( R> 500 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
+	if( R>=200 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
-		double cell_death_pyroptosis_probability = 0.5; 
+		double cell_death_pyroptosis_probability = (R-200)/(1000-200); 
+		if( cell_death_pyroptosis_probability > 1.0 )
+		{ cell_death_pyroptosis_probability = 1.0; } 
+		cell_death_pyroptosis_probability/=3;
 		// randomise a number in 0,1 that determines the cell death mode (pyroptosis or apoptosis)
 		if(UniformRandom() < cell_death_pyroptosis_probability) 
 		{
 			pCell->custom_data["cell_pyroptosis_flag"]=1; //cell pyroptoses
 		}
-		else 
-		{
-			pCell->custom_data["cell_virus_induced_apoptosis_flag"]=1; //cell apoptoses
-			phenotype.death.rates[apoptosis_model_index] = 1000; 
-		}
-
-
 		
 		return;
 	}
@@ -189,9 +178,9 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// // // secretion_rate = r_viral * Heaviside( RNA - 1 ) + r_paracrine * activation 
 	phenotype.secretion.secretion_rates[nINF1] = pCell->custom_data["interferon_activation"]; 
 	phenotype.secretion.secretion_rates[nINF1] *= pCell->custom_data["max_interferon_secretion_rate_via_paracrine"]; 
-	if( R >= 1.0 - 1e-16 ) // if there is at least 1 complete set of uncoated viral RNA
+	if( R >= pCell->custom_data["interferon_viral_RNA_detection"] - 1e-16 ) // if there is at least 1 complete set of uncoated viral RNA
 	{
-		double scaled_RNA = R / ( pCell->custom_data["interferon_viral_RNA_threshold"] + 1e-32 );
+		double scaled_RNA = (R-pCell->custom_data["interferon_viral_RNA_detection"]) / ( -pCell->custom_data["interferon_viral_RNA_detection"] + pCell->custom_data["interferon_viral_RNA_threshold"] );
 		if( scaled_RNA > 1 )
 		{ scaled_RNA = 1.0; }
 		phenotype.secretion.secretion_rates[nINF1] += pCell->custom_data["interferon_secretion_rate_via_infection"] * scaled_RNA; 

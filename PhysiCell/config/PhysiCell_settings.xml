@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">8640</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">14400</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -475,6 +475,8 @@
 					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
+				<interferon_viral_RNA_detection type="double" units="dimensionless" 
+					description="infected cell interferon secretion starts at this viral RNA level">1</interferon_viral_RNA_detection>
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min"
