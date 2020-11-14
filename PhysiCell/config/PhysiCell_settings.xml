@@ -572,6 +572,7 @@
 					<!-- (Sara & Fiona) -->
 					<substrate name="pro-pyroptosis cytokine">
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<uptake_rate units="1/min">0.01</uptake_rate>
 					</substrate>
 				</secretion>
 			</phenotype>
