@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">14400</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">8640</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -177,21 +177,8 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
-		<!-- Sara and Fiona -->
-        <!-- Pyroptosis related variables (Diffusion) -->
-
-		<variable name="pro-pyroptosis cytokine" units="mol/micron^3" ID="6">
-			<physical_parameter_set>
-			 <!-- (Sara & Fiona) pro-pyroptotic cytokine. Values copied from "chemokine". Diffusion constant is D_"chemokine"/100 to keep bystander effects local. -->
-				<diffusion_coefficient units="micron^2/min">5.56</diffusion_coefficient>
-				<decay_rate units="1/min">1.02e-2</decay_rate>  
-			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
-		</variable>
-		
 		<!-- tissue damage model -->
-		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
+		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="6">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -200,7 +187,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="collagen" units="mol/micron^3" ID="8">
+		<variable name="collagen" units="mol/micron^3" ID="7">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -318,22 +305,22 @@
 
 				<secretion>
 					<substrate name="interferon 1">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
 					<substrate name="pro-inflammatory cytokine">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
 					<substrate name="chemokine">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
 					<substrate name="debris">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate>
 						<substrate name="anti-inflammatory cytokine">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 
 						<substrate name="collagen">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
 						
 				</secretion>
@@ -350,25 +337,26 @@
 					description="total (functional) viral RNA copies">0</viral_RNA>
 				<viral_protein units="protein" type="double"
 					description="total assembled sets of viral protein">0</viral_protein>
-				<export_virion units="virions" type="double"
-					description="ready to export virion">0</export_virion>
 				<assembled_virion units="virions" type="double"
 					description="total assembled virions">0</assembled_virion>
+				<export_virion units="virions" type="double"
+					description="ready to export virion">0</export_virion>
 				
 				<virion_uncoating_rate type="double" units="1/min" 
 					description="rate at which an internalized virion is uncoated">0.01</virion_uncoating_rate>
 				<uncoated_to_RNA_rate type="double" units="1/min" 
 					description="rate at which uncoated virion makes its mRNA available">0.01</uncoated_to_RNA_rate> 
-				<max_RNA_replication_rate type="double" units="1/min" 
-					description="mRNA self replication max rate">3</max_RNA_replication_rate> 
-				<RNA_replication_half type="double" units="virions" 
-					description="mRNA self replication half max">200</RNA_replication_half> 
-				<basal_RNA_degradation_rate type="double" units="1/min" 
-					description="mRNA degradation rate">0.01</basal_RNA_degradation_rate> 
 				<protein_synthesis_rate type="double" units="1/min" 
 					description="rate at mRNA creates complete set of proteins">0.01</protein_synthesis_rate>
 				<virion_assembly_rate type="double" units="1/min" 
 					description="rate at which viral proteins are assembled into complete virion">0.01</virion_assembly_rate>
+        <!-- RNA replication and degradation parameters -->
+        <max_RNA_replication_rate units="1/min" type="double"
+					description="maximum RNA replication rate">3</max_RNA_replication_rate>
+        <basal_RNA_degradation_rate units="1/min" type="double"
+					description="degradation of RNA">0.01</basal_RNA_degradation_rate>
+        <RNA_replication_half units="virions" type="double"
+					description="virion count at which RNA replication at half max">200</RNA_replication_half>
  
 				<!-- virus adsorption and export -->
 				<virion_export_rate type="double" units="1/min" 
@@ -403,69 +391,18 @@
 				<virus_fraction_released_at_death type="double" units="none" 
 					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
-					description="max rate that infected cells secrete chemokine">1</infected_cell_chemokine_secretion_rate>
+					description="max rate that infected cells secrete chemokine">0</infected_cell_chemokine_secretion_rate>
 				<debris_secretion_rate units="1/min" type="double"
-					description="rate that dead cells release debris">1</debris_secretion_rate>
+					description="rate that dead cells release debris">0</debris_secretion_rate>
 				
 				<infected_cell_chemokine_secretion_activated units="none" type="double"
 					description="used internally to track activation of chemokine secretion">0</infected_cell_chemokine_secretion_activated>
-					
-				<!-- (Sara & Fiona) pyroptosis initial conditions (for the Pyroptosis ODE) -->
-				<nuclear_NFkB type="double" units="a.u. of concentration"
-					description="initial nuclear NFkB concentration">0.25</nuclear_NFkB>
-
-				<inactive_NLRP3 type="double" units="a.u. of concentration"
-					description="initial concentration of inactive NLRP3">0</inactive_NLRP3>					
-
-				<active_NLRP3 type="double" units="a.u. of concentration"
-					description="initial concentration of active NLRP3">0</active_NLRP3>
-					
-				<bound_NLRP3 type="double" units="a.u. of concentration"
-					description="initial concentration of inflammasone bound">0</bound_NLRP3>					
-
-				<bound_ASC type="double" units="a.u. of concentration"
-					description="initial concentration of bound ASC">0</bound_ASC>					
-
-				<bound_caspase1 type="double" units="a.u. of concentration"
-					description="initial concentration of bound caspase1">0</bound_caspase1>
-
-				<cleaved_gasderminD type="double" units="a.u. of concentration"
-					description="initial concentration cleaved gasderminD">0</cleaved_gasderminD>	
-
-				<pro_IL_1b type="double" units="a.u. of concentration"
-					description="initial concentration pro-IL-1b">0</pro_IL_1b>	
-
-				<cytoplasmic_IL_1b type="double" units="a.u. of concentration"
-					description="initial concentration cytoplasmic IL-1b">0</cytoplasmic_IL_1b>	
-
-				<external_IL_1b type="double" units="a.u. of concentration"
-					description="initial concentration external IL-1b">0</external_IL_1b>	
-
-				<cytoplasmic_IL_18 type="double" units="a.u. of concentration"
-					description="initial concentration cytoplasmic IL-18">0</cytoplasmic_IL_18>	
-
-				<external_IL_18 type="double" units="a.u. of concentration"
-					description="initial concentration external IL-18">0</external_IL_18>	
-
-				<cytoplasmic_volume type="double" units="a.u. of volume"
-					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
-		<!-- (Sara & Fiona) flags for different cell death modes-->		
-				<cell_pyroptosis_flag type="int" units="dimensionless"
-					description="bool for pyropotosis">0</cell_pyroptosis_flag>
-				<cell_bystander_pyroptosis_flag type="int" units="dimensionless"
-					description="bool for bystander pyropotosis">0</cell_bystander_pyroptosis_flag>
-				<cell_virus_induced_apoptosis_flag type="int" units="dimensionless"
-					description="bool for bystander pyropotosis">0</cell_virus_induced_apoptosis_flag>
-		<!-- (Sara & Fiona) variable for internalised propyroptotic cytokine (IL-1b) -->
-				<internalised_pro_pyroptosis_cytokine units="none" type="double"
-					description="used internally to track pro-pyroptotic cytokine concentration">0</internalised_pro_pyroptosis_cytokine>			
-					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -474,9 +411,7 @@
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
 					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
-					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
-				<interferon_viral_RNA_detection type="double" units="dimensionless" 
-					description="infected cell interferon secretion starts at this viral RNA level">1</interferon_viral_RNA_detection>
+					description="infected cell interferon secretion saturates at this viral RNA level">2</interferon_viral_RNA_threshold>
 				
 				<!-- for the immune model --> 
 				<TCell_contact_time type="double" units="min"
@@ -539,16 +474,16 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed>
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">0</activated_cytokine_secretion_rate>
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
 					
 				<!-- tissue damage model -->
 				<antiinflammatory_cytokine_secretion_rate units="1/min" type="double" 
-					description="secretion rate of anti-inflammatory from infected epithelium cell">15</antiinflammatory_cytokine_secretion_rate>
+					description="secretion rate of anti-inflammatory from infected epithelium cell">0</antiinflammatory_cytokine_secretion_rate>
 				<collagen_secretion_rate units="1/min" type="double" 
-					description="secretion rate of collagen from fibroblast">1</collagen_secretion_rate>
+					description="secretion rate of collagen from fibroblast">0</collagen_secretion_rate>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
 				
@@ -569,11 +504,6 @@
 					</options>
 				</motility>
 				<secretion>
-					<!-- (Sara & Fiona) -->
-					<substrate name="pro-pyroptosis cytokine">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
-						<uptake_rate units="1/min">0.01</uptake_rate>
-					</substrate>
 				</secretion>
 			</phenotype>
 			<custom_data>
@@ -609,13 +539,13 @@
 
 				<secretion>
 					<substrate name="pro-inflammatory cytokine">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 					<substrate name="chemokine">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 					<substrate name="debris">
-						<uptake_rate units="1/min">0.1</uptake_rate>
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -704,7 +634,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">0</activated_cytokine_secretion_rate>
 
 			</custom_data>
 		</cell_definition>		
@@ -884,20 +814,20 @@
 		<!-- example parameters from the template --> 
 		
 		<div_immune type="divider" description="--Immune activation parameters--"/>
-			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">10</immune_dt> 
+			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">0</immune_dt> 
 			
 			<immune_z_offset type="double" units="micron" 
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">4e-9</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">0</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract macrophages">0.3</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">4e-9</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">0</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
@@ -923,7 +853,7 @@
 			<!-- (Michael) added parameters for external_immune-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max fibroblast cell recruitment rate (for saturated signal)">4e-9</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max fibroblast cell recruitment rate (for saturated signal)">0</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
 			<fibroblast_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract fibroblast cells">0.1</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
 			<fibroblast_recruitment_saturation_signal type="double" units="substrate/micron^3"
@@ -938,14 +868,14 @@
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" 
-				description="initial number of macrophages">50</number_of_macrophages>
+				description="initial number of macrophages">0</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
 			<number_of_fibroblast type="int" units="none"
 				description="initial number of fibroblast cells">0</number_of_fibroblast>	
 		<!-- (Adrianne) initial number of DCs in the lung -->
 			<number_of_DCs type="int" units="none" 
-				description="initial number of Dendritic Cells">28</number_of_DCs> 
+				description="initial number of Dendritic Cells">0</number_of_DCs> 
 		<!-- (Adrianne) initial number of CD4 T cells in the lung -->
 			<number_of_CD4_Tcells type="int" units="none" 
 				description="initial number of CD4 Tcells in tissue">0</number_of_CD4_Tcells> 
@@ -978,21 +908,13 @@
 				description="apoptotic epithelial cell color">black</apoptotic_epithelium_color>
 			<apoptotic_immune_color type="string" 
 				description="apoptotic immune cell color">rosybrown</apoptotic_immune_color>
-				
-		<!-- (Sara & Fiona) colours to visualise different modes of cell death -->
-			<pyroptotic_epithelium_color type="string" 
-				description="pyroptotic epithelial cell color">darkorange</pyroptotic_epithelium_color>
-			<pyroptotic_bystander_epithelium_color type="string" 
-				description="pyroptotic epithelial cell color">darkred</pyroptotic_bystander_epithelium_color>
-			<vi_apoptotic_epithelium_color type="string" 
-				description="pyroptotic epithelial cell color">forestgreen</vi_apoptotic_epithelium_color>
-				
+		
 <!---			<lung_epithelium_color type="string" 
 				description="lung epithelium color">blue</lung_epithelium_color> -->
 			<CD8_Tcell_color type="string" 
 				description="CD8 T cell color">red</CD8_Tcell_color>
 			<CD4_Tcell_color type="string" 
-				description="CD4 T cell color">orange</CD4_Tcell_color>
+				description="CD8 T cell color">orange</CD4_Tcell_color>
 			<Macrophage_color type="string" 
 				description="macrophage color">rgb(35,139,69)</Macrophage_color>
 			<activated_macrophage_color type="string" 
@@ -1010,7 +932,7 @@
 			<activated_DC_color type="string" 
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
-				description="fibroblast cell color">blueviolet</fibroblast_color>
+				description="fibroblast cell color">orange</fibroblast_color>
 		
 	</user_parameters>
 	

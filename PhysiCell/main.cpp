@@ -83,7 +83,14 @@
 using namespace BioFVM;
 using namespace PhysiCell;
 
-std::string COVID19_version = "0.3.2"; 
+std::string COVID19_version = "0.4.0"; 
+
+double DM = 0; // global ICs
+double TC = 10;
+double TH1 = 1;
+double TH2 = 1;
+double TCt = 0;
+double Tht = 0;
 
 int main( int argc, char* argv[] )
 {
@@ -145,7 +152,8 @@ int main( int argc, char* argv[] )
 	std::vector<std::string> (*cell_coloring_function)(Cell*) = tissue_coloring_function; 
 	
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() ); 
-	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+//	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+	SVG_plot_virus( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
 	
 	display_citations(); 
 	
@@ -162,6 +170,9 @@ int main( int argc, char* argv[] )
 		report_file.open(filename); 	// create the data log file 
 		report_file<<"simulated time\tnum cells\tnum division\tnum death\twall time"<<std::endl;
 	}
+	
+	std::ofstream dm_tc_file;
+	dm_tc_file.open ("dm_tc.dat");
 	
 	// main loop 
 
@@ -183,6 +194,8 @@ int main( int argc, char* argv[] )
 				if( PhysiCell_settings.enable_full_saves == true )
 				{	
 					sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
+					
+					dm_tc_file << DM << " " << TC << " " << TH1 << " " << TH2 << " " << TCt << " " << Tht << std::endl; //write globals data
 					
 					save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 				}
@@ -207,8 +220,10 @@ int main( int argc, char* argv[] )
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
 			
-			// receptor dynamics 
+			//external_immune_main_model( diffusion_dt );
+			external_immune_model( diffusion_dt );
 			
+			// receptor dynamics 			
 			receptor_dynamics_main_model( diffusion_dt );
 			
 			// detach dead cells 
@@ -260,7 +275,8 @@ int main( int argc, char* argv[] )
 	save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 	
 	sprintf( filename , "%s/final.svg" , PhysiCell_settings.folder.c_str() ); 
-	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+//	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
+	SVG_plot_virus( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
 	
 	// timer 
 	
@@ -278,7 +294,7 @@ int main( int argc, char* argv[] )
 	extern double first_CD8_T_cell_recruitment_time; 
 
 	std::cout << std::endl; 
-	std::cout << "recruited macrophges: " << recruited_macrophages << " starting at time " 
+	std::cout << "recruited macrophages: " << recruited_macrophages << " starting at time " 
 		<< first_macrophage_recruitment_time <<	std::endl; 
 	std::cout << "recruited neutrophils: " << recruited_neutrophils << " starting at time " 
 		<< first_neutrophil_recruitment_time << std::endl; 
