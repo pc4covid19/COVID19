@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string external_immune_version = "0.0.2"; 
+std::string external_immune_version = "0.4.0"; 
 
 Submodel_Information external_immune_info; 
 

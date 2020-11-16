@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string epithelium_submodel_version = "0.1.0"; 
+std::string epithelium_submodel_version = "0.4.0"; 
 
 Submodel_Information epithelium_submodel_info; 
 
@@ -145,6 +145,7 @@ void epithelium_submodel_setup( void )
 	epithelium_submodel_info.microenvironment_variables.push_back( "pro-inflammatory cytokine" ); 
 	epithelium_submodel_info.microenvironment_variables.push_back( "chemokine" ); 
 	epithelium_submodel_info.microenvironment_variables.push_back( "anti-inflammatory cytokine" );
+	epithelium_submodel_info.microenvironment_variables.push_back( "pro-pyroptosis cytokine" );
 		// what custom data do I need? 
 	//epithelium_submodel_info.cell_variables.push_back( "something" ); 
 		// register the submodel  
