@@ -479,6 +479,8 @@
 					description="infected cell interferon secretion starts at this viral RNA level">1</interferon_viral_RNA_detection>
 				
 				<!-- for the immune model --> 
+				<TCell_detection type="double" units="protein"
+					description="protein value at which a T Cell can detect an infected cell">10</TCell_detection>
 				<TCell_contact_time type="double" units="min"
 					description="tracks total contact time with CD8 T cells">0.0</TCell_contact_time>
 				<cell_attachment_rate units="1/min" type="double"
