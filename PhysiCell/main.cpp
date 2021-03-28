@@ -91,6 +91,10 @@ double TH1 = 1;
 double TH2 = 1;
 double TCt = 0;
 double Tht = 0;
+double Bc = 20;
+double Ps = 0;
+double Ig = 0;
+double EPICOUNT = 1;
 
 int main( int argc, char* argv[] )
 {
@@ -195,7 +199,7 @@ int main( int argc, char* argv[] )
 				{	
 					sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
 					
-					dm_tc_file << DM << " " << TC << " " << TH1 << " " << TH2 << " " << TCt << " " << Tht << std::endl; //write globals data
+					dm_tc_file << DM << " " << TC << " " << TH1 << " " << TH2 << " " << TCt << " " << Tht <<" " << Bc <<" " << Ps <<" " << Ig << std::endl; //write globals data
 					
 					save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 				}
@@ -313,7 +317,6 @@ int main( int argc, char* argv[] )
 		{ recruited_Tcells++; }
 		if( pC->type == 4 )
 		{ recruited_macrophages++; }
-
 	}
 	std::cout << "remaining macrophages: " << recruited_macrophages << std::endl; 
 	std::cout << "remaining neutrophils: " << recruited_neutrophils << std::endl; 

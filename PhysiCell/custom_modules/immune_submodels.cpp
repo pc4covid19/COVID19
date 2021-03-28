@@ -1437,9 +1437,9 @@ void immune_cell_recruitment( double dt )
 		}
 		
 		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**
-		static double DC_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
-		static double DC_min_signal = parameters.doubles( "macrophage_recruitment_min_signal" ); 
-		static double DC_sat_signal = parameters.doubles( "macrophage_recruitment_saturation_signal" ); 
+		static double DC_recruitment_rate = parameters.doubles( "DC_max_recruitment_rate" ); 
+		static double DC_min_signal = parameters.doubles( "DC_recruitment_min_signal" ); 
+		static double DC_sat_signal = parameters.doubles( "DC_recruitment_saturation_signal" ); 
 		static double DC_max_minus_min = DC_sat_signal - DC_min_signal; 
 				
 		total_rate = 0;

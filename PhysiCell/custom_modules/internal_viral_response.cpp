@@ -123,7 +123,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = pCell->custom_data["activated_cytokine_secretion_rate"]/10;
 	}
 	
-	// (Adrianne) check whether the cell is undergoing pyroptosis and if so, evalute the pyropotosis model
+	// (Adrianne) check whether the cell is undergoing pyroptosis and if so, evaluate the pyropotosis model
 	if( pCell->custom_data["cell_pyroptosis_flag"]==1 )
 	{
 		pyroptosis_cascade( pCell, phenotype, dt ); 
@@ -141,7 +141,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
     //phenotype.secretion.uptake_rates[nV_external] = pCell->custom_data[nR_bind] * pCell->custom_data[nR_EU]; 
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
-	if( R>=200 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
+	if( R>=150 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
 		double cell_death_pyroptosis_probability = (R-200)/(1000-200); 

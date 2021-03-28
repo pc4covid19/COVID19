@@ -385,7 +385,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.01</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -462,10 +462,10 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -508,8 +508,8 @@
 				<threshold_neutrophil_volume units="micron" type="double" 
 					desription="Threshold volume for neutrophil exhaustion">1581</threshold_neutrophil_volume>
 				<!-- (adrianne) death rate of exhausted macrophages is 5x faster than death rate in activated macrophages, need a motivation for this death rate from the literature --> 
-				<exhausted_macrophage_death_rat units="1/min" type="double" 
-					desription="Threshold volume for neutrophil exhaustion">0.01</exhausted_macrophage_death_rat>
+				<exhausted_macrophage_death_rate units="1/min" type="double" 
+					desription="Threshold volume for neutrophil exhaustion">0.01</exhausted_macrophage_death_rate>
 				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be able to phagocytose infected cells --> 
 				<ability_to_phagocytose_infected_cell units="dimensionless" type="int"
 					description="Boolean for whether macrophages can phagocytose infected cells">0</ability_to_phagocytose_infected_cell>
@@ -528,10 +528,9 @@
 				
 				
 				
-<!-- 					
+					
 				<phagocytosis_relative_target_cutoff_size unit="dimensionless" type="double"
 					desription="do not phagocytose anything over this size (relative to cell's volume)">1.1</phagocytosis_relative_target_cutoff_size>
---> <!-- disable in v 3.2 -->
 
 				<sensitivity_to_debris_chemotaxis units="dimensionless" type="double" 
 					description="relative sensitivity to debris in chemotaxis">1.0</sensitivity_to_debris_chemotaxis>
@@ -904,6 +903,13 @@
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+				
+			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
+				description="max macrophage recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
+			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
+				description="min concentration to attract macrophages">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
+			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
+				description="saturating concentration to attract macrophages">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"

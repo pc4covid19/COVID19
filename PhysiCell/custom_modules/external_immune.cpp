@@ -38,6 +38,10 @@ void external_immune_model( double dt )
 	extern double TH2;
 	extern double TCt;
 	extern double Tht;
+	extern double Bc;
+	extern double Ps;
+	extern double Ig;
+	extern double EPICOUNT;
 	static double dC = parameters.doubles( "TC_death_rate" ); 
 	static double pT1 = parameters.doubles( "max_activation_TC" ); 
 	static double pT2 = parameters.doubles( "half_max_activation_TC" ); 
@@ -47,18 +51,28 @@ void external_immune_model( double dt )
 	static double immunevolume = 1;
 	static double dDm = parameters.doubles( "DM_decay" );
 	static double sTh1 = 0.0007;
-	static double pTh1 = 0.0000083;
+	static double pTh1 = 0.000015;
 	static double dTh1 = 7e-7;
-	static double mTh = 0.000015;
-	static double sTh2 = 0.00003;
+	static double mTh = 0.0000156;
+	static double sTh2 = 0.000028;
 	static double pTh2 = 0.000002;
 	static double ro = 1;
 	static double CD8_Tcell_recruitment_rate = parameters.doubles( "T_Cell_Recruitment" ); 
+	static double dB = 0.000014;
+	static double B0 = 20;
+	static double rB1 = 0.0031;
+	static double h = 1;
+	static double rB2 = 1000;
+	static double pSc = 0.00021;
+	static double dS = 0.00014;
+	static double pAS = 0.056;
+	static double dMc = 0.0014;
 		
+	double lypmh_scale = EPICOUNT / 500000;
 	// actual model goes here 
 	
-	double x[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize x
-	double f[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize f
+	double x[4][9]={{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize x
+	double f[4][9]={{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize f
 	int j;
 	
 	// TC update
@@ -79,20 +93,26 @@ void external_immune_model( double dt )
 	
 	
 
-	x[0][0] = DM/0.02; 
+	x[0][0] = DM/lypmh_scale; 
 	x[0][1] = TC; //initial values
 	x[0][2] = TH1; //initial values
 	x[0][3] = TH2; //initial values
-	x[0][4] = TCt/0.02;
-	x[0][5] = Tht/0.02;
+	x[0][4] = TCt/lypmh_scale;
+	x[0][5] = Tht/lypmh_scale;
+	x[0][6] = Bc;
+	x[0][7] = Ps;
+	x[0][8] = Ig;
 	
     for(j = 0; j < 4; j++){
 		f[j][0] = {-dDm*x[j][0]/immunevolume}; //define function
         f[j][1] = {dR_TC-dC*x[j][1]+pT1*x[j][0]*x[j][1]/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)};
-		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(1+x[j][3])-mTh*x[j][2]}; //define function
+		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //define function
 		f[j][3] = {(sTh2*x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //define function
 		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //define function
 		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //define function
+		f[j][6] = {dB*B0+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //define function
+		f[j][7] = {pSc*x[j][6]-dS*x[j][7]}; //define function
+		f[j][8] = {pAS*x[j][7]-dMc*x[j][8]}; //define function
         if (j== 0 || j==1){
             x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 			x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
@@ -100,6 +120,9 @@ void external_immune_model( double dt )
 			x[j+1][3]=x[0][3]+dt/2*f[j][3]; //first and second x approximations
 			x[j+1][4]=x[0][4]+dt/2*f[j][4]; //first and second x approximations
 			x[j+1][5]=x[0][5]+dt/2*f[j][5]; //first and second x approximations
+			x[j+1][6]=x[0][6]+dt/2*f[j][6]; //first and second x approximations
+			x[j+1][7]=x[0][7]+dt/2*f[j][7]; //first and second x approximations
+			x[j+1][8]=x[0][8]+dt/2*f[j][8]; //first and second x approximations
 		}
         if (j== 2){
             x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
@@ -108,17 +131,21 @@ void external_immune_model( double dt )
 			x[j+1][3]=x[0][3]+dt*f[j][3]; //third approximation
 			x[j+1][4]=x[0][4]+dt*f[j][4]; //third approximation
 			x[j+1][5]=x[0][5]+dt*f[j][5]; //third approximation
+			x[j+1][6]=x[0][6]+dt*f[j][6]; //third approximation
+			x[j+1][7]=x[0][7]+dt*f[j][7]; //third approximation
+			x[j+1][8]=x[0][8]+dt*f[j][8]; //third approximation
 		}
-    }
+    } 
 
-	//std::cout << dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6) << std::endl; 
-
-	DM=(x[0][0]+dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6))*0.02;
+	DM=(x[0][0]+dt*(f[0][0]/6+f[1][0]/3+f[2][0]/3+f[3][0]/6))*lypmh_scale;
 	TC=x[0][1]+dt*(f[0][1]/6+f[1][1]/3+f[2][1]/3+f[3][1]/6);
 	TH1=x[0][2]+dt*(f[0][2]/6+f[1][2]/3+f[2][2]/3+f[3][2]/6); //detirmine n+1
 	TH2=x[0][3]+dt*(f[0][3]/6+f[1][3]/3+f[2][3]/3+f[3][3]/6); //detirmine n+1
-	TCt=(x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6))*0.02;
-	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*0.02;
+	TCt=(x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6))*lypmh_scale;
+	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*lypmh_scale;
+	Bc=x[0][6]+dt*(f[0][6]/6+f[1][6]/3+f[2][6]/3+f[3][6]/6);
+	Ps=x[0][7]+dt*(f[0][7]/6+f[1][7]/3+f[2][7]/3+f[3][7]/6);
+	Ig=x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6);
 	
 	return; 
 }
