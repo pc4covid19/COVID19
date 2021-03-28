@@ -124,7 +124,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	}
 	
 	// (Adrianne) check whether the cell is undergoing pyroptosis and if so, evaluate the pyropotosis model
-	if( pCell->custom_data["cell_pyroptosis_flag"]==1 )
+	if( pCell->custom_data["cell_pyroptosis_flag"]>0.5 )
 	{
 		pyroptosis_cascade( pCell, phenotype, dt ); 
 		return;

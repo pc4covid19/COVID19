@@ -176,7 +176,8 @@ int main( int argc, char* argv[] )
 	}
 	
 	std::ofstream dm_tc_file;
-	dm_tc_file.open ("dm_tc.dat");
+	sprintf( filename , "%s/dm_tc.dat" , PhysiCell_settings.folder.c_str() ); 
+	dm_tc_file.open (filename);
 	
 	// main loop 
 
