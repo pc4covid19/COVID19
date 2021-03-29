@@ -106,11 +106,11 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0.0001*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
-			f[j][5] = {0.0001*x[j][1]}; //counter for export
+			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
@@ -151,45 +151,49 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 					pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
 				}
 				else {
+					if( pCell->nearest_density_vector()[nV_external] >= 1.0 / microenvironment.mesh.dV ) {
+						pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
+					}
+					else {
 					std::vector<double> dummypos(3, 0);
 					dummypos[0]=pCell->position[0]+20;
 					dummypos[1]=pCell->position[1];
 					dummypos[2]=pCell->position[2];
 				
-				std::vector<double> dummypos0(3, 0);
-				dummypos0[0]=pCell->position[0]-20;
-				dummypos0[1]=pCell->position[1];
-				dummypos0[2]=pCell->position[2];
+					std::vector<double> dummypos0(3, 0);
+					dummypos0[0]=pCell->position[0]-20;
+					dummypos0[1]=pCell->position[1];
+					dummypos0[2]=pCell->position[2];
 				
-				std::vector<double> dummypos1(3, 0);
-				dummypos1[0]=pCell->position[0];
-				dummypos1[1]=pCell->position[1]+20;
-				dummypos1[2]=pCell->position[2];
+					std::vector<double> dummypos1(3, 0);
+					dummypos1[0]=pCell->position[0];
+					dummypos1[1]=pCell->position[1]+20;
+					dummypos1[2]=pCell->position[2];
 				
-				std::vector<double> dummypos2(3, 0);
-				dummypos2[0]=pCell->position[0];
-				dummypos2[1]=pCell->position[1]-20;
-				dummypos2[2]=pCell->position[2];
+					std::vector<double> dummypos2(3, 0);
+					dummypos2[0]=pCell->position[0];
+					dummypos2[1]=pCell->position[1]-20;
+					dummypos2[2]=pCell->position[2];
 				
-				std::vector<double> dummypos00(3, 0);
-				dummypos00[0]=pCell->position[0]-20;
-				dummypos00[1]=pCell->position[1]+20;
-				dummypos00[2]=pCell->position[2];
+					std::vector<double> dummypos00(3, 0);
+					dummypos00[0]=pCell->position[0]-20;
+					dummypos00[1]=pCell->position[1]+20;
+					dummypos00[2]=pCell->position[2];
 				
-				std::vector<double> dummypos01(3, 0);
-				dummypos01[0]=pCell->position[0]+20;
-				dummypos01[1]=pCell->position[1]+20;
-				dummypos01[2]=pCell->position[2];
+					std::vector<double> dummypos01(3, 0);
+					dummypos01[0]=pCell->position[0]+20;
+					dummypos01[1]=pCell->position[1]+20;
+					dummypos01[2]=pCell->position[2];
 				
-				std::vector<double> dummypos11(3, 0);
-				dummypos11[0]=pCell->position[0]+20;
-				dummypos11[1]=pCell->position[1]-20;
-				dummypos11[2]=pCell->position[2];
+					std::vector<double> dummypos11(3, 0);
+					dummypos11[0]=pCell->position[0]+20;
+					dummypos11[1]=pCell->position[1]-20;
+					dummypos11[2]=pCell->position[2];
 				
-				std::vector<double> dummypos10(3, 0);
-				dummypos10[0]=pCell->position[0]-20;
-				dummypos10[1]=pCell->position[1]-20;
-				dummypos10[2]=pCell->position[2];
+					std::vector<double> dummypos10(3, 0);
+					dummypos10[0]=pCell->position[0]-20;
+					dummypos10[1]=pCell->position[1]-20;
+					dummypos10[2]=pCell->position[2];
 				
 				if( dummypos[0]>x_max ) {
 					if( dummypos1[1]>y_max ) {
@@ -242,6 +246,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 					}
 				}
 				}
+				}
 			}
 		}
 		
@@ -254,11 +259,11 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0.0001*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
-			f[j][5] = {0.0001*x[j][1]}; //counter for export
+			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
