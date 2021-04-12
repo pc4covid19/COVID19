@@ -223,7 +223,7 @@ int main( int argc, char* argv[] )
 			}
 
 			// update the microenvironment
-			microenvironment.simulate_diffusion_decay( diffusion_dt );
+			microenvironment.simulate_diffusion_decay( diffusion_dt ); //diffusion may need to occur later AFTER discrete events
 			
 			//external_immune_main_model( diffusion_dt );
 			external_immune_model( diffusion_dt );

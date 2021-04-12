@@ -48,7 +48,6 @@ void external_immune_model( double dt )
 	static double dT1 = parameters.doubles( "max_clearance_TC" ); 
 	static double dT2 = parameters.doubles( "half_max_clearance_TC" ); 
 	static double Tc0 = parameters.doubles( "TC_population_threshold" ); 
-	static double immunevolume = 1;
 	static double dDm = parameters.doubles( "DM_decay" );
 	static double sTh1 = 0.0007;
 	static double pTh1 = 0.000015;
@@ -58,15 +57,15 @@ void external_immune_model( double dt )
 	static double pTh2 = 0.000002;
 	static double ro = 1;
 	static double CD8_Tcell_recruitment_rate = parameters.doubles( "T_Cell_Recruitment" ); 
-	static double dB = 0.000014;
-	static double B0 = 20;
-	static double rB1 = 0.0031;
-	static double h = 1;
-	static double rB2 = 1000;
-	static double pSc = 0.00021;
+	static double dB = 1.74e-6;
+	static double B0 = 3000;
+	static double rB1 = 0.0026;
+	static double h = 6.6;
+	static double rB2 = 8800;
+	static double pSc = 0.0002;
 	static double dS = 0.00014;
-	static double pAS = 0.056;
-	static double dMc = 0.0014;
+	static double pAS = 0.005;
+	static double dMc = 0.00139;
 		
 	double lypmh_scale = EPICOUNT / 500000;
 	// actual model goes here 
@@ -101,10 +100,10 @@ void external_immune_model( double dt )
 	x[0][5] = Tht/lypmh_scale;
 	x[0][6] = Bc;
 	x[0][7] = Ps;
-	x[0][8] = Ig;
+	x[0][8] = Ig/lypmh_scale;
 	
     for(j = 0; j < 4; j++){
-		f[j][0] = {-dDm*x[j][0]/immunevolume}; //define function
+		f[j][0] = {-dDm*x[j][0]}; //define function
         f[j][1] = {dR_TC-dC*x[j][1]+pT1*x[j][0]*x[j][1]/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)};
 		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //define function
 		f[j][3] = {(sTh2*x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //define function
@@ -145,7 +144,40 @@ void external_immune_model( double dt )
 	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*lypmh_scale;
 	Bc=x[0][6]+dt*(f[0][6]/6+f[1][6]/3+f[2][6]/3+f[3][6]/6);
 	Ps=x[0][7]+dt*(f[0][7]/6+f[1][7]/3+f[2][7]/3+f[3][7]/6);
-	Ig=x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6);
+	Ig=x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6)*lypmh_scale;
+	
+	double x_min = microenvironment.mesh.bounding_box[0] + 1e-6; 
+	double x_max = microenvironment.mesh.bounding_box[3] - 1e-6; 
+	double y_min = microenvironment.mesh.bounding_box[1] + 1e-6; 
+	double y_max = microenvironment.mesh.bounding_box[4] - 1e-6; 
+	
+	double number_of_Ig=floor(Ig);
+	Ig -= number_of_Ig;
+	
+	static int nAb = microenvironment.find_density_index( "Ig" ); 
+	static int nV = microenvironment.find_density_index( "virion" ); 
+	
+	//std::cout << "Placing " << number_of_Ig << " Ig ... " << std::endl; 
+	for( int n=0 ; n < number_of_Ig ; n++ )
+		{
+			// pick a random voxel 
+			std::vector<double> position = {0,0,0}; 
+			position[0] = x_min + (x_max-x_min)*UniformRandom(); 
+			position[1] = y_min + (y_max-y_min)*UniformRandom(); 
+			
+			int m = microenvironment.nearest_voxel_index( position ); 
+
+			microenvironment(m)[nAb] += 1.0 / microenvironment.mesh.dV; 
+		}
+	#pragma omp parallel for
+	for( int n=0 ; n < microenvironment.number_of_voxels() ; n++ )
+		{
+			if (microenvironment(n)[nV]>0 && microenvironment(n)[nAb]>0) {
+			double rate = 1.5 * microenvironment(n)[nAb] * microenvironment(n)[nV] * dt; //rate is 1.5 after conversions for now - set to zero in no Ig cases
+			microenvironment(n)[nAb] -= rate;
+			microenvironment(n)[nV] -= rate;
+			}
+		}
 	
 	return; 
 }
