@@ -174,6 +174,15 @@ void external_immune_model( double dt )
 		{
 			if (microenvironment(n)[nV]>0 && microenvironment(n)[nAb]>0) {
 			double rate = 1.5 * microenvironment(n)[nAb] * microenvironment(n)[nV] * dt; //rate is 1.5 after conversions for now - set to zero in no Ig cases
+			if (rate < 0) {
+				rate=0;
+			}
+			if (rate > microenvironment(n)[nAb]) {
+				rate = microenvironment(n)[nAb];
+			}
+			if (rate > microenvironment(n)[nV]) {
+				rate = microenvironment(n)[nV];
+			}
 			microenvironment(n)[nAb] -= rate;
 			microenvironment(n)[nV] -= rate;
 			}

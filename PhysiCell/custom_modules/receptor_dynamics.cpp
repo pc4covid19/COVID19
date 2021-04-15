@@ -151,7 +151,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 					pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
 				}
 				else {
-					if( pCell->nearest_density_vector()[nV_external] >= 1.0 / microenvironment.mesh.dV ) {
+					if( pCell->nearest_density_vector()[nV_external] >= 0.5 / microenvironment.mesh.dV ) {
 						pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
 					}
 					else {
