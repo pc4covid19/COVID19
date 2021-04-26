@@ -64,7 +64,7 @@ void external_immune_model( double dt )
 	static double rB2 = 8800;
 	static double pSc = 0.0002;
 	static double dS = 0.00014;
-	static double pAS = 0.005;
+	static double pAS = 0.00005;
 	static double dMc = 0.00139;
 		
 	double lypmh_scale = EPICOUNT / 500000;
