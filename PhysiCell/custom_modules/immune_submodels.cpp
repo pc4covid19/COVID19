@@ -842,7 +842,7 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// (Adrianne) get type of CD8+ T cell
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type;
 	
-	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
+	/* // (Adrianne) if DC is already activated, then check whether it leaves the tissue
 	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.002)
 	{
 		extern double DM; //declare existance of DC lymph
@@ -853,8 +853,8 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		{ DM++; } // add one
 		return;
 		
-	}
-	else if( pCell->custom_data["activated_immune_cell"] > 0.5 ) // (Adrianne) activated DCs that don't leave the tissue can further activate CD8s increasing their proliferation rate and attachment rates
+	} */
+	if( pCell->custom_data["activated_immune_cell"] > 0.5 ) // (Adrianne) activated DCs that don't leave the tissue can further activate CD8s increasing their proliferation rate and attachment rates
 	{
 		
 		std::vector<Cell*> neighbors = pCell->cells_in_my_container(); // (Adrianne) find cells in a neighbourhood of DCs

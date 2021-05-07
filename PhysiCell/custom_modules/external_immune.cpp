@@ -91,8 +91,8 @@ void external_immune_model( double dt )
 	
 	
 	
-
-	x[0][0] = DM/lypmh_scale; 
+	extern std::vector<int>history;
+	x[0][0] = (DM+history.back())/lypmh_scale; 
 	x[0][1] = TC; //initial values
 	x[0][2] = TH1; //initial values
 	x[0][3] = TH2; //initial values
