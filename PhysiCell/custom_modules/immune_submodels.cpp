@@ -1,4 +1,5 @@
 #include "./immune_submodels.h" 
+#include <algorithm> 
 
 using namespace PhysiCell; 
 
@@ -1401,38 +1402,54 @@ void immune_cell_recruitment( double dt )
 		// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
 		
 		extern double TCt; 
+		extern std::vector<int>historyTc;
 		
 		int number_of_new_cells = (int) floor( TCt ); 
-		TCt=TCt-number_of_new_cells;
-		recruited_Tcells += number_of_new_cells;		
+		TCt-=number_of_new_cells;
 		
-		if( number_of_new_cells )
+		std::rotate(historyTc.rbegin(),historyTc.rbegin()+1,historyTc.rend());
+		historyTc.front() = number_of_new_cells;
+		
+		
+		
+		recruited_Tcells += historyTc.back();
+	
+	
+		static int nAb = microenvironment.find_density_index( "Ig" ); 
+		static int nV = microenvironment.find_density_index( "virion" ); 		
+		
+		if( historyTc.back() )
 		{
 			if( t_immune < first_CD8_T_cell_recruitment_time )
 			{ first_CD8_T_cell_recruitment_time = t_immune; }
 			
-			std::cout << "\tRecruiting " << number_of_new_cells << " CD8 T cells ... " << std::endl; 
+			std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << std::endl; 
 
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < historyTc.back() ; n++ )
 			{ create_infiltrating_Tcell(); }
 		}
 		
 		
 		// CD4 recruitment (Michael) changed to take floor of ODE value
 		extern double Tht; 
+		extern std::vector<int>historyTh;
 		
 		number_of_new_cells = (int) floor( Tht );
-		Tht=Tht-number_of_new_cells;
-		recruited_CD4Tcells += number_of_new_cells;		
+		Tht-=number_of_new_cells;
 		
-		if( number_of_new_cells )
+		std::rotate(historyTh.rbegin(),historyTh.rbegin()+1,historyTh.rend());
+		historyTh.front() = number_of_new_cells;
+		
+		recruited_CD4Tcells += historyTh.back();	
+		
+		if( historyTh.back() )
 		{
 			if( t_immune < first_CD4_T_cell_recruitment_time )
 			{ first_CD4_T_cell_recruitment_time = t_immune; }
 			
-			std::cout << "\tRecruiting " << number_of_new_cells << " CD4 T cells ... " << std::endl; 
+			std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << std::endl; 
 
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < historyTh.back() ; n++ )
 			{ create_infiltrating_CD4Tcell(); }
 		}
 		

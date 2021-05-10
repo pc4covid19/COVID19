@@ -1,4 +1,5 @@
 #include "./external_immune.h" 
+#include <algorithm> 
 
 using namespace PhysiCell; 
 
@@ -92,6 +93,8 @@ void external_immune_model( double dt )
 	
 	
 	extern std::vector<int>history;
+	extern std::vector<int>historyIg;
+	
 	x[0][0] = (DM+history.back())/lypmh_scale; 
 	x[0][1] = TC; //initial values
 	x[0][2] = TH1; //initial values
@@ -154,11 +157,15 @@ void external_immune_model( double dt )
 	double number_of_Ig=floor(Ig);
 	Ig -= number_of_Ig;
 	
+	std::rotate(historyIg.rbegin(),historyIg.rbegin()+1,historyIg.rend());
+	historyIg.front() = number_of_Ig;
+	
+	
 	static int nAb = microenvironment.find_density_index( "Ig" ); 
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	
 	//std::cout << "Placing " << number_of_Ig << " Ig ... " << std::endl; 
-	for( int n=0 ; n < number_of_Ig ; n++ )
+	for( int n=0 ; n < historyIg.back() ; n++ )
 		{
 			// pick a random voxel 
 			std::vector<double> position = {0,0,0}; 
