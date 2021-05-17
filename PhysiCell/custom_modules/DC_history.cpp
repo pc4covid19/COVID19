@@ -44,7 +44,7 @@ void DC_history_model( Cell* pCell, Phenotype& phenotype, double dt )
 	{ return; } 
 	
 	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
-	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.000003)
+	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.0000033)
 	{
 		// (Adrianne) DC leaves the tissue and so we lyse that DC
 		std::cout<<"DC leaves tissue"<<std::endl;

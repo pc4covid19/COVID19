@@ -25,4 +25,7 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt );
 
 void epithelium_submodel_setup( void ); 
 
+// (Adrianne V5) Model for ROS induction of cell apoptosis
+void ROS_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt ); 
+
 #endif 

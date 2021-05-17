@@ -217,6 +217,15 @@
 			<initial_condition units="mol/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
+		
+		<variable name="ROS" units="mol/micron^3" ID="10">
+			<physical_parameter_set> 
+				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
+				<decay_rate units="1/min">60</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mol/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+		</variable>
 
 		<options>
 			<calculate_gradients>true</calculate_gradients>
@@ -342,6 +351,12 @@
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 
 						<substrate name="collagen">
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+					</substrate> 	
+					<substrate name="ROS">
+						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+					</substrate> 	
+					<substrate name="Ig">
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate> 	
 						
@@ -549,7 +564,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed>
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">3</activated_cytokine_secretion_rate>
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
@@ -561,7 +576,9 @@
 					description="secretion rate of collagen from fibroblast">1</collagen_secretion_rate>
 
 				<!-- your custom data and parameters go here (for new submodels) --> 
-				
+				<!-- (AJ-V5) CD8/CD4 T cell generation model -->
+				<generation units="dimensionless" type="int"
+					description="cell proliferation generation">3</generation>
 			
 			</custom_data>
 		</cell_definition>
@@ -714,7 +731,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">3</activated_cytokine_secretion_rate>
 
 			</custom_data>
 		</cell_definition>		
@@ -1030,6 +1047,24 @@
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
 				description="fibroblast cell color">blueviolet</fibroblast_color>
+				
+		<!-- (Adrianne V5)  Rate that neutrophils and macs uptake virus, needs to be determined from literature-->
+			<phagocytes_virus_uptake_rate type="double" units="none"
+				description="Rate that phagocytes uptake virus after activation">0.0001</phagocytes_virus_uptake_rate>
+		
+		<!-- (Adrianne v5) Rate that neutrophils (activated) secrete ROS -->
+			<ROS_secretion_rate type="double" units="none"
+				description="Rate that neutrophils secrete ROS">0.01</ROS_secretion_rate>
+		<!-- (Adrianne v5) ROS dammage half effect -->
+			<epsilon_ROS type="double" units="none"
+				description="ROS half-effect">10</epsilon_ROS>
+				
+		<!-- (Adrianne V5) Antibody binding rate and half effect-->
+			<Antibody_binding_rate type="double" units="none"
+				description="Binding rate of antibody to infected cells">0.1</Antibody_binding_rate>
+		
+			<antibody_half_effect type="double" units="none"
+				description="Half effect of antibody on macrophage phagocytosis">0.1</antibody_half_effect>
 		
 	</user_parameters>
 	

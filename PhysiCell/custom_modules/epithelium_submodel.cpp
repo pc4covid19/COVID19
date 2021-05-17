@@ -32,6 +32,9 @@ void epithelium_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// T-cell based death
 	TCell_induced_apoptosis(pCell, phenotype, dt ); 
 	
+	// (Adrianne V5) ROS induced cell death model
+	ROS_induced_apoptosis(pCell, phenotype, dt);
+	
 	// if I am dead, remove all adhesions 
 	static int apoptosis_index = phenotype.death.find_death_model_index( "apoptosis" ); 
 	if( phenotype.death.dead == true )
@@ -182,6 +185,42 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		
 		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
 		pCell->phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate"]; 
+		pCell->phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+		
+		pCell->functions.update_phenotype = NULL; 
+	}
+	
+	return; 
+}
+
+void ROS_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" ); 
+	static int ROS_index = microenvironment.find_density_index( "ROS" ); 
+	double ROS_amount = pCell->nearest_density_vector()[ROS_index];
+	static int debris_index = microenvironment.find_density_index( "debris" ); 
+	static int proinflammatory_cytokine_index = microenvironment.find_density_index("pro-inflammatory cytokine");
+	
+	double epsilon_ROS = parameters.doubles("epsilon_ROS");
+	
+	double prob_apoptosis = ROS_amount/(ROS_amount+epsilon_ROS);
+	
+	if( UniformRandom() < prob_apoptosis )
+	{
+		std::cout<<ROS_amount<<" "<<epsilon_ROS<<std::endl;
+		// make sure to get rid of all adhesions! 
+		// detach all attached cells 
+		// remove_all_adhesions( pCell ); 
+		
+		#pragma omp critical
+		{
+		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from ROS" << std::endl; 
+		}
+		
+		// induce death 
+		pCell->start_death( apoptosis_index ); 
+		
+		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
 		pCell->phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
 		
 		pCell->functions.update_phenotype = NULL; 

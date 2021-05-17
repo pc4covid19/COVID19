@@ -98,7 +98,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 		
 	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
 	double R = pCell->custom_data[nR];
-	
+	static int antibody_index = microenvironment.find_density_index( "Ig");
 	
 	
 	
@@ -106,6 +106,8 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	if( R >= 1.00 - 1e-16 ) 
 	{
 		pCell->custom_data["infected_cell_chemokine_secretion_activated"] = 1.0; 
+		// (AJ-V5) Antibody binding starts once the cell is infected
+		pCell->phenotype.secretion.uptake_rates[antibody_index]=parameters.doubles("Antibody_binding_rate"); 
 	}
 
 	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
@@ -120,7 +122,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 		phenotype.secretion.saturation_densities[chemokine_index] = 1.0;
 
 		// (Adrianne) adding pro-inflammatory cytokine secretion by infected cells
-		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = pCell->custom_data["activated_cytokine_secretion_rate"]/10;
+		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = pCell->custom_data["activated_cytokine_secretion_rate"];
 	}
 	
 	// (Adrianne) check whether the cell is undergoing pyroptosis and if so, evaluate the pyropotosis model
