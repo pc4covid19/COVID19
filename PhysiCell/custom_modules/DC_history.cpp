@@ -33,7 +33,7 @@ void DC_history_model( Cell* pCell, Phenotype& phenotype, double dt )
 	// bookkeeping -- find microenvironment variables we need
 
 	// bookkeeping -- find custom data we need 
-
+	static double DCprob = parameters.doubles( "DC_leave_prob" ); 
 	extern double DCAMOUNT; //declare existance of counter
 	// do nothing if dead 
 	if( phenotype.death.dead == true )
@@ -44,7 +44,7 @@ void DC_history_model( Cell* pCell, Phenotype& phenotype, double dt )
 	{ return; } 
 	
 	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
-	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.0000033)
+	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < DCprob)
 	{
 		// (Adrianne) DC leaves the tissue and so we lyse that DC
 		std::cout<<"DC leaves tissue"<<std::endl;

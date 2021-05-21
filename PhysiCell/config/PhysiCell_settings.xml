@@ -988,6 +988,8 @@
 				description="Ig recuitment rate">0.00005</Ig_recuitment>
 			<Ig_degradation type="double" units="cells/min"
 				description="Ig degradation rate">0.00139</Ig_degradation>
+			<DC_leave_prob type="double" units="cells/min"
+				description="probability of DC leaving to lymph node">0.0000033</DC_leave_prob>
 			<!-- (Michael) added parameters for external_immune-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
