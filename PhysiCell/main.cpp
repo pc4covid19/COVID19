@@ -99,7 +99,6 @@ double Ig = 0;
 double EPICOUNT = 1;
 
 std::vector<int> history(144000);
-std::vector<int> historyIg(72000);
 std::vector<int> historyTc(120);
 std::vector<int> historyTh(120);
 //size 72000 - 0.5 day -> 0.01min
