@@ -956,6 +956,38 @@
 				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
+			<Th1_max_activation type="double" units="cells/min"
+				description="Th1 max activation speed">0.0007</Th1_max_activation>
+			<Th1_damping type="double" units="cells/min"
+				description="Th1 damping factor">0.000015</Th1_damping>
+			<Th1_decay type="double" units="cells/min"
+				description="Th1 active decay rate">7e-7</Th1_decay>
+			<Th_base_decay type="double" units="cells/min"
+				description="Th base dacay rates">0.0000156</Th_base_decay>
+			<Th2_self_feeback type="double" units="cells/min"
+				description="Th2 max self feeback speed">0.000028</Th2_self_feeback>
+			<Th2_max_conversion type="double" units="cells/min"
+				description="Th2 max conversion speed">0.000002</Th2_max_conversion>
+			<Th1_Th2_conversion_wieght type="double" units="cells/min"
+				description="Th1 to Th2 conversion wieght">1</Th1_Th2_conversion_wieght>
+			<BCell_base_rate type="double" units="cells/min"
+				description="BCell basal rates">1.74e-6</BCell_base_rate>
+			<BCell_base_value type="double" units="cells/min"
+				description="BCell basal value">3000</BCell_base_value>
+			<BCell_DC_proliferation type="double" units="cells/min"
+				description="BCell DC influenced proliferation">0.0026</BCell_DC_proliferation>
+			<BCell_Th2_wieght_function type="double" units="cells/min"
+				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
+			<BCell_damping type="double" units="cells/min"
+				description="BCell damping value">8800</BCell_damping>
+			<PCell_recuitment type="double" units="cells/min"
+				description="PCell recuitment rate">0.0002</PCell_recuitment>
+			<PCell_degradation type="double" units="cells/min"
+				description="PCell degradation rate">0.00014</PCell_degradation>
+			<Ig_recuitment type="double" units="cells/min"
+				description="Ig recuitment rate">0.00005</Ig_recuitment>
+			<Ig_degradation type="double" units="cells/min"
+				description="Ig degradation rate">0.00139</Ig_degradation>
 			<!-- (Michael) added parameters for external_immune-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
