@@ -105,15 +105,15 @@ void external_immune_model( double dt )
 	x[0][8] = Ig/lypmh_scale;
 	
     for(j = 0; j < 4; j++){
-		f[j][0] = {-dDm*x[j][0]}; //define function
-        f[j][1] = {dR_TC-dC*x[j][1]+pT1*x[j][0]*x[j][1]/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)};
-		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //define function
-		f[j][3] = {(sTh2*x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //define function
-		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //define function
-		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //define function
-		f[j][6] = {dB*B0+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //define function
-		f[j][7] = {pSc*x[j][6]-dS*x[j][7]}; //define function
-		f[j][8] = {pAS*x[j][7]-dMc*x[j][8]}; //define function
+		f[j][0] = {-dDm*x[j][0]}; //DM
+        f[j][1] = {dR_TC-dC*x[j][1]+pT1*((1000000-x[j][1])/(1000000))*x[j][0]*x[j][1]/(x[j][0]+pT2)-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)}; //Tc
+		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //Th1
+		f[j][3] = {(sTh2*x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //Th2
+		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //CD8 export
+		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //CD4 export
+		f[j][6] = {dB*B0+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //B-Cell
+		f[j][7] = {pSc*x[j][6]-dS*x[j][7]}; //P-Cell
+		f[j][8] = {pAS*x[j][7]-dMc*x[j][8]}; //Ig
         if (j== 0 || j==1){
             x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 			x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
