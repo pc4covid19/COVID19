@@ -146,7 +146,7 @@ void external_immune_model( double dt )
 	Tht=(x[0][5]+dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6))*lypmh_scale;
 	Bc=x[0][6]+dt*(f[0][6]/6+f[1][6]/3+f[2][6]/3+f[3][6]/6);
 	Ps=x[0][7]+dt*(f[0][7]/6+f[1][7]/3+f[2][7]/3+f[3][7]/6);
-	Ig=x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6)*lypmh_scale;
+	Ig=(x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6))*lypmh_scale;
 	
 	double x_min = microenvironment.mesh.bounding_box[0] + 1e-6; 
 	double x_max = microenvironment.mesh.bounding_box[3] - 1e-6; 

@@ -409,7 +409,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.0000001</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -486,17 +486,17 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.075</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.75</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.95</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.975</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -564,7 +564,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed>
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">3</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">0.001</activated_cytokine_secretion_rate>
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
@@ -731,7 +731,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">3</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">5</activated_cytokine_secretion_rate>
 
 			</custom_data>
 		</cell_definition>		
@@ -933,7 +933,7 @@
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">2e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
@@ -985,7 +985,7 @@
 			<PCell_degradation type="double" units="cells/min"
 				description="PCell degradation rate">0.00014</PCell_degradation>
 			<Ig_recuitment type="double" units="cells/min"
-				description="Ig recuitment rate">0.00005</Ig_recuitment>
+				description="Ig recuitment rate">0.005</Ig_recuitment>
 			<Ig_degradation type="double" units="cells/min"
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
