@@ -194,7 +194,7 @@
 		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
-				<decay_rate units="1/min">1.02e-2</decay_rate>  
+				<decay_rate units="1/min">1.04e-2</decay_rate>
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -202,8 +202,8 @@
 
 		<variable name="collagen" units="mol/micron^3" ID="8">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
-				<decay_rate units="1/min">1.02e-2</decay_rate>  
+				<diffusion_coefficient units="micron^2/min">0</diffusion_coefficient>  <!-- reduce the diffusion -->
+				<decay_rate units="1/min">0</decay_rate>
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -348,10 +348,10 @@
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate>
 						<substrate name="anti-inflammatory cytokine">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">10</secretion_target>
 					</substrate> 
 						<substrate name="collagen">
-						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 	
 					<substrate name="ROS">
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
@@ -570,8 +570,11 @@
 					description="used internally to track activation state">0.0</activated_immune_cell>
 					
 				<!-- tissue damage model -->
-				<antiinflammatory_cytokine_secretion_rate units="1/min" type="double" 
-					description="secretion rate of anti-inflammatory from infected epithelium cell">15</antiinflammatory_cytokine_secretion_rate>
+				<antiinflammatory_cytokine_secretion_rate_by_damagedSite units="1/min" type="double" 
+					description="secretion rate of anti-inflammatory from infected epithelium cell">1</antiinflammatory_cytokine_secretion_rate_by_damagedSite>
+				<antiinflammatory_cytokine_secretion_rate_by_macrophage units="1/min" type="double" 
+					description="secretion rate of anti-inflammatory from macrophage">0.07</antiinflammatory_cytokine_secretion_rate_by_macrophage>
+
 				<collagen_secretion_rate units="1/min" type="double" 
 					description="secretion rate of collagen from fibroblast">1</collagen_secretion_rate>
 
@@ -731,7 +734,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">5</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
 
 			</custom_data>
 		</cell_definition>		
@@ -871,11 +874,11 @@
 			<phenotype>
 				<death>
 					<model code="100" name="apoptosis"> 
-						<death_rate units="1/min">2.8e-4</death_rate> <!-- 5e-4 --> 
+						<death_rate units="1/min">8.3e-5</death_rate> <!-- 5e-4 --> 
 					</model> 
 				</death>
-				<motility>  
-					<speed units="micron/min">4</speed>
+				<motility>
+					<speed units="micron/min">1</speed>
 					<persistence_time units="min">5</persistence_time>
 					<migration_bias units="dimensionless">0.70</migration_bias>
 					<options>
@@ -888,10 +891,15 @@
 						</chemotaxis>
 					</options>
 				</motility>
+				
+				<volume>
+					<total units="micron^3">1767</total>
+					<nuclear units="micron^3">176.7</nuclear>
+				</volume>
 
 				<secretion>
 					<substrate name="anti-inflammatory cytokine">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 					<substrate name="collagen">
 						<uptake_rate units="1/min">0</uptake_rate>
@@ -933,11 +941,11 @@
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">2e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract macrophages">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
+				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract macrophages">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract DC">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
@@ -953,7 +961,7 @@
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">10</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
-				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
+				description="T cell recruitment rate to tissue">0.0003</T_Cell_Recruitment>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<Th1_max_activation type="double" units="cells/min"
@@ -995,9 +1003,9 @@
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max fibroblast cell recruitment rate (for saturated signal)">4e-9</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
 			<fibroblast_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract fibroblast cells">0.1</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
+				description="min concentration to attract fibroblast cells">7</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
 			<fibroblast_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract fibroblast cells">0.4</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
+				description="saturating concentration to attract fibroblast cells">22</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
@@ -1012,7 +1020,7 @@
 			<number_of_neutrophils type="int" units="none" 
 				description="initial number of neutrophils">0</number_of_neutrophils>
 			<number_of_fibroblast type="int" units="none"
-				description="initial number of fibroblast cells">0</number_of_fibroblast>	
+				description="initial number of fibroblast cells">57</number_of_fibroblast>	
 		<!-- (Adrianne) initial number of DCs in the lung -->
 			<number_of_DCs type="int" units="none" 
 				description="initial number of Dendritic Cells">28</number_of_DCs> 
