@@ -1115,7 +1115,6 @@ void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
     for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
     {
         double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
-        double Collagen = microenvironment(n)[collagen_index];
 
         if( TGF_beta > 0 )
         {

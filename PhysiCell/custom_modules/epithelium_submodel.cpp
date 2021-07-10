@@ -184,13 +184,45 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		pCell->start_death( apoptosis_index ); 
 		
 		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
-		pCell->phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_damagedSite"]; 
+		// pCell->phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_damagedSite"]; 
 		pCell->phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+		double positionpass0=pCell->position[0];
+		double positionpass1=pCell->position[1];
+		create_secreting_agentcall(positionpass0, positionpass1);
 		
 		pCell->functions.update_phenotype = NULL; 
 	}
 	
 	return; 
+}
+
+void create_secreting_agent( Cell_Definition* pCD, double positionpass0, double positionpass1)
+{
+	std::vector<double> positionpass = {0,0,0}; 
+	positionpass[0]=positionpass0;
+	positionpass[1]=positionpass1;
+	
+	Cell* pC = create_cell( *pCD );
+	
+	pC->assign_position( positionpass );
+	pC->is_movable = false; 
+	
+	return; 
+}
+
+/* void create_secreting_agent( std::string cell_name )
+{
+	create_secreting_agent( find_cell_definition( cell_name ) ); 
+	
+	return;
+} */
+
+void create_secreting_agentcall(double positionpass0, double positionpass1)
+{
+	static Cell_Definition* pCD = find_cell_definition( "residual" );
+	create_secreting_agent( pCD, positionpass0, positionpass1 ); 
+	
+	return;
 }
 
 void ROS_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )

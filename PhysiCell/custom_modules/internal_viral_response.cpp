@@ -146,10 +146,10 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	if( R>=150 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
-		double cell_death_pyroptosis_probability = (R-200)/(1000-200); 
+		double cell_death_pyroptosis_probability = (R-100)/(1000-100); 
 		if( cell_death_pyroptosis_probability > 1.0 )
 		{ cell_death_pyroptosis_probability = 1.0; } 
-		cell_death_pyroptosis_probability/=3;
+		cell_death_pyroptosis_probability/=2;
 		// randomise a number in 0,1 that determines the cell death mode (pyroptosis or apoptosis)
 		if(UniformRandom() < cell_death_pyroptosis_probability) 
 		{
