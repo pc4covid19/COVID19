@@ -98,9 +98,9 @@ double Ps = 0;
 double Ig = 0;
 double EPICOUNT = 1;
 
-std::vector<int> history(2); //144000 - full day delay
-std::vector<int> historyTc(2); //120 - half day delay
-std::vector<int> historyTh(2);
+std::vector<int> history(72000); //144000 - full day delay
+std::vector<int> historyTc(60); //120 - half day delay
+std::vector<int> historyTh(60);
 //size 72000 - 0.5 day -> 0.01min
 
 int main( int argc, char* argv[] )

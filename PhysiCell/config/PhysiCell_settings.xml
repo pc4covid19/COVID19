@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">14400</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">21600</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -486,17 +486,17 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.05</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
-					description="Interferon response scales linearly until Int-1 exceeds this threshold">0.95</interferon_max_response_threshold>
+					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.95</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.975</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -504,7 +504,7 @@
 				
 				<!-- for the immune model --> 
 				<TCell_detection type="double" units="protein"
-					description="protein value at which a T Cell can detect an infected cell">10</TCell_detection>
+					description="protein value at which a T Cell can detect an infected cell">1</TCell_detection>
 				<TCell_contact_time type="double" units="min"
 					description="tracks total contact time with CD8 T cells">0.0</TCell_contact_time>
 				<cell_attachment_rate units="1/min" type="double"
