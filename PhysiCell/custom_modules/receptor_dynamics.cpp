@@ -71,8 +71,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	// actual model goes here 
 	// reaction set
 	
-	double x[4][5]={{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};//initialize x
-	double f[4][5]={{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};//initialize f
+	double x[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize x
+	double f[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize f
 	int j;//initialize counter
 	
 	//initial values for RK4
@@ -81,9 +81,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	x[0][2] = pCell->custom_data[nR_IB]; 
 	x[0][3] = pCell->custom_data[nR_IU]; 
 	x[0][4] = pCell->custom_data[nV_internal]; 
-	
-
-	pCell->custom_data[nV_internal]=x[0][3]+dt*(f[0][3]/6+f[1][3]/3+f[2][3]/3+f[3][3]/6); //detirmine n+1
+	x[0][5] = 0; 
 	
 /* 	// internalize
 	double dR_IB = pCell->custom_data[nR_endo]*pCell->custom_data[nR_EB];	
@@ -92,6 +90,12 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	// receptor recycling 	
 	double dR_EU = pCell->custom_data[nR_recycle]*pCell->custom_data[nR_IU];
  */
+	//int ignore_smoothing_flag=1;
+	static int ignore_smoothing_flag = parameters.ints( "ignore_smoothing_flag" ); 
+	double x_min = microenvironment.mesh.bounding_box[0]; 
+	double x_max = microenvironment.mesh.bounding_box[3]; 
+	double y_min = microenvironment.mesh.bounding_box[1]; 
+	double y_max = microenvironment.mesh.bounding_box[4]; 
 	
     double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
      					phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
@@ -102,16 +106,18 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
+			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
 				x[j+1][2]=x[0][2]+dt/2*f[j][2]; //first and second x approximations
 				x[j+1][3]=x[0][3]+dt/2*f[j][3]; //first and second x approximations
 				x[j+1][4]=x[0][4]+dt/2*f[j][4]; //first and second x approximations
+				x[j+1][5]=x[0][5]+dt/2*f[j][5]; //first and second x approximations
 			}
 			if (j== 2){
 				x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
@@ -119,6 +125,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				x[j+1][2]=x[0][2]+dt*f[j][2]; //third approximation
 				x[j+1][3]=x[0][3]+dt*f[j][3]; //third approximation
 				x[j+1][4]=x[0][4]+dt*f[j][4]; //third approximation
+				x[j+1][5]=x[0][5]+dt*f[j][5]; //third approximation
 			}
 		}
 
@@ -128,6 +135,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 		pCell->custom_data[nR_IU]=x[0][3]+dt*(f[0][3]/6+f[1][3]/3+f[2][3]/3+f[3][3]/6); //detirmine n+1
 		pCell->custom_data[nV_internal]=x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6); //detirmine n+1
 		
+		#pragma omp critical
+		{ pCell->nearest_density_vector()[nV_external] += dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6) / microenvironment.mesh.dV; }
 		
 		//START STOCHASTIC PORTION
 		if( dt_bind>0 && UniformRandom()<= dt_bind )
@@ -137,10 +146,108 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 			{
 				pCell->custom_data[nR_EU] -= 1;
 				pCell->custom_data[nR_EB] += 1;
-				#pragma omp critical
-				{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+
+				if (ignore_smoothing_flag > 0.5){
+					pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
+				}
+				else {
+					if( pCell->nearest_density_vector()[nV_external] >= 0.5 / microenvironment.mesh.dV ) {
+						pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
+					}
+					else {
+					std::vector<double> dummypos(3, 0);
+					dummypos[0]=pCell->position[0]+20;
+					dummypos[1]=pCell->position[1];
+					dummypos[2]=pCell->position[2];
+				
+					std::vector<double> dummypos0(3, 0);
+					dummypos0[0]=pCell->position[0]-20;
+					dummypos0[1]=pCell->position[1];
+					dummypos0[2]=pCell->position[2];
+				
+					std::vector<double> dummypos1(3, 0);
+					dummypos1[0]=pCell->position[0];
+					dummypos1[1]=pCell->position[1]+20;
+					dummypos1[2]=pCell->position[2];
+				
+					std::vector<double> dummypos2(3, 0);
+					dummypos2[0]=pCell->position[0];
+					dummypos2[1]=pCell->position[1]-20;
+					dummypos2[2]=pCell->position[2];
+				
+					std::vector<double> dummypos00(3, 0);
+					dummypos00[0]=pCell->position[0]-20;
+					dummypos00[1]=pCell->position[1]+20;
+					dummypos00[2]=pCell->position[2];
+				
+					std::vector<double> dummypos01(3, 0);
+					dummypos01[0]=pCell->position[0]+20;
+					dummypos01[1]=pCell->position[1]+20;
+					dummypos01[2]=pCell->position[2];
+				
+					std::vector<double> dummypos11(3, 0);
+					dummypos11[0]=pCell->position[0]+20;
+					dummypos11[1]=pCell->position[1]-20;
+					dummypos11[2]=pCell->position[2];
+				
+					std::vector<double> dummypos10(3, 0);
+					dummypos10[0]=pCell->position[0]-20;
+					dummypos10[1]=pCell->position[1]-20;
+					dummypos10[2]=pCell->position[2];
+				
+				if( dummypos[0]>x_max ) {
+					if( dummypos1[1]>y_max ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else if( dummypos2[1]<y_min ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					}
+				} else if( dummypos0[0]<x_min ) {
+					if( dummypos1[1]>y_max ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else if( dummypos2[1]<y_min ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					}
+				} else {
+					if( dummypos1[1]>y_max ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else if( dummypos2[1]<y_min ) {
+						#pragma omp critical
+						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
+					} else {
+					#pragma omp critical
+					{ pCell->nearest_density_vector()[nV_external] -= 0.25 / microenvironment.mesh.dV; 
+					int dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos0 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos1 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos2 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos00 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos01 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos11 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
+					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos10 );
+					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;}
+					}
+				}
+				}
+				}
 			}
-			
 		}
 		
 	}
@@ -152,16 +259,18 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
+			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
 				x[j+1][2]=x[0][2]+dt/2*f[j][2]; //first and second x approximations
 				x[j+1][3]=x[0][3]+dt/2*f[j][3]; //first and second x approximations
 				x[j+1][4]=x[0][4]+dt/2*f[j][4]; //first and second x approximations
+				x[j+1][5]=x[0][5]+dt/2*f[j][5]; //first and second x approximations
 			}
 			if (j== 2){
 				x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
@@ -169,6 +278,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				x[j+1][2]=x[0][2]+dt*f[j][2]; //third approximation
 				x[j+1][3]=x[0][3]+dt*f[j][3]; //third approximation
 				x[j+1][4]=x[0][4]+dt*f[j][4]; //third approximation
+				x[j+1][5]=x[0][5]+dt*f[j][5]; //third approximation
 			}
 		}
 
@@ -181,6 +291,9 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 		//attempting proper integration to stochastic portion, still needs some thought
 		double alpha = dt_bind;
 		double n_virion = pCell->nearest_density_vector()[nV_external]* microenvironment.mesh.dV;
+		
+		#pragma omp critical
+		{ pCell->nearest_density_vector()[nV_external] += dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6) / microenvironment.mesh.dV; }
 		
 		//limit to number of virons in a voxel
 		if(alpha > n_virion)
@@ -210,6 +323,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 			{
 				pCell->custom_data[nR_EU] -= 1;
 				pCell->custom_data[nR_EB] += 1;
+				
 				#pragma omp critical
 				{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
 			}

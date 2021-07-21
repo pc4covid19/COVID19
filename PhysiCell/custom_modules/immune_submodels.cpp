@@ -1,4 +1,5 @@
 #include "./immune_submodels.h" 
+#include <algorithm> 
 
 using namespace PhysiCell; 
 
@@ -405,6 +406,32 @@ void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype&
 
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	int cycle_G0G1_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::G0G1_phase ); 
+	int cycle_S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase ); 
+	static int virus_index = microenvironment.find_density_index("virion");
+	int nV_external = virus_index;
+	double virus_amount = pCell->nearest_density_vector()[virus_index];
+	
+	
+	static int apoptosis_index = pCell->phenotype.death.find_death_model_index( "apoptosis" ); 
+	
+	// (AJ-V5) Model for T cell proliferation and death
+	int generation_value = pCell->custom_data["generation"];
+	
+	if(pCell->phenotype.cycle.data.elapsed_time_in_phase<6 &&  pCell->phenotype.cycle.data.current_phase_index==0)
+	{
+		pCell->custom_data["generation"] -= 1;
+	}
+	if(generation_value<0)
+	{
+		
+		pCell->phenotype.death.rates[apoptosis_index] = parameters.doubles("Death_rates_of_old_Tcells");
+		pCell->phenotype.death.rates[apoptosis_index] = 100; // new death rate of T cells when they have exceeded generation
+		
+		pCell->phenotype.cycle.data.transition_rate(cycle_G0G1_index,cycle_S_index) = 0;
+		
+	}
+	
 	static int debris_index = microenvironment.find_density_index( "debris");
 	
 	if( phenotype.death.dead == true )
@@ -531,6 +558,9 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
 	static int debris_index = microenvironment.find_density_index( "debris");
+	static int virus_index = microenvironment.find_density_index( "virion");
+	static int antibody_index = microenvironment.find_density_index( "Ig");
+	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
 	
 	// no apoptosis until activation (resident macrophages in constant number for homeostasis) 
 	if( pCell->custom_data["activated_immune_cell"] < 0.5 )
@@ -589,7 +619,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		if( pContactCell != pCell && pContactCell->phenotype.death.dead == false && pContactCell->type == CD8_Tcell_type 
 			&& pCell->custom_data["activated_immune_cell"] > 0.5 && cell_cell_distance<=parameters.doubles("epsilon_distance")*(radius_mac+radius_test_cell)) 
 		{
-			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// (Adrianne) contact with CD8 T cell turns off pro-inflammatory cytokine secretion
+			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
+			phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
 			n=neighbors.size();
 		}
 		// (Adrianne) if it is not me, not dead and is a CD4 T cell that is within a very short distance from me, I will be able to phagocytose infected (but not neccesarily dead) cells
@@ -654,6 +685,9 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 				phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 0.0; 
 
 				phenotype.motility.migration_speed = pCell->custom_data["activated_speed"]; 
+				
+				//(adrianne V5) adding virus uptake by phagocytes
+				phenotype.secretion.uptake_rates[virus_index] = parameters.doubles("phagocytes_virus_uptake_rate");
 					
 				pCell->custom_data["activated_immune_cell"] = 1.0; 
 				
@@ -680,12 +714,36 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 				phenotype.secretion.saturation_densities[proinflammatory_cytokine_index] = 1;
 
 				phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 0.0; 
+				
+				//(adrianne v5) adding virus uptake by phagocytes
+				phenotype.secretion.uptake_rates[virus_index] = parameters.doubles("phagocytes_virus_uptake_rate");
 
 				phenotype.motility.migration_speed = pCell->custom_data["activated_speed"]; 
 					
 				pCell->custom_data["activated_immune_cell"] = 1.0; 
 				
 				return; 
+			}
+			else if( pTestCell != pCell && pTestCell->phenotype.death.dead == false &&  
+				pTestCell->phenotype.molecular.internalized_total_substrates[antibody_index]>1e-12 ) 
+				// (Adrianne V5) macrophages can phaogyctose infected cell if it has some non-trivial bound antibody
+			{
+					double antibody_level = pTestCell->phenotype.molecular.internalized_total_substrates[antibody_index];
+					double antibody_half_effect = parameters.doubles("antibody_half_effect");
+					// (AJ-V5) recalculate probability of phagocytosis based on bound anitbody
+					if(UniformRandom() < probability_of_phagocytosis+(1-probability_of_phagocytosis)*(antibody_level)/(antibody_level+antibody_half_effect))	
+					// cell phagocytses
+					{
+						// (Adrianne) obtain volume of cell to be ingested
+						double volume_ingested_cell = pTestCell->phenotype.volume.total;
+					
+						pCell->ingest_cell( pTestCell ); 
+					
+						// (Adrianne)(assume neutrophils same as macrophages) neutrophils phagocytose material 1micron3/s so macrophage cannot phagocytose again until it has elapsed the time taken to phagocytose the material
+						double time_to_ingest = volume_ingested_cell*material_internalisation_rate;// convert volume to time taken to phagocytose
+						// (Adrianne) update internal time vector in macrophages that tracks time it will spend phagocytosing the material so they can't phagocytose again until this time has elapsed
+						pCell->custom_data.variables[time_to_next_phagocytosis_index].value = PhysiCell_globals.current_time+time_to_ingest;		
+					}					
 			}
 			n++; 
 		}			
@@ -729,6 +787,9 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 	static int debris_index = microenvironment.find_density_index( "debris" ); 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine");
+	// (Adrianne V5) ROS model
+	static int ROS_index = microenvironment.find_density_index("ROS");
+	static int virus_index = microenvironment.find_density_index("virion");
 			
 	if( phenotype.death.dead == true )
 	{
@@ -791,6 +852,14 @@ void neutrophil_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
 				pCell->custom_data["activated_cytokine_secretion_rate"]; // 10;
 			phenotype.secretion.saturation_densities[proinflammatory_cytokine_index] = 1;
+			
+			// (Adrianne V5) Cell starts secreting ROS
+			phenotype.secretion.secretion_rates[ROS_index] = parameters.doubles("ROS_secretion_rate"); // 10;
+			phenotype.secretion.saturation_densities[proinflammatory_cytokine_index] = 1;
+
+			
+			//(adrianne V5) adding virus uptake by phagocytes
+			phenotype.secretion.uptake_rates[virus_index] = parameters.doubles("phagocytes_virus_uptake_rate"); 
 
 			phenotype.motility.migration_speed = pCell->custom_data["activated_speed"]; 
 				
@@ -842,7 +911,7 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	// (Adrianne) get type of CD8+ T cell
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type;
 	
-	// (Adrianne) if DC is already activated, then check whether it leaves the tissue
+	/* // (Adrianne) if DC is already activated, then check whether it leaves the tissue
 	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.002)
 	{
 		extern double DM; //declare existance of DC lymph
@@ -853,8 +922,8 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		{ DM++; } // add one
 		return;
 		
-	}
-	else if( pCell->custom_data["activated_immune_cell"] > 0.5 ) // (Adrianne) activated DCs that don't leave the tissue can further activate CD8s increasing their proliferation rate and attachment rates
+	} */
+	if( pCell->custom_data["activated_immune_cell"] > 0.5 ) // (Adrianne) activated DCs that don't leave the tissue can further activate CD8s increasing their proliferation rate and attachment rates
 	{
 		
 		std::vector<Cell*> neighbors = pCell->cells_in_my_container(); // (Adrianne) find cells in a neighbourhood of DCs
@@ -961,7 +1030,31 @@ void DC_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 // (Adrianne CD4 phenotype function
 void CD4_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
-	//(Adrianne) currently CD4's don't have any rules
+	int cycle_G0G1_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::G0G1_phase ); 
+	int cycle_S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase ); 
+	static int virus_index = microenvironment.find_density_index("virion");
+	int nV_external = virus_index;
+	double virus_amount = pCell->nearest_density_vector()[virus_index];
+	
+	
+	static int apoptosis_index = pCell->phenotype.death.find_death_model_index( "apoptosis" ); 
+	
+	// (AJ-V5) Model for T cell proliferation and death
+	int generation_value = pCell->custom_data["generation"];
+	
+	if(pCell->phenotype.cycle.data.elapsed_time_in_phase<6 &&  pCell->phenotype.cycle.data.current_phase_index==0)
+	{
+		pCell->custom_data["generation"] -= 1;
+	}
+	if(generation_value<0)
+	{
+		
+		pCell->phenotype.death.rates[apoptosis_index] = parameters.doubles("Death_rates_of_old_Tcells");
+		pCell->phenotype.death.rates[apoptosis_index] = 100; // new death rate of T cells when they have exceeded generation
+		
+		pCell->phenotype.cycle.data.transition_rate(cycle_G0G1_index,cycle_S_index) = 0;
+		
+	}
 	return;
 }
 
@@ -1000,23 +1093,37 @@ void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
 	static int collagen_index = microenvironment.find_density_index("collagen");
+	double TGF_beta = pCell->nearest_density_vector()[antiinflammatory_cytokine_index];
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" );
+	static Cell_Definition* pCD = find_cell_definition( "fibroblast" );
 
-	pCell->phenotype.secretion.secretion_rates[collagen_index] = pCell->custom_data["collagen_secretion_rate"]; 
-
-
-			
+	// no apoptosis until activation for homeostasis
+	if( pCell->custom_data["activated_immune_cell"] < 0.5 )
+	{ phenotype.death.rates[apoptosis_index] = 0.0; }
+	else
+	{ phenotype.death.rates[apoptosis_index] = pCD->phenotype.death.rates[apoptosis_index]; }			
 	
 	if( phenotype.death.dead == true )
 	{
 		pCell->functions.update_phenotype = NULL;
-		pCell->functions.custom_cell_rule = NULL; 
-
-        // This should be careful, as anti-inflammatory cytokine only be secreted when CD8-T cells killing infected epithelium cell rather 
-        // than epithelium cell apoptotic due to virion
-		// pCell->phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate"]; 
+		pCell->functions.custom_cell_rule = NULL;
 		return; 
 	}
+	pCell->phenotype.secretion.net_export_rates[collagen_index] = (((0.942*TGF_beta)/(0.174+TGF_beta))*(pCell->custom_data["collagen_secretion_rate"])*2.52e-7);
 
+
+    for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
+    {
+        double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
+
+        if( TGF_beta > 0 )
+        {
+            pCell->custom_data["activated_immune_cell"] = 1.0;
+
+            return;
+         }
+    }
+	
 	return;
 }
 
@@ -1401,45 +1508,61 @@ void immune_cell_recruitment( double dt )
 		// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
 		
 		extern double TCt; 
+		extern std::vector<int>historyTc;
 		
 		int number_of_new_cells = (int) floor( TCt ); 
-		TCt=TCt-number_of_new_cells;
-		recruited_Tcells += number_of_new_cells;		
+		TCt-=number_of_new_cells;
 		
-		if( number_of_new_cells )
+		std::rotate(historyTc.rbegin(),historyTc.rbegin()+1,historyTc.rend());
+		historyTc.front() = number_of_new_cells;
+		
+		
+		
+		recruited_Tcells += historyTc.back();
+	
+	
+		static int nAb = microenvironment.find_density_index( "Ig" ); 
+		static int nV = microenvironment.find_density_index( "virion" ); 		
+		
+		if( historyTc.back() )
 		{
 			if( t_immune < first_CD8_T_cell_recruitment_time )
 			{ first_CD8_T_cell_recruitment_time = t_immune; }
 			
-			std::cout << "\tRecruiting " << number_of_new_cells << " CD8 T cells ... " << std::endl; 
+			std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << std::endl; 
 
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < historyTc.back() ; n++ )
 			{ create_infiltrating_Tcell(); }
 		}
 		
 		
 		// CD4 recruitment (Michael) changed to take floor of ODE value
 		extern double Tht; 
+		extern std::vector<int>historyTh;
 		
 		number_of_new_cells = (int) floor( Tht );
-		Tht=Tht-number_of_new_cells;
-		recruited_CD4Tcells += number_of_new_cells;		
+		Tht-=number_of_new_cells;
 		
-		if( number_of_new_cells )
+		std::rotate(historyTh.rbegin(),historyTh.rbegin()+1,historyTh.rend());
+		historyTh.front() = number_of_new_cells;
+		
+		recruited_CD4Tcells += historyTh.back();	
+		
+		if( historyTh.back() )
 		{
 			if( t_immune < first_CD4_T_cell_recruitment_time )
 			{ first_CD4_T_cell_recruitment_time = t_immune; }
 			
-			std::cout << "\tRecruiting " << number_of_new_cells << " CD4 T cells ... " << std::endl; 
+			std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << std::endl; 
 
-			for( int n = 0; n < number_of_new_cells ; n++ )
+			for( int n = 0; n < historyTh.back() ; n++ )
 			{ create_infiltrating_CD4Tcell(); }
 		}
 		
 		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**
-		static double DC_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
-		static double DC_min_signal = parameters.doubles( "macrophage_recruitment_min_signal" ); 
-		static double DC_sat_signal = parameters.doubles( "macrophage_recruitment_saturation_signal" ); 
+		static double DC_recruitment_rate = parameters.doubles( "DC_max_recruitment_rate" ); 
+		static double DC_min_signal = parameters.doubles( "DC_recruitment_min_signal" ); 
+		static double DC_sat_signal = parameters.doubles( "DC_recruitment_saturation_signal" ); 
 		static double DC_max_minus_min = DC_sat_signal - DC_min_signal; 
 				
 		total_rate = 0;
@@ -1501,7 +1624,8 @@ void immune_cell_recruitment( double dt )
 		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
 		{
 			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[antiinflammatory_cytokine_index] - f_min_signal );
+			double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
+			double dRate = ( 0.0492*pow(TGF_beta,3) -0.9868*pow(TGF_beta,2) +6.5408*TGF_beta + 7 - f_min_signal );
 			dRate /= f_max_minus_min;
 			// crop to [0,1]
 			if( dRate > 1 )

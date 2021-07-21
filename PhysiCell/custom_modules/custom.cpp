@@ -204,7 +204,7 @@ void setup_tissue( void )
 	
 	double triangle_stagger = sqrt(3.0) * spacing * 0.5; 
 	
-	// find hte cell nearest to the center 
+	// find the cell nearest to the center 
 	double nearest_distance_squared = 9e99; 
 	Cell* pNearestCell = NULL; 
 	
@@ -238,6 +238,8 @@ void setup_tissue( void )
 		}
 	}
 	
+	extern double EPICOUNT;
+	EPICOUNT = (*all_cells).size();
 	int number_of_virions = (int) ( parameters.doubles("multiplicity_of_infection") * 
 		(*all_cells).size() ); 
 	double single_virion_density_change = 1.0 / microenvironment.mesh.dV; 

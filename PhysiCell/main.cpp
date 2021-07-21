@@ -72,6 +72,7 @@
 #include <cmath>
 #include <omp.h>
 #include <fstream>
+#include <algorithm>    // std::rotate
 
 #include "./core/PhysiCell.h"
 #include "./modules/PhysiCell_standard_modules.h" 
@@ -85,12 +86,22 @@ using namespace PhysiCell;
 
 std::string COVID19_version = "0.4.0"; 
 
+double DCAMOUNT = 0;
 double DM = 0; // global ICs
 double TC = 10;
 double TH1 = 1;
 double TH2 = 1;
 double TCt = 0;
 double Tht = 0;
+double Bc = 20;
+double Ps = 0;
+double Ig = 0;
+double EPICOUNT = 1;
+
+std::vector<int> history(72000); //144000 - full day delay
+std::vector<int> historyTc(60); //120 - half day delay
+std::vector<int> historyTh(60);
+//size 72000 - 0.5 day -> 0.01min
 
 int main( int argc, char* argv[] )
 {
@@ -172,7 +183,8 @@ int main( int argc, char* argv[] )
 	}
 	
 	std::ofstream dm_tc_file;
-	dm_tc_file.open ("dm_tc.dat");
+	sprintf( filename , "%s/dm_tc.dat" , PhysiCell_settings.folder.c_str() ); 
+	dm_tc_file.open (filename);
 	
 	// main loop 
 
@@ -195,7 +207,7 @@ int main( int argc, char* argv[] )
 				{	
 					sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
 					
-					dm_tc_file << DM << " " << TC << " " << TH1 << " " << TH2 << " " << TCt << " " << Tht << std::endl; //write globals data
+					dm_tc_file << DM << " " << TC << " " << TH1 << " " << TH2 << " " << TCt << " " << Tht <<" " << Bc <<" " << Ps <<" " << Ig << std::endl; //write globals data
 					
 					save_PhysiCell_to_MultiCellDS_xml_pugi( filename , microenvironment , PhysiCell_globals.current_time ); 
 				}
@@ -218,7 +230,10 @@ int main( int argc, char* argv[] )
 			}
 
 			// update the microenvironment
-			microenvironment.simulate_diffusion_decay( diffusion_dt );
+			microenvironment.simulate_diffusion_decay( diffusion_dt ); //diffusion may need to occur later AFTER discrete events
+			
+			// history functions		
+			DC_history_main_model( diffusion_dt );
 			
 			//external_immune_main_model( diffusion_dt );
 			external_immune_model( diffusion_dt );
@@ -313,7 +328,6 @@ int main( int argc, char* argv[] )
 		{ recruited_Tcells++; }
 		if( pC->type == 4 )
 		{ recruited_macrophages++; }
-
 	}
 	std::cout << "remaining macrophages: " << recruited_macrophages << std::endl; 
 	std::cout << "remaining neutrophils: " << recruited_neutrophils << std::endl; 
