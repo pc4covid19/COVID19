@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string internal_virus_response_version = "0.4.0"; 
+std::string internal_virus_response_version = "0.5.0"; 
 
 Submodel_Information internal_virus_response_model_info; 
 
