@@ -84,7 +84,7 @@
 using namespace BioFVM;
 using namespace PhysiCell;
 
-std::string COVID19_version = "0.4.0"; 
+std::string COVID19_version = "0.5.0"; 
 
 double DCAMOUNT = 0;
 double DM = 0; // global ICs
