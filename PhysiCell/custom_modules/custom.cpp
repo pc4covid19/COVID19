@@ -362,7 +362,6 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	static int DC_type = get_cell_definition( "DC" ).type; 
 	static int CD4_Tcell_type = get_cell_definition( "CD4 Tcell" ).type; 
 	static int fibroblast_type = get_cell_definition( "fibroblast" ).type; 
-	static int res_type = get_cell_definition( "residual" ).type; 
 	
 	// start with white 
 	
@@ -451,14 +450,6 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	if( pCell->phenotype.death.dead == false && pCell->type == fibroblast_type )
 	{
 		output[0] = parameters.strings("fibroblast_color");  
-		output[2] = output[0];
-		output[3] = output[0];
-		return output; 
-	}
-	
-	if( pCell->phenotype.death.dead == false && pCell->type == res_type )
-	{
-		output[0] = "black";  
 		output[2] = output[0];
 		output[3] = output[0];
 		return output; 
