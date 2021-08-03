@@ -945,7 +945,21 @@
 						</chemotaxis>
 					</options>
 				</motility>
+				<volume>  
+					<total units="micron^3">2</total>
+					<fluid_fraction units="dimensionless">1</fluid_fraction>
+					<nuclear units="micron^3">1</nuclear>
 
+					<fluid_change_rate units="1/min">0</fluid_change_rate>
+					<cytoplasmic_biomass_change_rate units="1/min">0</cytoplasmic_biomass_change_rate>
+					<nuclear_biomass_change_rate units="1/min">0</nuclear_biomass_change_rate>
+
+					<calcified_fraction units="dimensionless">0</calcified_fraction>
+					<calcification_rate units="1/min">0</calcification_rate>
+
+					<relative_rupture_volume units="dimensionless">100</relative_rupture_volume>
+				</volume> 
+				
 				<secretion>
 					<substrate name="anti-inflammatory cytokine">
 						<secretion_rate units="1/min">1</secretion_rate>
