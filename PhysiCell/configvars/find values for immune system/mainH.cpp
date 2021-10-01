@@ -87,14 +87,14 @@ using namespace PhysiCell;
 std::string COVID19_version = "0.5.0"; 
 
 double DCAMOUNT = 0;
-double DM = 0; // global ICs
-double TC = 10;
-double TH1 = 1;
-double TH2 = 1;
+double DM = 0.13; // global ICs
+double TC = 52000;
+double TH1 = 19;
+double TH2 = 617;
 double TCt = 0;
 double Tht = 0;
-double Bc = 20;
-double Ps = 0;
+double Bc = 3E8;
+double Ps = 6E7;
 double Ig = 0;
 double EPICOUNT = 1;
 

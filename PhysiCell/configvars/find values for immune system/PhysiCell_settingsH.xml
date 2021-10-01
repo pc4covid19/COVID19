@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>4</omp_num_threads>
+		<omp_num_threads>6</omp_num_threads>
 	</parallel> 
 
 	<options>
@@ -155,7 +155,7 @@
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
+			<initial_condition units="mol/micron^3">0.07</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
@@ -173,7 +173,7 @@
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
+			<initial_condition units="mol/micron^3">0.01</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
@@ -196,7 +196,7 @@
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.04e-2</decay_rate>
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
+			<initial_condition units="mol/micron^3">1.2</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
@@ -214,7 +214,7 @@
 				<diffusion_coefficient units="micron^2/min">6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">0.00139</decay_rate>  
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
+			<initial_condition units="mol/micron^3">0.65</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
@@ -1071,7 +1071,7 @@
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			
 			<number_of_CD8_Tcells type="int" units="none" 
-				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
+				description="initial number of CD8 T cells in tissue">140</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" 
 				description="initial number of macrophages">50</number_of_macrophages>
 			<number_of_neutrophils type="int" units="none" 
@@ -1080,10 +1080,10 @@
 				description="initial number of fibroblast cells">57</number_of_fibroblast>	
 		<!-- (Adrianne) initial number of DCs in the lung -->
 			<number_of_DCs type="int" units="none" 
-				description="initial number of Dendritic Cells">28</number_of_DCs> 
+				description="initial number of Dendritic Cells">2</number_of_DCs> 
 		<!-- (Adrianne) initial number of CD4 T cells in the lung -->
 			<number_of_CD4_Tcells type="int" units="none" 
-				description="initial number of CD4 Tcells in tissue">0</number_of_CD4_Tcells> 
+				description="initial number of CD4 Tcells in tissue">20</number_of_CD4_Tcells> 
 		<!-- (Adrianne) New CD8 proliferation rate (G0G1 TO S PHASE) after interaction with DCS-->	
 			<DC_induced_CD8_proliferation type="double" units="cells/min/micron^3"
 				description="DC induced CD8 proliferation rate">0.00208</DC_induced_CD8_proliferation> <!-- currently an arbitrary choice -->
