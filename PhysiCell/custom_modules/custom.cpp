@@ -362,7 +362,7 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	static int DC_type = get_cell_definition( "DC" ).type; 
 	static int CD4_Tcell_type = get_cell_definition( "CD4 Tcell" ).type; 
 	static int fibroblast_type = get_cell_definition( "fibroblast" ).type; 
-	static int res_type = get_cell_definition( "residual" ).type;
+	static int res_type = get_cell_definition( "residual" ).type; 
 	
 	// start with white 
 	

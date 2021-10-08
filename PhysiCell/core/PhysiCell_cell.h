@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2018, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2021, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -231,6 +231,8 @@ class Cell : public Basic_Agent
 	Cell_Container * get_container();
 	
 	std::vector<Cell*>& cells_in_my_container( void ); 
+	std::vector<Cell*> nearby_cells( void ); // new in 1.8.0 
+	std::vector<Cell*> nearby_interacting_cells( void ); // new in 1.8.0 
 	
 	void convert_to_cell_definition( Cell_Definition& cd ); 
 };
@@ -268,6 +270,9 @@ extern std::vector<double> (*cell_division_orientation)(void);
 
 void attach_cells( Cell* pCell_1, Cell* pCell_2 );
 void detach_cells( Cell* pCell_1 , Cell* pCell_2 );
+
+std::vector<Cell*> find_nearby_cells( Cell* pCell ); // new in 1.8.0
+std::vector<Cell*> find_nearby_interacting_cells( Cell* pCell ); // new in 1.8.0
 
 };
 

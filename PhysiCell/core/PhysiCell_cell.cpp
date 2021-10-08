@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2018, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2021, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -70,6 +70,17 @@
 #include "PhysiCell_utilities.h"
 #include "PhysiCell_constants.h"
 #include "../BioFVM/BioFVM_vector.h" 
+
+#ifdef ADDON_PHYSIBOSS
+#include "../addons/PhysiBoSS/src/maboss_intracellular.h"
+#endif
+#ifdef ADDON_ROADRUNNER
+#include "../addons/libRoadrunner/src/librr_intracellular.h"
+#endif
+#ifdef ADDON_PHYSIDFBA
+#include "../addons/dFBA/src/dfba_intracellular.h"
+#endif
+
 #include<limits.h>
 
 #include <signal.h>  // for segfault
@@ -367,6 +378,7 @@ Cell::~Cell()
 	if( result != std::end(*all_cells) )
 	{
 		std::cout << "Warning: Cell was never removed from data structure " << std::endl ; 
+		std::cout << "I am of type " << this->type << " at " << this->position << std::endl; 
 
 		int temp_index = -1; 
 		bool found = false; 
@@ -543,7 +555,14 @@ Cell* Cell::divide( )
 	
 	// child->set_phenotype( phenotype ); 
 	child->phenotype = phenotype; 
+
+    if (child->phenotype.intracellular)
+        child->phenotype.intracellular->start();
 	
+// #ifdef ADDON_PHYSIDFBA
+// 	child->fba_model = this->fba_model;
+// #endif
+
 	return child;
 }
 
@@ -571,6 +590,17 @@ bool Cell::assign_position(double x, double y, double z)
 	update_voxel_index();
 	// update current_mechanics_voxel_index
 	current_mechanics_voxel_index= get_container()->underlying_mesh.nearest_voxel_index( position );
+
+    // Since it is most likely our first position, we update the max_cell_interactive_distance_in_voxel
+	// which was not initialized at cell creation
+	if( get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] < 
+		phenotype.geometry.radius * phenotype.mechanics.relative_maximum_adhesion_distance )
+	{
+		// get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()]= phenotype.geometry.radius*parameters.max_interaction_distance_factor;
+		get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] = phenotype.geometry.radius
+			* phenotype.mechanics.relative_maximum_adhesion_distance;
+	}
+
 	get_container()->register_agent(this);
 	
 	if( !get_container()->underlying_mesh.is_position_valid(x,y,z) )
@@ -604,12 +634,18 @@ void Cell::set_total_volume(double volume)
 	// phenotype.update_radius();
 	//if( get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] < 
 	//	phenotype.geometry.radius * parameters.max_interaction_distance_factor )
-	if( get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] < 
-		phenotype.geometry.radius * phenotype.mechanics.relative_maximum_adhesion_distance )
-	{
-		// get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()]= phenotype.geometry.radius*parameters.max_interaction_distance_factor;
-		get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] = phenotype.geometry.radius
-			* phenotype.mechanics.relative_maximum_adhesion_distance;
+
+    	
+	// Here the current mechanics voxel index may not be initialized, when position is still unknown. 
+	if (get_current_mechanics_voxel_index() >= 0)
+    {
+        if( get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] < 
+            phenotype.geometry.radius * phenotype.mechanics.relative_maximum_adhesion_distance )
+        {
+            // get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()]= phenotype.geometry.radius*parameters.max_interaction_distance_factor;
+            get_container()->max_cell_interactive_distance_in_voxel[get_current_mechanics_voxel_index()] = phenotype.geometry.radius
+                * phenotype.mechanics.relative_maximum_adhesion_distance;
+        }
 	}
 	
 	return; 
@@ -913,6 +949,9 @@ void Cell::add_potentials(Cell* other_agent)
 	// }
 	axpy( &velocity , temp_r , displacement ); 
 	
+	
+	state.neighbors.push_back(other_agent); // new 1.8.0
+	
 	return;
 }
 
@@ -1115,6 +1154,12 @@ std::vector<Cell*>& Cell::cells_in_my_container( void )
 	return get_container()->agent_grid[get_current_mechanics_voxel_index()];
 }
 
+std::vector<Cell*> Cell::nearby_cells( void )
+{ return find_nearby_cells( this ); }
+
+std::vector<Cell*> Cell::nearby_interacting_cells( void )
+{ return find_nearby_interacting_cells( this ); }
+
 void Cell::ingest_cell( Cell* pCell_to_eat )
 {
 	// don't ingest a cell that's already ingested 
@@ -1280,6 +1325,14 @@ void display_ptr_as_bool( void (*ptr)(Cell*,Phenotype&,double), std::ostream& os
 	return;
 }
 
+void display_ptr_as_bool( void (*ptr)(Cell*,Phenotype&,Cell*,Phenotype&,double), std::ostream& os )
+{
+	if( ptr )
+	{ os << "true"; return; }
+	os << "false"; 
+	return;
+}
+
 void display_cell_definitions( std::ostream& os )
 {
 	for( int n=0; n < cell_definitions_by_index.size() ; n++ )
@@ -1360,6 +1413,8 @@ void display_cell_definitions( std::ostream& os )
 		os << "\t\t volume update function: "; display_ptr_as_bool( pCF->volume_update_function , std::cout ); 
 		os << std::endl; 
 		os << "\t\t mechanics function: "; display_ptr_as_bool( pCF->update_velocity , std::cout ); 
+		os << std::endl;
+		os << "\t\t contact function: "; display_ptr_as_bool( pCF->contact_function , std::cout ); 
 		os << std::endl; 
 		
 		// summarize motility 
@@ -1501,7 +1556,8 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 	Cell_Definition* pCD; 
 	
 	// if this is not "default" then create a new one 
-	if( std::strcmp( cd_node.attribute( "name" ).value() , "default" ) != 0 )
+	if( std::strcmp( cd_node.attribute( "name" ).value() , "default" ) != 0 
+	    && std::strcmp( cd_node.attribute( "ID" ).value() , "0" ) != 0 )
 	{ pCD = new Cell_Definition; }
 	else
 	{ pCD = &cell_defaults; }
@@ -1555,7 +1611,6 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 	pCD->phenotype.secretion.sync_to_microenvironment( (pCD->pMicroenvironment) ); 
 	pCD->phenotype.molecular.sync_to_microenvironment( (pCD->pMicroenvironment) );
 	
-	
 	// set the reference phenotype 
 	pCD->parameters.pReference_live_phenotype = &(pCD->phenotype); 
 	pugi::xml_node node = cd_node.child( "phenotype" ); 
@@ -1567,47 +1622,66 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 	node = node.child( "cycle" ); 
 	if( node )
 	{
-		int model = node.attribute("code").as_int() ; 
+		int model; // = node.attribute("code").as_int() ; 
+		if( strlen( node.attribute("code").as_string() ) > 0 )
+		{ model = node.attribute("code").as_int(); }
+		else
+		{ model = find_cycle_model_code( node.attribute("name").as_string() ); } 
+		if( model < 0 )
+		{ 
+			std::cout << "Error. Unable to identify cycle model " 
+				<< node.attribute("name").value() 
+				<< " (" << node.attribute("code").value() << ")" << std::endl;
+			exit(-1);
+		}		
 		
 		// Set the model, but only if it was specified. 
 		if( strlen( node.attribute("code").value() ) > 0 )
 		{
 			// set the model 
-			switch( model )
-			{
-				case PhysiCell_constants::advanced_Ki67_cycle_model: 
-					pCD->functions.cycle_model = Ki67_advanced; 
-					break; 
-				case PhysiCell_constants::basic_Ki67_cycle_model: 
-					pCD->functions.cycle_model = Ki67_basic; 
-					break; 
-				case PhysiCell_constants::flow_cytometry_cycle_model: 
-					pCD->functions.cycle_model = flow_cytometry_cycle_model;  
-					break; 
-				case PhysiCell_constants::live_apoptotic_cycle_model: // ?
-					pCD->functions.cycle_model = live;  // ?
-					std::cout << "Warning: live_apoptotic_cycle_model not directly supported." << std::endl		
-							  << "         Substituting live cells model. Set death rates=0." << std::endl; 
-					break; 
-				case PhysiCell_constants::total_cells_cycle_model: 
-					pCD->functions.cycle_model = live; 
-					std::cout << "Warning: total_cells_cycle_model not directly supported." << std::endl		
-							  << "         Substituting live cells model. Set death rates=0." << std::endl; 
-					break; 
-				case PhysiCell_constants::live_cells_cycle_model: 
-					pCD->functions.cycle_model = live; 
-					break; 
-				case PhysiCell_constants::flow_cytometry_separated_cycle_model: 
-					pCD->functions.cycle_model = flow_cytometry_separated_cycle_model; 
-					break; 
-				case PhysiCell_constants::cycling_quiescent_model: 
-					pCD->functions.cycle_model = cycling_quiescent; 
-					break; 
-				default:
-					std::cout << "Warning: Unknown cycle model " << std::endl;
-					exit(-1); 
-					break; 
-			}
+			//switch( model )   // do not use a switch stmt to avoid compile errors related to "static const int" on various compilers
+			if (model == PhysiCell_constants::advanced_Ki67_cycle_model)
+            {
+                pCD->functions.cycle_model = Ki67_advanced; 
+            }
+			else if (model == PhysiCell_constants::basic_Ki67_cycle_model)
+            {
+                pCD->functions.cycle_model = Ki67_basic; 
+            }
+            else if (model == PhysiCell_constants::flow_cytometry_cycle_model) 
+            {
+                pCD->functions.cycle_model = flow_cytometry_cycle_model;  
+            }
+            else if (model == PhysiCell_constants::live_apoptotic_cycle_model) // ?
+            {
+                pCD->functions.cycle_model = live;  // ?
+                std::cout << "Warning: live_apoptotic_cycle_model not directly supported." << std::endl		
+                            << "         Substituting live cells model. Set death rates=0." << std::endl; 
+            }
+            else if (model == PhysiCell_constants::total_cells_cycle_model) 
+            {
+                pCD->functions.cycle_model = live; 
+                std::cout << "Warning: total_cells_cycle_model not directly supported." << std::endl		
+                            << "         Substituting live cells model. Set death rates=0." << std::endl; 
+            }
+            else if (model == PhysiCell_constants::live_cells_cycle_model) 
+            {
+                pCD->functions.cycle_model = live; 
+            }
+            else if (model == PhysiCell_constants::flow_cytometry_separated_cycle_model) 
+            {
+                pCD->functions.cycle_model = flow_cytometry_separated_cycle_model; 
+            }
+            else if (model == PhysiCell_constants::cycling_quiescent_model) 
+            {
+                pCD->functions.cycle_model = cycling_quiescent; 
+            }
+            else
+            {
+                std::cout << "Warning: Unknown cycle model " << std::endl;
+                exit(-1); 
+            }
+//			}
 			pCD->phenotype.cycle.sync_to_cycle_model( pCD->functions.cycle_model ); 
 		}
 		
@@ -1706,7 +1780,19 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 		node = node.child( "model" );
 		while( node )
 		{
-			int model = node.attribute("code").as_int() ; 
+			int model; // = node.attribute("code").as_int() ; 
+			if( strlen( node.attribute("code").as_string() ) > 0 )
+			{ model = node.attribute("code").as_int(); }
+			else
+			{ model = find_cycle_model_code( node.attribute("name").as_string() ); } 
+			if( model < 0 )
+			{ 
+				std::cout << "Error. Unable to identify death model " 
+					<< node.attribute("name").value() 
+					<< " (" << node.attribute("code").value() << ")" << std::endl;
+				exit(-1);
+			}		
+
 			
 			// check: is that death model already there? 
 			
@@ -1786,44 +1872,45 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 					
 			// set the model 
 			// if the model already exists, just overwrite the parameters 
-			switch( model )
-			{
-				case PhysiCell_constants::apoptosis_death_model: 
+            if (model == PhysiCell_constants::apoptosis_death_model) 
+            {
 //					pCD->phenotype.death.add_death_model( rate , &apoptosis , apoptosis_parameters );
-					if( death_model_already_exists == false )
-					{
-						pCD->phenotype.death.add_death_model( rate , &apoptosis , death_params ); 
-						death_index = pD->find_death_model_index( model );
-					}
-					else
-					{
-						pCD->phenotype.death.parameters[death_index] = death_params; 
-						pCD->phenotype.death.rates[death_index] = rate; 
-					}
-					break; 
-				case PhysiCell_constants::necrosis_death_model: 
-					// set necrosis parameters 
+                if( death_model_already_exists == false )
+                {
+                    pCD->phenotype.death.add_death_model( rate , &apoptosis , death_params ); 
+                    death_index = pD->find_death_model_index( model );
+                }
+                else
+                {
+                    pCD->phenotype.death.parameters[death_index] = death_params; 
+                    pCD->phenotype.death.rates[death_index] = rate; 
+                }
+            }
+            else if (model == PhysiCell_constants::necrosis_death_model) 
+            {
+                // set necrosis parameters 
 //					pCD->phenotype.death.add_death_model( rate , &necrosis , necrosis_parameters );
-					if( death_model_already_exists == false )
-					{
-						pCD->phenotype.death.add_death_model( rate , &necrosis , death_params ); 
-						death_index = pD->find_death_model_index( model );
-					}
-					else
-					{
-						pCD->phenotype.death.parameters[death_index] = death_params; 
-						pCD->phenotype.death.rates[death_index] = rate; 						
-					}
-					break; 
-				case PhysiCell_constants::autophagy_death_model: 
-					std::cout << "Warning: autophagy_death_model not yet supported." << std::endl		
-							  << "         Skipping this model." << std::endl; 
-					break; 
-				default:
-					std::cout << "Warning: Unknown death model " << std::endl;
-					exit(-1); 
-					break; 
-			}
+                if( death_model_already_exists == false )
+                {
+                    pCD->phenotype.death.add_death_model( rate , &necrosis , death_params ); 
+                    death_index = pD->find_death_model_index( model );
+                }
+                else
+                {
+                    pCD->phenotype.death.parameters[death_index] = death_params; 
+                    pCD->phenotype.death.rates[death_index] = rate; 						
+                }
+            }
+            else if (model == PhysiCell_constants::autophagy_death_model) 
+            {
+                std::cout << "Warning: autophagy_death_model not yet supported." << std::endl		
+                            << "         Skipping this model." << std::endl; 
+            }
+            else 
+            {
+                std::cout << "Warning: Unknown death model " << std::endl;
+                exit(-1); 
+            }
 			
 			// now get transition rates within the death model 
 			// set the rates 
@@ -1996,6 +2083,10 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 		pV->target_cytoplasmic_to_nuclear_ratio = pV->cytoplasmic_to_nuclear_ratio; 
 		
 		pV->rupture_volume = pV->relative_rupture_volume * pV->total; // in volume units 
+
+        // update the geometry (radius, etc.) for consistency 
+
+        pCD->phenotype.geometry.update( NULL, pCD->phenotype, 0.0 ); 
 	}
 	
 	// mechanics 
@@ -2096,7 +2187,8 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 				pMot->chemotaxis_index = microenvironment.find_density_index( substrate_name ); 
 				if( pMot->chemotaxis_index < 0)
 				{
-					std::cout << __FUNCTION__ << ": Error: parsing phenotype:motility:options:chemotaxis:  invalid substrate" << std::endl << std::endl; 
+					std::cout << __FUNCTION__ << ": Error: parsing phenotype:motility:options:chemotaxis:  invalid substrate" << std::endl; 
+					std::cout << substrate_name << " was not found in the microenvironment. Please check for typos!" << std::endl << std::endl; 
 					exit(-1); 
 				}
 				
@@ -2172,6 +2264,63 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 		}
 	}	
 
+    	// intracellular
+	
+	node = cd_node.child( "phenotype" );
+	node = node.child( "intracellular" ); 
+	if( node )
+	{
+		std::string model_type = node.attribute( "type" ).value(); 
+		
+#ifdef ADDON_PHYSIBOSS
+		if (model_type == "maboss") {
+			// If it has already be copied
+			if (pParent != NULL && pParent->phenotype.intracellular != NULL) {
+				pCD->phenotype.intracellular->initialize_intracellular_from_pugixml(node);
+				
+			// Otherwise we need to create a new one
+			} else {
+				MaBoSSIntracellular* pIntra = new MaBoSSIntracellular(node);
+				pCD->phenotype.intracellular = pIntra->getIntracellularModel();
+			}
+		}
+#endif
+
+#ifdef ADDON_ROADRUNNER
+		if (model_type == "roadrunner") 
+        {
+			// If it has already be copied
+			if (pParent != NULL && pParent->phenotype.intracellular != NULL) 
+            {
+                // std::cout << "------ " << __FUNCTION__ << ": copying another\n";
+				pCD->phenotype.intracellular->initialize_intracellular_from_pugixml(node);
+            }	
+			// Otherwise we need to create a new one
+			else 
+            {
+                std::cout << "\n------ " << __FUNCTION__ << ": creating new RoadRunnerIntracellular\n";
+				RoadRunnerIntracellular* pIntra = new RoadRunnerIntracellular(node);
+				pCD->phenotype.intracellular = pIntra->getIntracellularModel();
+                pCD->phenotype.intracellular->validate_PhysiCell_tokens(pCD->phenotype);
+                pCD->phenotype.intracellular->validate_SBML_species();
+			}
+		}
+#endif
+
+#ifdef ADDON_PHYSIDFBA
+		if (model_type == "dfba") {
+			// If it has already be copied
+			if (pParent != NULL && pParent->phenotype.intracellular != NULL) {
+				pCD->phenotype.intracellular->initialize_intracellular_from_pugixml(node);
+			// Otherwise we need to create a new one
+			} else {
+				dFBAIntracellular* pIntra = new dFBAIntracellular(node);
+				pCD->phenotype.intracellular = pIntra->getIntracellularModel();
+			}
+		}
+#endif
+
+	}	
 	
 	// set up custom data 
 	node = cd_node.child( "custom_data" );
@@ -2225,6 +2374,20 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 
 void initialize_cell_definitions_from_pugixml( pugi::xml_node root )
 {
+	pugi::xml_node node_options; 
+	
+	node_options = xml_find_node( root , "options" ); 
+	if( node_options )
+	{
+		bool settings = 
+			xml_get_bool_value( node_options, "virtual_wall_at_domain_edge" ); 
+		if( settings )
+		{
+			std::cout << "virtual_wall_at_domain_edge: enabled" << std::endl; 
+			cell_defaults.functions.add_cell_basement_membrane_interactions = standard_domain_edge_avoidance_interactions;
+		}
+	}
+	
 	pugi::xml_node node = root.child( "cell_definitions" ); 
 	
 	node = node.child( "cell_definition" ); 
@@ -2322,6 +2485,82 @@ void detach_cells( Cell* pCell_1 , Cell* pCell_2 )
 	pCell_2->detach_cell( pCell_1 );
 	return; 
 }
+
+std::vector<Cell*> find_nearby_cells( Cell* pCell )
+{
+	std::vector<Cell*> neighbors = {}; 
+
+	// First check the neighbors in my current voxel
+	std::vector<Cell*>::iterator neighbor;
+	std::vector<Cell*>::iterator end =
+		pCell->get_container()->agent_grid[pCell->get_current_mechanics_voxel_index()].end();
+	for( neighbor = pCell->get_container()->agent_grid[pCell->get_current_mechanics_voxel_index()].begin(); neighbor != end; ++neighbor)
+	{ neighbors.push_back( *neighbor ); }
+
+	std::vector<int>::iterator neighbor_voxel_index;
+	std::vector<int>::iterator neighbor_voxel_index_end = 
+		pCell->get_container()->underlying_mesh.moore_connected_voxel_indices[pCell->get_current_mechanics_voxel_index()].end();
+	
+	for( neighbor_voxel_index = 
+		pCell->get_container()->underlying_mesh.moore_connected_voxel_indices[pCell->get_current_mechanics_voxel_index()].begin();
+		neighbor_voxel_index != neighbor_voxel_index_end; 
+		++neighbor_voxel_index )
+	{
+		if(!is_neighbor_voxel(pCell, pCell->get_container()->underlying_mesh.voxels[pCell->get_current_mechanics_voxel_index()].center, pCell->get_container()->underlying_mesh.voxels[*neighbor_voxel_index].center, *neighbor_voxel_index))
+			continue;
+		end = pCell->get_container()->agent_grid[*neighbor_voxel_index].end();
+		for(neighbor = pCell->get_container()->agent_grid[*neighbor_voxel_index].begin();neighbor != end; ++neighbor)
+		{ neighbors.push_back( *neighbor ); }
+	}
+	
+	return neighbors; 
+}
+
+std::vector<Cell*> find_nearby_interacting_cells( Cell* pCell )
+{
+	std::vector<Cell*> neighbors = {}; 
+
+	// First check the neighbors in my current voxel
+	std::vector<Cell*>::iterator neighbor;
+	std::vector<Cell*>::iterator end = pCell->get_container()->agent_grid[pCell->get_current_mechanics_voxel_index()].end();
+	for( neighbor = pCell->get_container()->agent_grid[pCell->get_current_mechanics_voxel_index()].begin(); neighbor != end; ++neighbor)
+	{
+		std::vector<double> displacement = (*neighbor)->position - pCell->position; 
+		double distance = norm( displacement ); 
+		if( distance <= pCell->phenotype.mechanics.relative_maximum_adhesion_distance * pCell->phenotype.geometry.radius 
+			+ (*neighbor)->phenotype.mechanics.relative_maximum_adhesion_distance * (*neighbor)->phenotype.geometry.radius 
+			&& (*neighbor) != pCell )
+		{ neighbors.push_back( *neighbor ); }
+	}
+
+	std::vector<int>::iterator neighbor_voxel_index;
+	std::vector<int>::iterator neighbor_voxel_index_end = 
+		pCell->get_container()->underlying_mesh.moore_connected_voxel_indices[pCell->get_current_mechanics_voxel_index()].end();
+	
+	for( neighbor_voxel_index = 
+		pCell->get_container()->underlying_mesh.moore_connected_voxel_indices[pCell->get_current_mechanics_voxel_index()].begin();
+		neighbor_voxel_index != neighbor_voxel_index_end; 
+		++neighbor_voxel_index )
+	{
+		if(!is_neighbor_voxel(pCell, pCell->get_container()->underlying_mesh.voxels[pCell->get_current_mechanics_voxel_index()].center, pCell->get_container()->underlying_mesh.voxels[*neighbor_voxel_index].center, *neighbor_voxel_index))
+			continue;
+		end = pCell->get_container()->agent_grid[*neighbor_voxel_index].end();
+		for(neighbor = pCell->get_container()->agent_grid[*neighbor_voxel_index].begin();neighbor != end; ++neighbor)
+		{
+			std::vector<double> displacement = (*neighbor)->position - pCell->position; 
+			double distance = norm( displacement ); 
+			if( distance <= pCell->phenotype.mechanics.relative_maximum_adhesion_distance * pCell->phenotype.geometry.radius 
+				+ (*neighbor)->phenotype.mechanics.relative_maximum_adhesion_distance * (*neighbor)->phenotype.geometry.radius
+				&& (*neighbor) != pCell	)
+			{ neighbors.push_back( *neighbor ); }
+		}
+	}
+	
+	return neighbors; 
+}
+
+
+
 
 
 };
