@@ -161,6 +161,10 @@ void external_immune_model( double dt )
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	
 	//std::cout << "Placing " << number_of_Ig << " Ig ... " << std::endl; 
+	if( number_of_Ig > 1000)
+	{
+		number_of_Ig=1000;
+	}
 	for( int n=0 ; n < number_of_Ig ; n++ )
 		{
 			// pick a random voxel 

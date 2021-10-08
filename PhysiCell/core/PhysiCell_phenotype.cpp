@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2018, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2021, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -1058,10 +1058,46 @@ Phenotype::Phenotype()
 	flagged_for_removal = false; 
 	
 	// sync the molecular stuff here automatically? 
+	intracellular = NULL;
 	
 	return; 
 }
 
+Phenotype::Phenotype(const Phenotype &p) {
+	intracellular = NULL;
+	*this = p;
+}
+
+Phenotype::~Phenotype() 
+{
+	if (intracellular != NULL)
+		delete intracellular;
+}
+
+Phenotype& Phenotype::operator=(const Phenotype &p ) { 
+		
+	flagged_for_division = p.flagged_for_division;
+	flagged_for_removal = p.flagged_for_removal;
+	
+	cycle = p.cycle;
+	death = p.death;
+	volume = p.volume;
+	geometry = p.geometry;
+	mechanics = p.mechanics;
+	motility = p.motility;
+	secretion = p.secretion;
+	
+	molecular = p.molecular;
+	
+	delete intracellular;
+	
+	if (p.intracellular != NULL)
+		intracellular = p.intracellular->clone();
+	else
+		intracellular = NULL;
+	
+	return *this;
+}
 /*
 class Bools
 {
@@ -1100,5 +1136,3 @@ void Phenotype::sync_to_microenvironment( Microenvironment* pMicroenvironment )
 }
 
 };
-
-

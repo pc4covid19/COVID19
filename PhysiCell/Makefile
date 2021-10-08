@@ -2,37 +2,18 @@ VERSION := $(shell grep . VERSION.txt | cut -f1 -d:)
 PROGRAM_NAME := COVID19
 
 CC := g++
-# CC := g++-mp-7 # typical macports compiler name
-# CC := g++-7 # typical homebrew compiler name 
 
 # Check for environment definitions of compiler 
-# e.g., on CC = g++-7 on OSX
+# e.g., on CC = g++-10 on OSX
 ifdef PHYSICELL_CPP 
 	CC := $(PHYSICELL_CPP)
 endif
 
 ARCH := native # best auto-tuning 
-# ARCH := core2 # a reasonably safe default for most CPUs since 2007
-# ARCH := corei7
-# ARCH := corei7-avx # earlier i7 
-# ARCH := core-avx-i # i7 ivy bridge or newer 
-# ARCH := core-avx2 # i7 with Haswell or newer
-# ARCH := nehalem
-# ARCH := westmere
-# ARCH := sandybridge # circa 2011
-# ARCH := ivybridge   # circa 2012
-# ARCH := haswell     # circa 2013
-# ARCH := broadwell   # circa 2014
-# ARCH := skylake     # circa 2015
-# ARCH := bonnell
-# ARCH := silvermont
-# ARCH := skylake-avx512
-# ARCH := nocona #64-bit pentium 4 or later 
 
-# CFLAGS := -march=$(ARCH) -Ofast -s -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
-CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11 
+CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
 
-COMPILE_COMMAND := $(CC) $(CFLAGS) 
+COMPILE_COMMAND := $(CC) $(CFLAGS)
 
 BioFVM_OBJECTS := BioFVM_vector.o BioFVM_mesh.o BioFVM_microenvironment.o BioFVM_solvers.o BioFVM_matlab.o \
 BioFVM_utilities.o BioFVM_basic_agent.o BioFVM_MultiCellDS.o BioFVM_agent_container.o 
@@ -44,10 +25,11 @@ PhysiCell_module_OBJECTS := PhysiCell_SVG.o PhysiCell_pathology.o PhysiCell_Mult
 PhysiCell_pugixml.o PhysiCell_settings.o
 
 # put your custom objects here (they should be in the custom_modules directory)
-
-PhysiCell_custom_module_OBJECTS := custom.o DC_history.o external_immune.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o immune_submodels.o epithelium_submodel.o
+PhysiCell_custom_module_OBJECTS := custom.o DC_history.o external_immune.o submodel_data_structures.o internal_viral_dynamics.o internal_viral_response.o receptor_dynamics.o immune_submodels.o epithelium_submodel.o 
 
 pugixml_OBJECTS := pugixml.o
+
+ROADRUNNER_OBJECTS := librr_intracellular.o 
 
 PhysiCell_OBJECTS := $(BioFVM_OBJECTS)  $(pugixml_OBJECTS) $(PhysiCell_core_OBJECTS) $(PhysiCell_module_OBJECTS)
 ALL_OBJECTS := $(PhysiCell_OBJECTS) $(PhysiCell_custom_module_OBJECTS)
@@ -164,6 +146,7 @@ epithelium_submodel.o: ./custom_modules/epithelium_submodel.cpp
 DC_history.o: ./custom_modules/DC_history.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/DC_history.cpp 
 
+
 # cleanup
 	
 clean:
@@ -179,7 +162,16 @@ data-cleanup:
 	touch ./output/empty.txt
 
 reset:
-	cp ./config/PhysiCell_settings.xml-default ./config/PhysiCell_settings.xml 
+	rm -f *.cpp 
+	cp ./sample_projects/Makefile-default Makefile 
+	rm -f ./custom_modules/*
+	touch ./custom_modules/empty.txt 
+	touch ALL_CITATIONS.txt 
+	touch ./core/PhysiCell_cell.cpp
+	rm ALL_CITATIONS.txt 
+	cp ./config/PhysiCell_settings-backup.xml ./config/PhysiCell_settings.xml 
+	touch ./config/empty.csv
+	rm ./config/*.csv	
 	
 FOLDER := output
 FRAMERATE := 24
