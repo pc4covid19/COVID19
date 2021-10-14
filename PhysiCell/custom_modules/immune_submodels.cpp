@@ -908,21 +908,17 @@ void neutrophil_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 // (Adrianne) DC phenotype function
 void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	static Cell_Definition* pCD = find_cell_definition( "DC" ); 
+	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" ); 
+	// no apoptosis until activation (resident macrophages in constant number for homeostasis) 
+	if( pCell->custom_data["activated_immune_cell"] < 0.5 )
+	{ phenotype.death.rates[apoptosis_index] = 0.0; }
+	else
+	{ phenotype.death.rates[apoptosis_index] = pCD->phenotype.death.rates[apoptosis_index]; } 
+
 	// (Adrianne) get type of CD8+ T cell
 	static int CD8_Tcell_type = get_cell_definition( "CD8 Tcell" ).type;
 	
-	/* // (Adrianne) if DC is already activated, then check whether it leaves the tissue
-	if( pCell->custom_data["activated_immune_cell"] >  0.5 && UniformRandom() < 0.002)
-	{
-		extern double DM; //declare existance of DC lymph
-		// (Adrianne) DC leaves the tissue and so we lyse that DC
-		std::cout<<"DC leaves tissue"<<std::endl;
-		pCell->lyse_cell(); 
-		#pragma omp critical 
-		{ DM++; } // add one
-		return;
-		
-	} */
 	if( pCell->custom_data["activated_immune_cell"] > 0.5 ) // (Adrianne) activated DCs that don't leave the tissue can further activate CD8s increasing their proliferation rate and attachment rates
 	{
 		
@@ -1386,292 +1382,275 @@ void immune_cell_recruitment( double dt )
 		
 	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
 	
-	static double dt_immune = parameters.doubles( "immune_dt" ); 
-	static double t_immune = 0.0; 
-	static double t_last_immune = 0.0; 
-	static double t_next_immune = 0.0; 
-	
 	static double tolerance = 0.1 * diffusion_dt; 
+
+	// macrophage recruitment 
 	
-	// is it time for the next immune recruitment? 
-	if( t_immune > t_next_immune- tolerance )
+	static double macrophage_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
+	static double M_min_signal = parameters.doubles( "macrophage_recruitment_min_signal" ); 
+	static double M_sat_signal = parameters.doubles( "macrophage_recruitment_saturation_signal" ); 
+	static double M_max_minus_min = M_sat_signal - M_min_signal; 
+	
+	double total_rate = 0;
+	// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
+	double total_scaled_signal= 0.0;
+	for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
 	{
-		double elapsed_time = (t_immune - t_last_immune );
-
-		// macrophage recruitment 
-		
-		static double macrophage_recruitment_rate = parameters.doubles( "macrophage_max_recruitment_rate" ); 
-		static double M_min_signal = parameters.doubles( "macrophage_recruitment_min_signal" ); 
-		static double M_sat_signal = parameters.doubles( "macrophage_recruitment_saturation_signal" ); 
-		static double M_max_minus_min = M_sat_signal - M_min_signal; 
-		
-		double total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
-		double total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - M_min_signal ); 
-			dRate /= M_max_minus_min; 
-			// crop to [0,1] 
-			if( dRate > 1 ) 
-			{ dRate = 1; } 
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate; 
-		}	
-		// multiply by dV and rate_max 
-		total_scaled_signal = total_rate; 
-		
-		total_rate *= microenvironment.mesh.dV; 
-		total_rate *= macrophage_recruitment_rate; 
-
-		// expected number of new neutrophils 
-		double number_of_new_cells_prob = total_rate * elapsed_time ; 
-		// recruited_DCs += number_of_new_cells;		
-		
-		int number_of_new_cells_int = floor( number_of_new_cells_prob );
-	    double alpha = number_of_new_cells_prob - number_of_new_cells_int;	
-		
-		//STOCHASTIC PORTION		
-	    
-	    if( UniformRandom()< alpha )
-	    {
-			number_of_new_cells_int++;
-	    }
-		recruited_macrophages += number_of_new_cells_int;
-		
-		if( number_of_new_cells_int )
-		{
-			if( t_immune < first_macrophage_recruitment_time )
-			{ first_macrophage_recruitment_time = t_immune; }
-
-			std::cout << "\tRecruiting " << number_of_new_cells_int << " macrophages ... " << std::endl; 
-			
-			for( int n = 0; n < number_of_new_cells_int ; n++ )
-			{ create_infiltrating_macrophage(); }
-		}
-		
-		// neutrophil recruitment 
-		static double neutrophil_recruitment_rate = parameters.doubles( "neutrophil_max_recruitment_rate" ); 
-		static double NR_min_signal = parameters.doubles( "neutrophil_recruitment_min_signal" ); 
-		static double NR_sat_signal = parameters.doubles( "neutrophil_recruitment_saturation_signal" ); 
-		static double NR_max_minus_min = NR_sat_signal - NR_min_signal; 
-		
-		total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
-		total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - NR_min_signal ); 
-			dRate /= NR_max_minus_min; 
-			// crop to [0,1] 
-			if( dRate > 1 ) 
-			{ dRate = 1; } 
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate; 
-		}	
-		// multiply by dV and rate_max 
-		total_scaled_signal = total_rate; 
-		
-		total_rate *= microenvironment.mesh.dV; 
-		total_rate *= neutrophil_recruitment_rate; 
-
-		// expected number of new neutrophils 
-		number_of_new_cells_prob = total_rate * elapsed_time ; 
-		// recruited_DCs += number_of_new_cells;		
-		
-		number_of_new_cells_int = floor( number_of_new_cells_prob );
-	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
-		
-		//STOCHASTIC PORTION		
-	    
-	    if( UniformRandom()< alpha )
-	    {
-			number_of_new_cells_int++;
-	    }
-		recruited_neutrophils += number_of_new_cells_int;
-		
-		if( number_of_new_cells_int )
-		{
-			if( t_immune < first_neutrophil_recruitment_time )
-			{ first_neutrophil_recruitment_time = t_immune; }
-
-			std::cout << "\tRecruiting " << number_of_new_cells_int << " neutrophils ... " << std::endl; 
-			
-			for( int n = 0; n < number_of_new_cells_int ; n++ )
-			{ create_infiltrating_neutrophil(); }
-		}
-		
-		// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
-		
-		extern double TCt; 
-		extern std::vector<int>historyTc;
-		
-		int number_of_new_cells = (int) floor( TCt ); 
-		TCt-=number_of_new_cells;
-		
-		std::rotate(historyTc.rbegin(),historyTc.rbegin()+1,historyTc.rend());
-		historyTc.front() = number_of_new_cells;
-		
-		
-		
-		recruited_Tcells += historyTc.back();
+		// (signal(x)-signal_min)/(signal_max/signal_min)
+		double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - M_min_signal ); 
+		dRate /= M_max_minus_min; 
+		// crop to [0,1] 
+		if( dRate > 1 ) 
+		{ dRate = 1; } 
+		if( dRate < 0 )
+		{ dRate = 0; }
+		total_rate += dRate; 
+	}	
+	// multiply by dV and rate_max 
+	total_scaled_signal = total_rate; 
 	
+	total_rate *= microenvironment.mesh.dV; 
+	total_rate *= macrophage_recruitment_rate; 
+
+	// expected number of new neutrophils 
+	double number_of_new_cells_prob = total_rate * dt ; 
+	// recruited_DCs += number_of_new_cells;		
 	
-		static int nAb = microenvironment.find_density_index( "Ig" ); 
-		static int nV = microenvironment.find_density_index( "virion" ); 		
-		
-		if( historyTc.back() )
-		{
-			if( t_immune < first_CD8_T_cell_recruitment_time )
-			{ first_CD8_T_cell_recruitment_time = t_immune; }
-			
-			std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << std::endl; 
+	int number_of_new_cells_int = floor( number_of_new_cells_prob );
+	double alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+	
+	//STOCHASTIC PORTION		
+	
+	if( UniformRandom()< alpha )
+	{
+		number_of_new_cells_int++;
+	}
+	recruited_macrophages += number_of_new_cells_int;
+	
+	if( number_of_new_cells_int )
+	{
+		if( PhysiCell_globals.current_time < first_macrophage_recruitment_time )
+		{ first_macrophage_recruitment_time = PhysiCell_globals.current_time; }
 
-			for( int n = 0; n < historyTc.back() ; n++ )
-			{ create_infiltrating_Tcell(); }
-		}
+		std::cout << "\tRecruiting " << number_of_new_cells_int << " macrophages ... " << std::endl; 
 		
-		
-		// CD4 recruitment (Michael) changed to take floor of ODE value
-		extern double Tht; 
-		extern std::vector<int>historyTh;
-		
-		number_of_new_cells = (int) floor( Tht );
-		Tht-=number_of_new_cells;
-		
-		std::rotate(historyTh.rbegin(),historyTh.rbegin()+1,historyTh.rend());
-		historyTh.front() = number_of_new_cells;
-		
-		recruited_CD4Tcells += historyTh.back();	
-		
-		if( historyTh.back() )
-		{
-			if( t_immune < first_CD4_T_cell_recruitment_time )
-			{ first_CD4_T_cell_recruitment_time = t_immune; }
-			
-			std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << std::endl; 
-
-			for( int n = 0; n < historyTh.back() ; n++ )
-			{ create_infiltrating_CD4Tcell(); }
-		}
-		
-		// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**
-		static double DC_recruitment_rate = parameters.doubles( "DC_max_recruitment_rate" ); 
-		static double DC_min_signal = parameters.doubles( "DC_recruitment_min_signal" ); 
-		static double DC_sat_signal = parameters.doubles( "DC_recruitment_saturation_signal" ); 
-		static double DC_max_minus_min = DC_sat_signal - DC_min_signal; 
-				
-		total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
-		total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - DC_min_signal ); 
-			dRate /= DC_max_minus_min; 
-			// crop to [0,1] 
-			if( dRate > 1 ) 
-			{ dRate = 1; } 
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate; 
-		}	
-		// multiply by dV and rate_max 
-		total_scaled_signal = total_rate; 
-		
-		total_rate *= microenvironment.mesh.dV; 
-		total_rate *= DC_recruitment_rate; 
-		
-		// expected number of new neutrophils 
-		number_of_new_cells_prob = total_rate * elapsed_time ; 
-		// recruited_DCs += number_of_new_cells;		
-		
-		number_of_new_cells_int = floor( number_of_new_cells_prob );
-	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
-		
-		//STOCHASTIC PORTION		
-	    
-	    if( UniformRandom()< alpha )
-	    {
-			number_of_new_cells_int++;
-	    }
-		recruited_DCs += number_of_new_cells_int;
-		
-		if( number_of_new_cells_int )
-		{
-			if( t_immune < first_DC_recruitment_time )
-			{ first_DC_recruitment_time = t_immune; }
-			
-			std::cout << "\tRecruiting " << number_of_new_cells_int << " DCs ... " << std::endl; 
-
-			for( int n = 0; n < number_of_new_cells_int ; n++ )
-			{ create_infiltrating_DC(); }
-		}
-		
-		//  fibroblast recruitment
-		static double fibroblast_recruitment_rate = parameters.doubles( "fibroblast_max_recruitment_rate" );
-		static double f_min_signal = parameters.doubles( "fibroblast_recruitment_min_signal" );
-		static double f_sat_signal = parameters.doubles( "fibroblast_recruitment_saturation_signal" );
-		static double f_max_minus_min = f_sat_signal - f_min_signal;
-
-		total_rate = 0;
-		// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV
-		total_scaled_signal= 0.0;
-		for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
-		{
-			// (signal(x)-signal_min)/(signal_max/signal_min)
-			double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
-			double dRate = ( 0.0492*pow(TGF_beta,3) -0.9868*pow(TGF_beta,2) +6.5408*TGF_beta + 7 - f_min_signal );
-			dRate /= f_max_minus_min;
-			// crop to [0,1]
-			if( dRate > 1 )
-			{ dRate = 1; }
-			if( dRate < 0 )
-			{ dRate = 0; }
-			total_rate += dRate;
-		}
-		
-		// multiply by dV and rate_max
-		total_scaled_signal = total_rate;
-
-		total_rate *= microenvironment.mesh.dV;
-		total_rate *= fibroblast_recruitment_rate;
-		
-		// expected number of new fibroblast
-		number_of_new_cells_prob = total_rate * elapsed_time;
-		number_of_new_cells_int = floor( number_of_new_cells_prob );
-	    alpha = number_of_new_cells_prob - number_of_new_cells_int;	
-		
-		//STOCHASTIC PORTION		
-	    
-	    if( UniformRandom()< alpha )
-	    {
-			number_of_new_cells_int++;
-	    }
-		recruited_fibroblasts += number_of_new_cells_int;
-		
-		if( number_of_new_cells_int )
-		{
-			if( t_immune < first_fibroblast_cell_recruitment_time )
-			{ first_fibroblast_cell_recruitment_time = t_immune; }
-
-			std::cout << "\tRecruiting " << number_of_new_cells_int << " fibroblast cells ... " << std::endl;
-
-			for( int n = 0; n < number_of_new_cells_int ; n++ )
-			{ create_infiltrating_fibroblast(); }
-		}
-		
-		t_last_immune = t_immune; 
-		t_next_immune = t_immune + dt_immune; 
-		
+		for( int n = 0; n < number_of_new_cells_int ; n++ )
+		{ create_infiltrating_macrophage(); }
 	}
 	
+	// neutrophil recruitment 
+	static double neutrophil_recruitment_rate = parameters.doubles( "neutrophil_max_recruitment_rate" ); 
+	static double NR_min_signal = parameters.doubles( "neutrophil_recruitment_min_signal" ); 
+	static double NR_sat_signal = parameters.doubles( "neutrophil_recruitment_saturation_signal" ); 
+	static double NR_max_minus_min = NR_sat_signal - NR_min_signal; 
+	
+	total_rate = 0;
+	// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
+	total_scaled_signal= 0.0;
+	for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
+	{
+		// (signal(x)-signal_min)/(signal_max/signal_min)
+		double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - NR_min_signal ); 
+		dRate /= NR_max_minus_min; 
+		// crop to [0,1] 
+		if( dRate > 1 ) 
+		{ dRate = 1; } 
+		if( dRate < 0 )
+		{ dRate = 0; }
+		total_rate += dRate; 
+	}	
+	// multiply by dV and rate_max 
+	total_scaled_signal = total_rate; 
+	
+	total_rate *= microenvironment.mesh.dV; 
+	total_rate *= neutrophil_recruitment_rate; 
+
+	// expected number of new neutrophils 
+	number_of_new_cells_prob = total_rate * dt ; 
+	// recruited_DCs += number_of_new_cells;		
+	
+	number_of_new_cells_int = floor( number_of_new_cells_prob );
+	alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+	
+	//STOCHASTIC PORTION		
+	
+	if( UniformRandom()< alpha )
+	{
+		number_of_new_cells_int++;
+	}
+	recruited_neutrophils += number_of_new_cells_int;
+	
+	if( number_of_new_cells_int )
+	{
+		if( PhysiCell_globals.current_time < first_neutrophil_recruitment_time )
+		{ first_neutrophil_recruitment_time = PhysiCell_globals.current_time; }
+
+		std::cout << "\tRecruiting " << number_of_new_cells_int << " neutrophils ... " << std::endl; 
 		
-	t_immune += dt; 
+		for( int n = 0; n < number_of_new_cells_int ; n++ )
+		{ create_infiltrating_neutrophil(); }
+	}
+	
+	// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
+	
+	extern double TCt; 
+	extern std::vector<int>historyTc;
+	
+	int number_of_new_cells = (int) floor( TCt ); 
+	TCt-=number_of_new_cells;
+	
+	std::rotate(historyTc.rbegin(),historyTc.rbegin()+1,historyTc.rend());
+	historyTc.front() = number_of_new_cells;
+	
+	
+	
+	recruited_Tcells += historyTc.back();
+
+
+	static int nAb = microenvironment.find_density_index( "Ig" ); 
+	static int nV = microenvironment.find_density_index( "virion" ); 		
+	
+	if( historyTc.back() )
+	{
+		if( PhysiCell_globals.current_time < first_CD8_T_cell_recruitment_time )
+		{ first_CD8_T_cell_recruitment_time = PhysiCell_globals.current_time; }
+		
+		std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << std::endl; 
+
+		for( int n = 0; n < historyTc.back() ; n++ )
+		{ create_infiltrating_Tcell(); }
+	}
+	
+	
+	// CD4 recruitment (Michael) changed to take floor of ODE value
+	extern double Tht; 
+	extern std::vector<int>historyTh;
+	
+	number_of_new_cells = (int) floor( Tht );
+	Tht-=number_of_new_cells;
+	
+	std::rotate(historyTh.rbegin(),historyTh.rbegin()+1,historyTh.rend());
+	historyTh.front() = number_of_new_cells;
+	
+	recruited_CD4Tcells += historyTh.back();	
+	
+	if( historyTh.back() )
+	{
+		if( PhysiCell_globals.current_time < first_CD4_T_cell_recruitment_time )
+		{ first_CD4_T_cell_recruitment_time = PhysiCell_globals.current_time; }
+		
+		std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << std::endl; 
+
+		for( int n = 0; n < historyTh.back() ; n++ )
+		{ create_infiltrating_CD4Tcell(); }
+	}
+	
+	// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**
+	static double DC_recruitment_rate = parameters.doubles( "DC_max_recruitment_rate" ); 
+	static double DC_min_signal = parameters.doubles( "DC_recruitment_min_signal" ); 
+	static double DC_sat_signal = parameters.doubles( "DC_recruitment_saturation_signal" ); 
+	static double DC_max_minus_min = DC_sat_signal - DC_min_signal; 
+			
+	total_rate = 0;
+	// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV 
+	total_scaled_signal= 0.0;
+	for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
+	{
+		// (signal(x)-signal_min)/(signal_max/signal_min)
+		double dRate = ( microenvironment(n)[proinflammatory_cytokine_index] - DC_min_signal ); 
+		dRate /= DC_max_minus_min; 
+		// crop to [0,1] 
+		if( dRate > 1 ) 
+		{ dRate = 1; } 
+		if( dRate < 0 )
+		{ dRate = 0; }
+		total_rate += dRate; 
+	}	
+	// multiply by dV and rate_max 
+	total_scaled_signal = total_rate; 
+	
+	total_rate *= microenvironment.mesh.dV; 
+	total_rate *= DC_recruitment_rate; 
+	
+	// expected number of new neutrophils 
+	number_of_new_cells_prob = total_rate * dt ; 
+	// recruited_DCs += number_of_new_cells;		
+	
+	number_of_new_cells_int = floor( number_of_new_cells_prob );
+	alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+	
+	//STOCHASTIC PORTION		
+	
+	if( UniformRandom()< alpha )
+	{
+		number_of_new_cells_int++;
+	}
+	recruited_DCs += number_of_new_cells_int;
+	
+	if( number_of_new_cells_int )
+	{
+		if( PhysiCell_globals.current_time < first_DC_recruitment_time )
+		{ first_DC_recruitment_time = PhysiCell_globals.current_time; }
+		
+		std::cout << "\tRecruiting " << number_of_new_cells_int << " DCs ... " << std::endl; 
+
+		for( int n = 0; n < number_of_new_cells_int ; n++ )
+		{ create_infiltrating_DC(); }
+	}
+	
+	//  fibroblast recruitment
+	static double fibroblast_recruitment_rate = parameters.doubles( "fibroblast_max_recruitment_rate" );
+	static double f_min_signal = parameters.doubles( "fibroblast_recruitment_min_signal" );
+	static double f_sat_signal = parameters.doubles( "fibroblast_recruitment_saturation_signal" );
+	static double f_max_minus_min = f_sat_signal - f_min_signal;
+
+	total_rate = 0;
+	// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV
+	total_scaled_signal= 0.0;
+	for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
+	{
+		// (signal(x)-signal_min)/(signal_max/signal_min)
+		double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
+		double dRate = ( 0.0492*pow(TGF_beta,3) -0.9868*pow(TGF_beta,2) +6.5408*TGF_beta + 7 - f_min_signal );
+		dRate /= f_max_minus_min;
+		// crop to [0,1]
+		if( dRate > 1 )
+		{ dRate = 1; }
+		if( dRate < 0 )
+		{ dRate = 0; }
+		total_rate += dRate;
+	}
+	
+	// multiply by dV and rate_max
+	total_scaled_signal = total_rate;
+
+	total_rate *= microenvironment.mesh.dV;
+	total_rate *= fibroblast_recruitment_rate;
+	
+	// expected number of new fibroblast
+	number_of_new_cells_prob = total_rate * dt;
+	number_of_new_cells_int = floor( number_of_new_cells_prob );
+	alpha = number_of_new_cells_prob - number_of_new_cells_int;	
+	
+	//STOCHASTIC PORTION		
+	
+	if( UniformRandom()< alpha )
+	{
+		number_of_new_cells_int++;
+	}
+	recruited_fibroblasts += number_of_new_cells_int;
+	
+	if( number_of_new_cells_int )
+	{
+		if( PhysiCell_globals.current_time < first_fibroblast_cell_recruitment_time )
+		{ first_fibroblast_cell_recruitment_time = PhysiCell_globals.current_time; }
+
+		std::cout << "\tRecruiting " << number_of_new_cells_int << " fibroblast cells ... " << std::endl;
+
+		for( int n = 0; n < number_of_new_cells_int ; n++ )
+		{ create_infiltrating_fibroblast(); }
+	}
+		
 	
 	return; 
 }

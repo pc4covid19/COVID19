@@ -976,9 +976,6 @@
 		<!-- example parameters from the template --> 
 		
 		<ignore_smoothing_flag type="int" units="dimensionless">1</ignore_smoothing_flag> 
-		
-		<div_immune type="divider" description="--Immune activation parameters--"/>
-			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">10</immune_dt> 
 			
 			<immune_z_offset type="double" units="micron" 
 				description="immune cell position over the epithelium">0</immune_z_offset>
