@@ -109,8 +109,6 @@ void create_cell_types( void )
 	cell_defaults.functions.custom_cell_rule = custom_function; 
 	cell_defaults.functions.contact_function = contact_function; 
 	
-	
-	pBacteria->functions.update_phenotype = bacteria_phenotype;
 	/*
 	   This builds the map of cell definitions and summarizes the setup. 
 	*/
@@ -151,78 +149,35 @@ void setup_tissue( void )
 		Zmax = 0.0; 
 	}
 	
-	double Xrange = Xmax - Xmin;
-	double Yrange = Ymax - Ymin;
-	double Zrange = Zmax - Zmin;
+	double Xrange = Xmax - Xmin; 
+	double Yrange = Ymax - Ymin; 
+	double Zrange = Zmax - Zmin; 
 	
-	double center_x = 0.5*(Xmin+Xmax);
-	double center_y = 0.5*(Ymin+Ymax);
-	double center_z = 0.5*(Zmin+Zmax);
 	// create some of each type of cell 
+	
 	Cell* pC;
-	// find cell definitions
-   Cell_Definition* pBacteria = find_cell_definition( "bacteria" );
-	Cell_Definition* pSupplier = find_cell_definition( "supplier" ); ​
-   for( int k=0; k<parameters.ints("number_of_bacteria"); k++ )​
-   {​
-       std::vector<double> position = {0,0,0}; ​
-       double r = NormalRandom(0,1)*parameters.doubles( "radius_bacteria_region" );
-       double theta = 6.28318530718*UniformRandom();
-       position[0] = center_x + r*cos(theta);
-       position[1] = center_y + r*sin(theta);
-       position[2] = center_z;
-       pC = create_cell( *pBacteria );
-       pC->assign_position( position );
-   } ​
-   for( int k=0; k<parameters.ints("number_of_suppliers"); k++ )​
-   {​
-       std::vector<double> position = {0,0,0};
-       position[0] = Xmin + UniformRandom()*Xrange;
-       position[1] = Ymin + UniformRandom()*Yrange;
-       position[2] = Zmin + UniformRandom()*Zrange;
-       pC = create_cell( *pSupplier );
-       pC->assign_position( position );
-       pC->is_movable = false;​
-    }​
-    return;
-}​
-
-void bacteria_phenotype( Cell* pCell, Phenotype& phenotype , double dt )​
-{​
-	if( phenotype.death.dead == true )​
-		{​
-			pCell->functions.update_phenotype = NULL; // don't bother doing this function again! ​
-			return;​
-		}​
-// find my cell definition ​
-// don't use static if you plan to use this for more than one cell type ​
-	static Cell_Definition* pCD = find_cell_definition( pCell->type_name );
-// find the index of resource​
-	static int nR = microenvironment.find_density_index( "resource" );
-// index of necrotic death model ​
-	static int nNecrosis = 1; // PhysiCell_constants::necrosis_death_model; ​
-// sample microenvironment at cell position to get resource​
-	double R = pCell->nearest_density_vector()[nR];
-// check for necrotic death ​
-
-	if( R < pCell->custom_data["R_necrosis"] )​
-		{ phenotype.death.rates[nNecrosis] = pCell->custom_data["necrosis_rate"];} ​
-	else ​{
-		phenotype.death.rates[nNecrosis] = 0.0; }​
-// set birth rate
-// set proliferation ​
-// first, set to the cell line rate ​
-phenotype.cycle.data.transition_rate(0,1) = ​
-pCD->phenotype.cycle.data.transition_rate(0,1); ​
-// scale with R​
-double scaling_factor = (R - pCell->custom_data["R_necrosis"])/(pCell->custom_data["R_max_growth"] - pCell->custom_data["R_necrosis"]); ​
-if( scaling_factor > 1 )​
-{ scaling_factor = 1.0; } ​
-if( scaling_factor < 0 )​
-{ scaling_factor = 0.0; } ​
-// multiply by scaling factor​
-phenotype.cycle.data.transition_rate(0,1) *= scaling_factor; ​
-return; ​
+	
+	for( int k=0; k < cell_definitions_by_index.size() ; k++ )
+	{
+		Cell_Definition* pCD = cell_definitions_by_index[k]; 
+		std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
+		for( int n = 0 ; n < parameters.ints("number_of_cells") ; n++ )
+		{
+			std::vector<double> position = {0,0,0}; 
+			position[0] = Xmin + UniformRandom()*Xrange; 
+			position[1] = Ymin + UniformRandom()*Yrange; 
+			position[2] = Zmin + UniformRandom()*Zrange; 
+			
+			pC = create_cell( *pCD ); 
+			pC->assign_position( position );
+		}
+	}
+	std::cout << std::endl; 
+	
+	// load cells from your CSV file (if enabled)
+	load_cells_from_pugixml(); 	
+	
+	return; 
 }
 
 std::vector<std::string> my_coloring_function( Cell* pCell )

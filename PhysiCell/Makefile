@@ -13,6 +13,18 @@ ARCH := native # best auto-tuning
 
 CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -mfpmath=both -fopenmp -m64 -std=c++11
 
+ifeq ($(OS),Windows_NT)
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		UNAME_P := $(shell uname -p)
+		var := $(shell which $(CC) | xargs file)
+		ifeq ($(lastword $(var)),arm64)
+		  CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -fopenmp -m64 -std=c++11
+		endif
+	endif
+endif
+
 COMPILE_COMMAND := $(CC) $(CFLAGS)
 
 BioFVM_OBJECTS := BioFVM_vector.o BioFVM_mesh.o BioFVM_microenvironment.o BioFVM_solvers.o BioFVM_matlab.o \
@@ -204,3 +216,32 @@ unzip:
 untar: 
 	cp ./archives/latest.tar .
 	tar -xzf latest.tar
+	
+# upgrade rules 
+
+SOURCE := PhysiCell_upgrade.zip 
+get-upgrade: 
+	@echo $$(curl https://raw.githubusercontent.com/MathCancer/PhysiCell/master/VERSION.txt) >> VER.txt 
+	@echo https://github.com/MathCancer/PhysiCell/releases/download/$$(grep . VER.txt)/PhysiCell_V.$$(grep . VER.txt).zip >> DL_FILE.txt 
+	rm -f VER.txt
+	$$(curl -L $$(grep . DL_FILE.txt) --output PhysiCell_upgrade.zip)
+	rm -f DL_FILE.txt 
+
+PhysiCell_upgrade.zip: 
+	make get-upgrade 
+
+upgrade: $(SOURCE)
+	unzip $(SOURCE) PhysiCell/VERSION.txt
+	mv -f PhysiCell/VERSION.txt . 
+	unzip $(SOURCE) PhysiCell/core/* 
+	cp -r PhysiCell/core/* core 
+	unzip $(SOURCE) PhysiCell/modules/* 
+	cp -r PhysiCell/modules/* modules 
+	unzip $(SOURCE) PhysiCell/sample_projects/* 
+	cp -r PhysiCell/sample_projects/* sample_projects 
+	unzip $(SOURCE) PhysiCell/BioFVM/* 
+	cp -r PhysiCell/BioFVM/* BioFVM
+	unzip $(SOURCE) PhysiCell/documentation/User_Guide.pdf
+	mv -f PhysiCell/documentation/User_Guide.pdf documentation
+	rm -f -r PhysiCell
+	rm -f $(SOURCE) 
