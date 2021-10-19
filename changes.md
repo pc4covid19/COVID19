@@ -1,19 +1,19 @@
 # COVID19 tissue simulator 
 **Version:** 0.5.0
 
-**Release date:** 21 July 2021
+**Release date:** 19 October 2021
 
 ## Overview
-This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium with an initial immune reaction. It is being rapidly prototyped and refined with community support (see below).
+This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium with an initial immune reaction. It is being iteratively prototyped and refined with community support (see below).
 
 In this model, SARS-CoV-2 (coronavirus / COVID19) infects a single cell, or a solution of virions is administered to the extracellular space. The virus is uncoated to explose viral RNA, which synthesizes viral proteins that are assembled into a virion. Assembled virions are exported to the environment, where they can diffuse and infect other cells. In the extracellular space, virions adhere to ACE2 receptors and get internalized through endocytosis. Internalized ACE2 receptors release their virus cargo and are recycled back to the surface. 
 
-Resident macrophages ingest apototic cells and release a pro-inflammatory cytokine that recruits additional macrophages, neutrophils, and CD8+ T cells. CD8+ T cells chemotax towards cytokines released by infected cells and adhere. Cumulative CD8+ T cell contact time can induce apoptosis in infected cells. Activated macrophages and neutrophils chemotaxis chemotax along chemokine and debris gradients and continue to phagocytose dead cells. Neutrophils also absorb free (extracellular) virus. Immunoglobulin can bind and remove Virion in the external field and bind to infected Cells.
+Resident macrophages ingest apototic cells and release a pro-inflammatory cytokine that recruits additional macrophages, neutrophils, and dendritic cells. CD8+ T cells are recuited from the lymph node and chemotax towards cytokines released by infected cells and adhere. Cumulative CD8+ T cell contact time can induce apoptosis in infected cells. Activated macrophages and neutrophils chemotaxis chemotax along chemokine and debris gradients and continue to phagocytose dead cells. Neutrophils also absorb free (extracellular) virus. Immunoglobulin (Ig) can bind and remove Virion in the external field and bind to infected Cells.
 
 The model includes a basic pharmacodynamic response (to assembled virions) to cause cell apoptosis. Apoptosed cells release some or all of their internal contents, notably including virions.
 
 ### Caveats and disclaimers: 
-**This model is under active development using rapid prototyping:**
+**This model is under active development using iterative prototyping:**
 * It has not been peer reviewed. 
 * It is intended to drive basic scientific research and public education at this stage. 
 * **It cannot be used for public policy decisions.**
@@ -63,13 +63,13 @@ This release incorporates major v4 model feedback and adds:
 
 + Lymph node delay and history to simulate transport to lymph node.
 
-+ ROS induced apoptosis; neutrophils secrete ROS on phagocytosis
++ ROS induced apoptosis; neutrophils secrete ROS on phagocytosis.
 
-+ fibroblast collagen changes, anti-inflammatory secretion after CD8+ T Cell induced death is now temporary 
++ fibroblast collagen changes, anti-inflammatory secretion after CD8+ T Cell induced death is now temporary.
 
-+ BCell,PCell,Ig addition; Ig can travel to tissue to both bind to cells and remove virion in external environment
++ B Cell, plasma cell, Ig addition; Ig can travel to tissue to both bind to cells and remove virion in the external environment.
 
-+ CD8+ and CD4+ T Cell tissue phenotype changes; generation counter kills CD8s faster once "generation" passes
++ CD8+ and CD4+ T Cell tissue phenotype changes; generation counter kills CD8s faster once "generation" passes.
 
 + CD8 contact to active macrophage turns off proinflammatory and turns on antiinflammatory response.
 
@@ -112,7 +112,7 @@ Resident macrophages ingest apototic cells and release a pro-inflammatory cytoki
 The model includes a basic pharmacodynamic response (to assembled virions) to cause cell apoptosis. Apoptosed cells release some or all of their internal contents, notably including virions.
 
 ### Caveats and disclaimers: 
-**This model is under active development using rapid prototyping:**
+**This model is under active development using iterative prototyping:**
 * It has not been peer reviewed. 
 * It is intended to drive basic scientific research and public education at this stage. 
 * **It cannot be used for public policy decisions.**
