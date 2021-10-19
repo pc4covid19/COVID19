@@ -4,7 +4,7 @@
 **Release date:** 21 July 2021
 
 ## Overview
-This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium and several submodels (such as single-cell response, pyroptosis death model, tissue-damage model, lymph node model and immune response). It is being rapidly prototyped and refined with community support (see below).
+This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium and several submodels (such as single-cell response, pyroptosis death model, tissue-damage model, lymph node model and immune response). It is being iteratively prototyped and refined with community support (see below).
 
 This multiscale simulator combines several model components:
 * **Tissue:** Virus, cell debris, immunoglobulin, and chemokines diffuse within the extracellular space. They may also “decay” to reflect removal by interstitial flow into nearby blood vessels or airways. In version `0.5.0`, Virus and immunoglobulin react for Virus removal in the tissue.
