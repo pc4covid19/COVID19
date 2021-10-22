@@ -99,7 +99,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
     double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
      					phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
-
+	const double PI  =3.141592653589793238463;
 	if( dt_bind<1 )
 	{
 		//SOLVE ODE BEFORE STOCHASTIC PORTION
@@ -148,104 +148,262 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				pCell->custom_data[nR_EB] += 1;
 
 				if (ignore_smoothing_flag > 0.5){
-					pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
+					#pragma omp critical
+					{pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;}
 				}
 				else {
-					if( pCell->nearest_density_vector()[nV_external] >= 0.5 / microenvironment.mesh.dV ) {
-						pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;
+					std::vector<double> cellpos(3, 0);
+					cellpos[0]=pCell->position[0]; //x
+					cellpos[1]=pCell->position[1]; //y
+					cellpos[2]=pCell->position[2]; //z
+					
+					int dummy_voxel_index= microenvironment.nearest_voxel_index( cellpos );
+					
+					double xc = microenvironment.mesh.voxels[dummy_voxel_index].center[0];
+					double yc = microenvironment.mesh.voxels[dummy_voxel_index].center[1];
+					double zc = microenvironment.mesh.voxels[dummy_voxel_index].center[2];
+					double cell_radius = pCell->phenotype.geometry.radius;
+					double cell_volume = pCell->phenotype.volume.total;
+					
+					// current looping assumes that voxel>cell size
+					if (cellpos[0] > xc){
+						if (cellpos[0] + cell_radius > xc + 10) { //FIND RELIABLE MESH SIZING REF
+							//enter x greater than loop
+							std::vector<double> dummypos_x(3, 0);
+							dummypos_x[0]=cellpos[0]+20;
+							dummypos_x[1]=cellpos[1];
+							dummypos_x[2]=cellpos[2];
+							int dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
+							if (cellpos[1] > yc){
+								if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
+									//enter x and y greater than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]+20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									//solve for percent inside voxels in y
+									double h = abs((cellpos[1] + cell_radius)-(yc + 10));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_y=VSCapy/cell_volume;
+									//solve for percent inside voxels in x
+									h = abs((cellpos[0] + cell_radius)-(xc + 10));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_x=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout_x-fractout_y) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout_x / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout_y / microenvironment.mesh.dV;}
+								}
+								else {
+									//solve for percent inside voxels in x
+									double h = abs((cellpos[0] + cell_radius)-(xc + 10));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+							}
+							else {
+								if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
+									//enter x greater and y less than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]-20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									//solve for percent inside voxels in y
+									double h = abs((yc - 10)-(cellpos[1] + cell_radius));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_y=VSCapy/cell_volume;
+									//solve for percent inside voxels in x
+									h = abs((cellpos[0] + cell_radius)-(xc + 10));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_x=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout_x-fractout_y) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout_x / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout_y / microenvironment.mesh.dV;}
+								}
+								else {
+									//solve for percent inside voxels in x
+									double h = abs((cellpos[0] + cell_radius)-(xc + 10));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+							}
+						}
+						else {
+							if (cellpos[1] > yc){
+								if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
+									//enter y greater than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]+20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((cellpos[1] + cell_radius)-(yc + 10));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapy/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+								else {
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;}
+								}
+							}
+							else {
+								if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
+									//enter y less than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]-20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((yc - 10)-(cellpos[1] + cell_radius));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapy/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+								else {
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;}
+								}
+							}
+						}
 					}
 					else {
-					std::vector<double> dummypos(3, 0);
-					dummypos[0]=pCell->position[0]+20;
-					dummypos[1]=pCell->position[1];
-					dummypos[2]=pCell->position[2];
-				
-					std::vector<double> dummypos0(3, 0);
-					dummypos0[0]=pCell->position[0]-20;
-					dummypos0[1]=pCell->position[1];
-					dummypos0[2]=pCell->position[2];
-				
-					std::vector<double> dummypos1(3, 0);
-					dummypos1[0]=pCell->position[0];
-					dummypos1[1]=pCell->position[1]+20;
-					dummypos1[2]=pCell->position[2];
-				
-					std::vector<double> dummypos2(3, 0);
-					dummypos2[0]=pCell->position[0];
-					dummypos2[1]=pCell->position[1]-20;
-					dummypos2[2]=pCell->position[2];
-				
-					std::vector<double> dummypos00(3, 0);
-					dummypos00[0]=pCell->position[0]-20;
-					dummypos00[1]=pCell->position[1]+20;
-					dummypos00[2]=pCell->position[2];
-				
-					std::vector<double> dummypos01(3, 0);
-					dummypos01[0]=pCell->position[0]+20;
-					dummypos01[1]=pCell->position[1]+20;
-					dummypos01[2]=pCell->position[2];
-				
-					std::vector<double> dummypos11(3, 0);
-					dummypos11[0]=pCell->position[0]+20;
-					dummypos11[1]=pCell->position[1]-20;
-					dummypos11[2]=pCell->position[2];
-				
-					std::vector<double> dummypos10(3, 0);
-					dummypos10[0]=pCell->position[0]-20;
-					dummypos10[1]=pCell->position[1]-20;
-					dummypos10[2]=pCell->position[2];
-				
-				if( dummypos[0]>x_max ) {
-					if( dummypos1[1]>y_max ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else if( dummypos2[1]<y_min ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					}
-				} else if( dummypos0[0]<x_min ) {
-					if( dummypos1[1]>y_max ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else if( dummypos2[1]<y_min ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					}
-				} else {
-					if( dummypos1[1]>y_max ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else if( dummypos2[1]<y_min ) {
-						#pragma omp critical
-						{ pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV; }
-					} else {
-					#pragma omp critical
-					{ pCell->nearest_density_vector()[nV_external] -= 0.25 / microenvironment.mesh.dV; 
-					int dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos0 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos1 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos2 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.125 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos00 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos01 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos11 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;
-					dummy_voxel_index= microenvironment.nearest_voxel_index( dummypos10 );
-					microenvironment.nearest_density_vector( dummy_voxel_index )[nV_external] -= 0.0625 / microenvironment.mesh.dV;}
-					}
-				}
-				}
+						if (cellpos[0] - cell_radius < xc - 10) { //FIND RELIABLE MESH SIZING REF
+							//enter x less than loop
+							std::vector<double> dummypos_x(3, 0);
+							dummypos_x[0]=cellpos[0]-20;
+							dummypos_x[1]=cellpos[1];
+							dummypos_x[2]=cellpos[2];
+							int dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
+							if (cellpos[1] > yc){
+								if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
+									//enter y greater and x less than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]+20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((cellpos[1] + cell_radius)-(yc + 10));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_y=VSCapy/cell_volume;
+									//solve percent in x
+									h = abs(xc - 10 - (cellpos[0] + cell_radius));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_x=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout_x-fractout_y) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout_x / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout_y / microenvironment.mesh.dV;}
+								}
+								else {
+									//solve percent in x
+									double h = abs(xc - 10 - (cellpos[0] + cell_radius));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+							}
+							else {
+								if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
+									//enter x and y less than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]-20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((yc - 10)-(cellpos[1] + cell_radius));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_y=VSCapy/cell_volume;
+									//solve percent in x
+									h = abs(xc - 10 - (cellpos[0] + cell_radius));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout_x=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout_x-fractout_y) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout_x / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout_y / microenvironment.mesh.dV;}
+								}
+								else {
+									//solve percent in x
+									double h = abs(xc - 10 - (cellpos[0] + cell_radius));
+									double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapx/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+							}
+						}
+						else {
+							if (cellpos[1] > yc){
+								if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
+									//enter y greater than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]+20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((cellpos[1] + cell_radius)-(yc + 10));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapy/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+								else {
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;}
+								}
+							}
+							else {
+								if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
+									//enter y less than loop
+									std::vector<double> dummypos_y(3, 0);
+									dummypos_y[0]=cellpos[0];
+									dummypos_y[1]=cellpos[1]-20;
+									dummypos_y[2]=cellpos[2];
+									int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+									
+									//solve for percent inside voxels in y
+									double h = abs((yc - 10)-(cellpos[1] + cell_radius));
+									double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+									double fractout=VSCapy/cell_volume;
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= (1.0-fractout) / microenvironment.mesh.dV;
+									microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external] -= fractout / microenvironment.mesh.dV;}
+								}
+								else {
+									#pragma omp critical
+									{pCell->nearest_density_vector()[nV_external] -= 1.0 / microenvironment.mesh.dV;}
+								}
+							}
+						}
+					}	
 				}
 			}
 		}
