@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 os.chdir('../../')
 
-a = sio.loadmat('time_1_4.mat')
+a = sio.loadmat('timeReplicate.mat')
 cells = a['timedata']
 
 cells.shape
