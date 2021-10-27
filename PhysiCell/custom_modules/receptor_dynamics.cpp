@@ -100,87 +100,101 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
     double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
      					phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
 	const double PI  =3.141592653589793238463;
+	std::vector<double> cellpos(3, 0);
+	std::vector<double> dummypos_y(3, 0);
+	std::vector<double> dummypos_x(3, 0);
+	double xc;
+	double yc;
+	double zc;
+	int dummy_voxel_index;
+	int dummy_voxel_index_x;
+	int dummy_voxel_index_y;
+	double cell_radius;
+	double cell_volume;
+	double h;
+	double VSCapy;
+	double fractout;
+	double fractout_y;
+	double fractout_x;
+	double VSCapx;
+	
 	if (ignore_smoothing_flag > 0.5){
 		double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
 		phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
 	}
 	else {
-		std::vector<double> cellpos(3, 0);
 		cellpos[0]=pCell->position[0]; //x
 		cellpos[1]=pCell->position[1]; //y
 		cellpos[2]=pCell->position[2]; //z
 		
-		int dummy_voxel_index= microenvironment.nearest_voxel_index( cellpos );
+		dummy_voxel_index= microenvironment.nearest_voxel_index( cellpos );
 		
-		double xc = microenvironment.mesh.voxels[dummy_voxel_index].center[0];
-		double yc = microenvironment.mesh.voxels[dummy_voxel_index].center[1];
-		double zc = microenvironment.mesh.voxels[dummy_voxel_index].center[2];
-		double cell_radius = pCell->phenotype.geometry.radius;
-		double cell_volume = pCell->phenotype.volume.total;
+		xc = microenvironment.mesh.voxels[dummy_voxel_index].center[0];
+		yc = microenvironment.mesh.voxels[dummy_voxel_index].center[1];
+		zc = microenvironment.mesh.voxels[dummy_voxel_index].center[2];
+		cell_radius = pCell->phenotype.geometry.radius;
+		cell_volume = pCell->phenotype.volume.total;
 		
 		// current looping assumes that voxel>cell size
 		if (cellpos[0] > xc){
 			if (cellpos[0] + cell_radius > xc + 10) { //FIND RELIABLE MESH SIZING REF
 				//enter x greater than loop
-				std::vector<double> dummypos_x(3, 0);
 				dummypos_x[0]=cellpos[0]+20;
 				dummypos_x[1]=cellpos[1];
 				dummypos_x[2]=cellpos[2];
-				int dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
+				dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
 				if (cellpos[1] > yc){
 					if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
 						//enter x and y greater than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]+20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						//solve for percent inside voxels in y
-						double h = abs((cellpos[1] + cell_radius)-(yc + 10));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_y=VSCapy/cell_volume;
+						h = abs((cellpos[1] + cell_radius)-(yc + 10));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_y=VSCapy/cell_volume;
 						//solve for percent inside voxels in x
 						h = abs((cellpos[0] + cell_radius)-(xc + 10));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_x=VSCapx/cell_volume;
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_x=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout_x-fractout_y) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout_x *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout_y; //use FE to find what loop to enter
 					}
 					else {
 						//solve for percent inside voxels in x
-						double h = abs((cellpos[0] + cell_radius)-(xc + 10));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapx/cell_volume;
-						double dt_bind = dt * pCell->custom_data[nR_bind] * pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
+						h = abs((cellpos[0] + cell_radius)-(xc + 10));
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapx/cell_volume;
+						dt_bind = dt * pCell->custom_data[nR_bind] * pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout; //use FE to find what loop to enter
 					}
 				}
 				else {
 					if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
 						//enter x greater and y less than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]-20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						//solve for percent inside voxels in y
-						double h = abs((yc - 10)-(cellpos[1] + cell_radius));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_y=VSCapy/cell_volume;
+						h = abs((yc - 10)-(cellpos[1] + cell_radius));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_y=VSCapy/cell_volume;
 						//solve for percent inside voxels in x
 						h = abs((cellpos[0] + cell_radius)-(xc + 10));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_x=VSCapx/cell_volume;
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_x=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout_x-fractout_y) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout_x *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout_y; //use FE to find what loop to enter
 					}
 					else {
 						//solve for percent inside voxels in x
-						double h = abs((cellpos[0] + cell_radius)-(xc + 10));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapx/cell_volume;
+						h = abs((cellpos[0] + cell_radius)-(xc + 10));
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -190,16 +204,15 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				if (cellpos[1] > yc){
 					if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
 						//enter y greater than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]+20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((cellpos[1] + cell_radius)-(yc + 10));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapy/cell_volume;
+						h = abs((cellpos[1] + cell_radius)-(yc + 10));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapy/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -211,16 +224,15 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				else {
 					if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
 						//enter y less than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]-20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((yc - 10)-(cellpos[1] + cell_radius));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapy/cell_volume;
+						h = abs((yc - 10)-(cellpos[1] + cell_radius));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapy/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -234,37 +246,35 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 		else {
 			if (cellpos[0] - cell_radius < xc - 10) { //FIND RELIABLE MESH SIZING REF
 				//enter x less than loop
-				std::vector<double> dummypos_x(3, 0);
 				dummypos_x[0]=cellpos[0]-20;
 				dummypos_x[1]=cellpos[1];
 				dummypos_x[2]=cellpos[2];
-				int dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
+				dummy_voxel_index_x= microenvironment.nearest_voxel_index( dummypos_x );
 				if (cellpos[1] > yc){
 					if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
 						//enter y greater and x less than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]+20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((cellpos[1] + cell_radius)-(yc + 10));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_y=VSCapy/cell_volume;
+						h = abs((cellpos[1] + cell_radius)-(yc + 10));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_y=VSCapy/cell_volume;
 						//solve percent in x
 						h = abs(xc - 10 - (cellpos[0] + cell_radius));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_x=VSCapx/cell_volume;
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_x=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout_x-fractout_y) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout_x *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout_y; //use FE to find what loop to enter
 					}
 					else {
 						//solve percent in x
-						double h = abs(xc - 10 - (cellpos[0] + cell_radius));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapx/cell_volume;
+						h = abs(xc - 10 - (cellpos[0] + cell_radius));
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -272,29 +282,28 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				else {
 					if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
 						//enter x and y less than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]-20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((yc - 10)-(cellpos[1] + cell_radius));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_y=VSCapy/cell_volume;
+						h = abs((yc - 10)-(cellpos[1] + cell_radius));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_y=VSCapy/cell_volume;
 						//solve percent in x
 						h = abs(xc - 10 - (cellpos[0] + cell_radius));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout_x=VSCapx/cell_volume;
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout_x=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout_x-fractout_y) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout_x *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout_y; //use FE to find what loop to enter
 					}
 					else {
 						//solve percent in x
-						double h = abs(xc - 10 - (cellpos[0] + cell_radius));
-						double VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapx/cell_volume;
+						h = abs(xc - 10 - (cellpos[0] + cell_radius));
+						VSCapx=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapx/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_x )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -304,16 +313,15 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				if (cellpos[1] > yc){
 					if (cellpos[1] + cell_radius > yc + 10) { //FIND RELIABLE MESH SIZING REF
 						//enter y greater than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]+20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((cellpos[1] + cell_radius)-(yc + 10));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapy/cell_volume;
+						h = abs((cellpos[1] + cell_radius)-(yc + 10));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapy/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout; //use FE to find what loop to enter
 					}
@@ -325,16 +333,15 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 				else {
 					if (cellpos[1] - cell_radius < yc - 10) { //FIND RELIABLE MESH SIZING REF
 						//enter y less than loop
-						std::vector<double> dummypos_y(3, 0);
 						dummypos_y[0]=cellpos[0];
 						dummypos_y[1]=cellpos[1]-20;
 						dummypos_y[2]=cellpos[2];
-						int dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
+						dummy_voxel_index_y= microenvironment.nearest_voxel_index( dummypos_y );
 						
 						//solve for percent inside voxels in y
-						double h = abs((yc - 10)-(cellpos[1] + cell_radius));
-						double VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
-						double fractout=VSCapy/cell_volume;
+						h = abs((yc - 10)-(cellpos[1] + cell_radius));
+						VSCapy=1/3*PI*pow(h,2)*(3*cell_radius-h);
+						fractout=VSCapy/cell_volume;
 						double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*(1.0-fractout) *
 						microenvironment.nearest_density_vector( dummy_voxel_index_y )[nV_external]*fractout; //use FE to find what loop to enter
 					}
