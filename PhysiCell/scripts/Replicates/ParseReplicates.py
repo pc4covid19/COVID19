@@ -44,7 +44,7 @@ for j in range(12):
     temp1_aI = []   # env
     temp1_col = []   # env
 
-    for k in range(361):
+    for k in range(181):
         str_name = 'output{:08d}.xml'.format(k)
         path = 'output_R'+str("%02d"%j)
         mcds = pyMCDS(str_name, path)  # /case1/run3/output
