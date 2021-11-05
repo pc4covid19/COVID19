@@ -256,16 +256,12 @@ void setup_tissue( void )
 		std::cout << "Placing " << number_of_virions << " virions ... " << std::endl; 
 		for( int n=0 ; n < number_of_virions ; n++ )
 		{
-			// pick a random voxel 
+			// pick a random position
 			std::vector<double> position = {0,0,0}; 
 			position[0] = x_min + (x_max-x_min)*UniformRandom(); 
 			position[1] = y_min + (y_max-y_min)*UniformRandom(); 
 			
-			int m = microenvironment.nearest_voxel_index( position ); 
-			
-			// int n = (int) ( ( microenvironment.number_of_voxels()-1.0 ) * UniformRandom() ); 
-			// microenvironment(i,j)[nV] += single_virion_density_change; 
-			microenvironment(m)[nV] += single_virion_density_change; 
+			create_secreting_agentcallv(position[0], position[1]);
 		}
 	}
 	
@@ -363,6 +359,7 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 	static int CD4_Tcell_type = get_cell_definition( "CD4 Tcell" ).type; 
 	static int fibroblast_type = get_cell_definition( "fibroblast" ).type; 
 	static int res_type = get_cell_definition( "residual" ).type; 
+	static int vir_type = get_cell_definition( "virion" ).type; 
 	
 	// start with white 
 	
@@ -463,6 +460,14 @@ std::vector<std::string> tissue_coloring_function( Cell* pCell )
 		output[3] = output[0];
 		return output; 
 	}
+	
+	if( pCell->phenotype.death.dead == false && pCell->type == vir_type )
+	{
+		output[0] = "orange";  
+		output[2] = output[0];
+		output[3] = output[0];
+		return output; 
+	}
 
 	return output; 
 }
@@ -476,7 +481,25 @@ bool Write_SVG_circle_opacity( std::ostream& os, double center_x, double center_
  return true; 
 }
 
-
+void create_secreting_agentcallv(double positionpass0, double positionpass1)
+{
+	static Cell_Definition* pCD = find_cell_definition( "virion" );
+	create_secreting_agentv( pCD, positionpass0, positionpass1 ); 
+	
+	return;
+}
+void create_secreting_agentv( Cell_Definition* pCD, double positionpass0, double positionpass1)
+{
+	std::vector<double> positionpass = {0,0,0}; 
+	positionpass[0]=positionpass0;
+	positionpass[1]=positionpass1;
+	
+	Cell* pC = create_cell( *pCD );
+	
+	pC->assign_position( positionpass );
+	
+	return; 
+}
 //
 void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice , double time, std::vector<std::string> (*cell_coloring_function)(Cell*) )
 {

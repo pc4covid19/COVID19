@@ -43,6 +43,25 @@ void internal_virus_model_setup( void )
 	return; 
 }
 
+void create_secreting_agentvir( Cell_Definition* pCD, double positionpass0, double positionpass1)
+{
+	std::vector<double> positionpass = {0,0,0}; 
+	positionpass[0]=positionpass0;
+	positionpass[1]=positionpass1;
+	Cell* pC = create_cell( *pCD );
+	pC->assign_position( positionpass );
+	
+	return; 
+}
+
+void create_secreting_agentcallvir(double positionpass0, double positionpass1)
+{
+	static Cell_Definition* pCD = find_cell_definition( "virion" );
+	create_secreting_agentvir( pCD, positionpass0, positionpass1 ); 
+	
+	return;
+}
+
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// bookkeeping -- find microenvironment variables we need
@@ -125,18 +144,6 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	pCell->custom_data[nP] -= dA; 
 	pCell->custom_data[nA_internal] += dA; 
 	
-	// set export rate 
-/*	
-	phenotype.secretion.net_export_rates[nA_external] = 
-		pCell->custom_data["virion_export_rate" ] * pCell->custom_data[nA_internal]; 
- 
-	// copy data from custom variables to "internalized variables" 
-		
-	phenotype.molecular.internalized_total_substrates[nV_external] = 
-		pCell->custom_data[nV_internal];		
-	phenotype.molecular.internalized_total_substrates[nA_external] = 
-		pCell->custom_data[nA_internal];	
-*/			
 	double deP = dt * pCell->custom_data["virion_export_rate"] * pCell->custom_data[nA_internal]; 
 	if( deP > pCell->custom_data[nA_internal] )
 	{ deP = pCell->custom_data[nA_internal]; } 
@@ -145,9 +152,18 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	//test int export
 	
 	double alpha1 = floor(pCell->custom_data[eP]);
-	#pragma omp critical
-	{ pCell->nearest_density_vector()[nV_external] += alpha1 / microenvironment.mesh.dV; }
-	pCell->custom_data[eP] -= alpha1; 
-	
+	//create virion if alpha1 >= 1
+	if (alpha1 >= 1) {
+		int i = 0;
+		while( i < alpha1 ) {
+			double theta = 2*3.14*UniformRandom();
+			double rad = phenotype.geometry.radius*UniformRandom();
+			double positionpass0=pCell->position[0]+rad*cos(theta);
+			double positionpass1=pCell->position[1]+rad*sin(theta);
+			create_secreting_agentcallvir(positionpass0, positionpass1);
+			i++; 
+		}
+		pCell->custom_data[eP] -= alpha1; 
+	}
 	return; 
 }

@@ -19,5 +19,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt );
 // this needs to be done on faster time scale; 
 void receptor_dynamics_main_model( double dt ); 
 
+//Binding processes
+bool attempt_immune_cell_attachmentv( Cell* pAttacker, Cell* pTarget , double dt );
+Cell* immune_cell_check_neighbors_for_attachmentv( Cell* pAttacker , double dt );
 
 #endif 

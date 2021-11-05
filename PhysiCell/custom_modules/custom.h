@@ -99,3 +99,6 @@ std::vector<std::string> tissue_coloring_function( Cell* );
 void move_exported_to_viral_field( void ); 
 
 void SVG_plot_virus( std::string filename , Microenvironment& M, double z_slice , double time, std::vector<std::string> (*cell_coloring_function)(Cell*) );
+
+void create_secreting_agentcallv(double positionpass0, double positionpass1);
+void create_secreting_agentv( Cell_Definition* pCD, double positionpass0, double positionpass1);

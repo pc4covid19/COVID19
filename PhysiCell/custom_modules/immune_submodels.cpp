@@ -12,6 +12,7 @@ Submodel_Information Neutrophil_submodel_info;
 Submodel_Information DC_submodel_info; 
 Submodel_Information CD4_submodel_info;
 Submodel_Information fibroblast_submodel_info;
+Submodel_Information vir_submodel_info; 
 
 std::vector<Cell*> cells_to_move_from_edge; 
 
@@ -505,6 +506,20 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		return; 
 	}
 	phenotype.motility.is_motile = true; // I suggest eliminating this. 
+	
+	return; 
+}
+
+void vir_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	// bounds check 
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{ 
+		#pragma omp critical
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return; 
+	}
 	
 	return; 
 }
@@ -1171,6 +1186,22 @@ void immune_submodels_setup( void )
 	pCD->functions.update_phenotype = CD8_submodel_info.phenotype_function;
 	pCD->functions.custom_cell_rule = CD8_submodel_info.mechanics_function;
 	pCD->functions.contact_function = CD8_Tcell_contact_function; 
+	
+	// set up virion for edge detection
+		// set version info 
+	vir_submodel_info.name = "CD8 Tcell model"; 
+	vir_submodel_info.version = immune_submodels_version; 
+		// set functions 
+	vir_submodel_info.main_function = NULL; 
+	vir_submodel_info.phenotype_function = NULL; 
+	vir_submodel_info.mechanics_function = vir_mechanics; 
+		// what microenvironment variables do you expect? 
+		// what custom data do I need? 
+		// register the submodel  
+	vir_submodel_info.register_model();	
+		// set functions for the corresponding cell definition 
+	pCD = find_cell_definition( "virion" ); 
+	pCD->functions.custom_cell_rule = vir_submodel_info.mechanics_function;
 	
 	// set up macrophages
 	Macrophage_submodel_info = CD8_submodel_info; // much shared information 
