@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>8</omp_num_threads>
+		<omp_num_threads>1</omp_num_threads>
 	</parallel> 
 
 	<options>
@@ -473,7 +473,11 @@
 
 				<cytoplasmic_volume type="double" units="a.u. of volume"
 					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
-		<!-- (Sara & Fiona) flags for different cell death modes-->		
+		<!-- (Sara & Fiona) flags for different cell death modes-->	
+				<cell_pyroptosis_time type="int" units="dimensionless"
+					description="bool for pyropotosis time">0</cell_pyroptosis_time>
+				<cell_apo_time type="int" units="dimensionless"
+					description="bool for apoptosis time">0</cell_apo_time>		
 				<cell_pyroptosis_flag type="int" units="dimensionless"
 					description="bool for pyropotosis">0</cell_pyroptosis_flag>
 				<cell_bystander_pyroptosis_flag type="int" units="dimensionless"
@@ -975,7 +979,7 @@
 					</model> 
 				</death>
 				<volume>  
-					<total units="micron^3">4E-3</total>
+					<total units="micron^3">10</total>
 					<fluid_fraction units="dimensionless">0</fluid_fraction>
 					<nuclear units="micron^3">0</nuclear>
 					
