@@ -473,7 +473,13 @@
 
 				<cytoplasmic_volume type="double" units="a.u. of volume"
 					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
-		<!-- (Sara & Fiona) flags for different cell death modes-->		
+		<!-- (Sara & Fiona) flags for different cell death modes ADDED TIME DEPENDENT-->	
+				<cell_pyroptosis_time type="int" units="dimensionless"
+					description="bool for pyropotosis time">0</cell_pyroptosis_time>
+					
+						<cell_apo_time type="int" units="dimensionless"
+					description="bool for apoptosis time">0</cell_apo_time>
+					
 				<cell_pyroptosis_flag type="int" units="dimensionless"
 					description="bool for pyropotosis">0</cell_pyroptosis_flag>
 				<cell_bystander_pyroptosis_flag type="int" units="dimensionless"
@@ -496,7 +502,7 @@
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.975</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.95</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -551,8 +557,7 @@
 				
 				
 				
-				
-					
+									
 				<phagocytosis_relative_target_cutoff_size unit="dimensionless" type="double"
 					desription="do not phagocytose anything over this size (relative to cell's volume)">1.1</phagocytosis_relative_target_cutoff_size>
 
@@ -909,7 +914,6 @@
 			<custom_data>
 			</custom_data>
 		</cell_definition>
-					<!-- generic immune cell type --> 
 		<cell_definition name="residual" parent_type="default" ID="9">
 			<phenotype>
 				<mechanics> 
@@ -935,7 +939,6 @@
 						</chemotaxis>
 					</options>
 				</motility>
-        
 				<volume>   
 					<total units="micron^3">2</total>
 					<fluid_fraction units="dimensionless">1</fluid_fraction>
@@ -944,13 +947,10 @@
 					<fluid_change_rate units="1/min">0</fluid_change_rate>
 					<cytoplasmic_biomass_change_rate units="1/min">0</cytoplasmic_biomass_change_rate>
 					<nuclear_biomass_change_rate units="1/min">0</nuclear_biomass_change_rate>
-					
 					<calcified_fraction units="dimensionless">0</calcified_fraction>
 					<calcification_rate units="1/min">0</calcification_rate>
-					
 					<relative_rupture_volume units="dimensionless">100</relative_rupture_volume>
 				</volume> 
-        
 				<secretion>
 					<substrate name="anti-inflammatory cytokine">
 						<secretion_rate units="1/min">1247</secretion_rate>
@@ -962,7 +962,6 @@
 						<uptake_rate units="1/min">0</uptake_rate>
 					</substrate> 	
 				</secretion>
-
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -974,8 +973,9 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		<!-- example parameters from the template --> 
-		
 		<ignore_smoothing_flag type="int" units="dimensionless">1</ignore_smoothing_flag> 
+		
+		<div_immune type="divider" description="--Immune activation parameters--"/>
 			
 			<immune_z_offset type="double" units="micron" 
 				description="immune cell position over the epithelium">0</immune_z_offset>
@@ -993,13 +993,13 @@
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
-				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract DC">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
@@ -1052,6 +1052,7 @@
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
 				description="probability of DC leaving to lymph node">0.0000033</DC_leave_prob>
+
 			<!-- (Michael) added parameters for external_immune-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
@@ -1143,11 +1144,9 @@
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
 				description="fibroblast cell color">blueviolet</fibroblast_color>
-				
 		<!-- (Adrianne V5)  Rate that neutrophils and macs uptake virus, needs to be determined from literature-->
 			<phagocytes_virus_uptake_rate type="double" units="none"
 				description="Rate that phagocytes uptake virus after activation">0.0001</phagocytes_virus_uptake_rate>
-		
 		<!-- (Adrianne v5) Rate that neutrophils (activated) secrete ROS -->
 			<ROS_secretion_rate type="double" units="none"
 				description="Rate that neutrophils secrete ROS">0.01</ROS_secretion_rate>

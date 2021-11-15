@@ -101,7 +101,12 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int antibody_index = microenvironment.find_density_index( "Ig");
 	
 	
-	
+	// FIONA ADDED FOLLOWING 4 line 28th April
+	if( pCell->custom_data["cell_virus_induced_apoptosis_flag"]>=1 )
+{
+	pCell->custom_data["cell_apo_time"]=pCell->custom_data["cell_apo_time"]+dt;
+}
+//
 	
 	if( R >= 1.00 - 1e-16 ) 
 	{
@@ -126,7 +131,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	}
 	
 	// (Adrianne) check whether the cell is undergoing pyroptosis and if so, evaluate the pyropotosis model
-	if( pCell->custom_data["cell_pyroptosis_flag"]>0.5 )
+	if( pCell->custom_data["cell_pyroptosis_flag"]==0.5 )
 	{
 		pyroptosis_cascade( pCell, phenotype, dt ); 
 		return;
@@ -143,27 +148,39 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
     //phenotype.secretion.uptake_rates[nV_external] = pCell->custom_data[nR_bind] * pCell->custom_data[nR_EU]; 
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
-	if( R>=150 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0)
+	
+	// FIONA: NOTE IN OUR OURS IT IS R>2 and I added cell_bystander check
+	if( R>=200 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
-		double cell_death_pyroptosis_probability = (R-100)/(1000-100); 
+		// FIONA THIS IS DIFFERENT FROM OURS AS WE SET THE PROBABILITY
+		double cell_death_pyroptosis_probability = (R-200)/(1000-200); 
 		if( cell_death_pyroptosis_probability > 1.0 )
 		{ cell_death_pyroptosis_probability = 1.0; } 
-		cell_death_pyroptosis_probability/=2;
+		// FIONA FOR SOME REASON THEY DIVIDE BY 3
+		cell_death_pyroptosis_probability/=3; 
 		// randomise a number in 0,1 that determines the cell death mode (pyroptosis or apoptosis)
 		if(UniformRandom() < cell_death_pyroptosis_probability) 
 		{
 			pCell->custom_data["cell_pyroptosis_flag"]=1; //cell pyroptoses
+			pCell->custom_data["cell_pyroptosis_time"]=1; // FIONA ADDED PYROPTOSIS TIME INITIATED
+		}
+		else // FIONA ADDED IN ELSE
+		{
+			pCell->custom_data["cell_virus_induced_apoptosis_flag"]=1; //cell apoptoses
+			phenotype.death.rates[apoptosis_model_index] = 1; 
+			
 		}
 		
 		return;
 	}
-	// (Sara&Fiona)
-    else if(pyroptotic_cytokine_concentration>100.0 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0) 
+	// (Sara&Fiona)  FIONA added cell_bystander check
+    else if(R<200 && pyroptotic_cytokine_concentration>100.0 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0) 
     {
-		pCell->custom_data["cell_pyroptosis_flag"]=1; // Pyroptosis cascade is initiated
+		pCell->custom_data["cell_pyroptosis_flag"]=2; // Pyroptosis bystander cascade is initiated
 		pCell->custom_data["cell_bystander_pyroptosis_flag"]=1; // Pyroptosis cascade is initiated
 		//printf("Pyro bystander effect!\n");
+		pCell->custom_data["cell_pyroptosis_time"]=1; // FIONA TIME INITIATED
 		return;
     }
 	
@@ -203,6 +220,8 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// Sara&Fiona: Pyroptosis code starts here.
+	// FIONA ADDED IN TIME UPDATER - THIS IS WHERE WE UPDATE HOW LONG THE CELL HAS BEEN UNDERGOING PYROPTOSIS
+	pCell->custom_data["cell_pyroptosis_time"]=pCell->custom_data["cell_pyroptosis_time"]+dt;
 	
 	// Intracellular components
 	static int nfkb_n = pCell->custom_data.find_variable_index( "nuclear_NFkB" ); 
@@ -265,72 +284,113 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 
 	// System of pyroptosis equations starts here
     //Model constants (definitions could be moved to xml file)
-    static double k_nfkb_ctn = 0.3;
-    static double k_nfkb_ntc =  0.03;
-    static double k_nlrp3_ita =  0.07;
-    static double k_nlrp3_atb = 0.07;
-    static double k_asc_ftb = 0.02;
-    static double k_c1_ftb = 0.04;
-    static double k_il1b_cte = 0.8;
-    static double k_il18_cte = 0.8;
-    static double k_vol_c = 0.1;
+   // static double k_nfkb_ctn = 0.3; // THIS CAN BE REMOVED NO LONGER USED
+    // static double k_nfkb_ntc =  0.03; // THIS CAN BE REMOVED NO LONGER USED
+    static double k_nlrp3_ita =  0.7; // FIONA: VALUE UPDATED FROM 0.07
+    static double k_nlrp3_atb = 1; // FIONA: VALUE UPDATED FROM 0.07
+    static double k_asc_ftb = 0.04; // FIONA: VALUE UPDATED FROM 0.02
+    static double k_c1_ftb = 0.03; // FIONA: VALUE UPDATED FROM 0.04
+    static double k_il1b_cte = 1; // FIONA: VALUE UPDATED FROM 0.8
+    static double k_il18_cte = 1;// FIONA: VALUE UPDATED FROM 0.8
+    static double k_vol_c = 0.2;// FIONA: VALUE UPDATED FROM 0.1
     // Decay constants
     static double d_nlrp3 = 0.002;
     static double d_il =0.004;
     // Hill function rates
-    static double a_nlrp3 = 0.025;
-    static double a_il1b_p = 0.007;
-    static double a_gsdmd =0.08;
-    static double a_il1b_c = 0.8;
-    static double a_il18 = 0.8;
+    static double a_nlrp3 = 0.07; // FIONA: VALUE UPDATED FROM 0.025
+    static double a_il1b_p = 0.06; // FIONA: VALUE UPDATED FROM 0.007
+    static double a_gsdmd =0.1; // FIONA: VALUE UPDATED FROM 0.08
+    static double a_il1b_c = 1;// FIONA: VALUE UPDATED FROM 0.8
+    static double a_il18 = 1;// FIONA: VALUE UPDATED FROM 0.8
     static double hm_nfkb = 0.3;
     static double hm_c1 = 0.3;
     static double hex_nfkb = 2.0;
     static double hex_c1 = 2.0 ;
-	//If the inflammsome base is formed set F_ib = 0. 
-	double F_ib = 1;
-	if( pCell->custom_data[nlrp3_b] >= 1)
-	{F_ib=0;}
+	
+	double no_a=-1; // FIONA: ADDED
+	double no_b=2;// FIONA: ADDED
+	double no_c=1000; // FIONA: ADDED
+
+	double nf_hh=0.55; // FIONA: ADDED
+	double nf_orig=0.25; // FIONA: ADDED
+	double nf_ss=0.8; // FIONA: ADDED
+	double nf_tt=10; // FIONA: ADDED
+	double t_i=pCell->custom_data["cell_pyroptosis_time"]-dt;	// FIONA: ADDED - this is time dependence
+
+	
+	
+	//If the inflammsome base is formed set F_ib = 0. NO LONGER NEEDED
+	//double F_ib = 1;
+	//if( pCell->custom_data[nlrp3_b] >= 1)
+	//{F_ib=0;}
 
 	//Update nuclear NFkB (updated backward)
-	pCell->custom_data[nfkb_n] = (pCell->custom_data[nfkb_n]+k_nfkb_ctn*F_ib*dt)/(1+dt*k_nfkb_ntc+k_nfkb_ctn*F_ib*dt);
+	//pCell->custom_data[nfkb_n] = (pCell->custom_data[nfkb_n]+k_nfkb_ctn*F_ib*dt)/(1+dt*k_nfkb_ntc+k_nfkb_ctn*F_ib*dt); // OLD
+	pCell->custom_data[nfkb_n]= (nf_hh)*exp(-(log((t_i)/nf_tt)*log((t_i)/nf_tt))/nf_ss)+nf_orig; // FIONA: NEW
 
 	//Set Hill function 1
-	double hill_nfkb = (pow(pCell->custom_data[nfkb_n],hex_nfkb))/(pow(hm_nfkb,hex_nfkb)+pow(pCell->custom_data[nfkb_n],hex_nfkb));
+	// double hill_nfkb = (pow(pCell->custom_data[nfkb_n],hex_nfkb))/(pow(hm_nfkb,hex_nfkb)+pow(pCell->custom_data[nfkb_n],hex_nfkb)); // OLD
+	double hill_nfkb = (pow((pCell->custom_data[nfkb_n]-nf_orig),hex_nfkb))/(pow(hm_nfkb,hex_nfkb)+pow((pCell->custom_data[nfkb_n]-nf_orig),hex_nfkb)); // FIONA: NEW
+	
 	
 	//Update NLRP3 (inactive, active and bound) (updated backward)
- 	pCell->custom_data[nlrp3_i] = (pCell->custom_data[nlrp3_i]+dt*a_nlrp3*hill_nfkb)/(1+dt*k_nlrp3_ita+dt*d_nlrp3);
-	pCell->custom_data[nlrp3_a] = (pCell->custom_data[nlrp3_a]+k_nlrp3_ita*dt*(pCell->custom_data[nlrp3_i]))/(1+dt*k_nlrp3_atb+dt*d_nlrp3);
-	pCell->custom_data[nlrp3_b] = pCell->custom_data[nlrp3_b] + dt * k_nlrp3_atb * F_ib * pCell->custom_data[nlrp3_a];
+ 	//pCell->custom_data[nlrp3_i] = (pCell->custom_data[nlrp3_i]+dt*a_nlrp3*hill_nfkb)/(1+dt*k_nlrp3_ita+dt*d_nlrp3); // OLD
+	//pCell->custom_data[nlrp3_a] = (pCell->custom_data[nlrp3_a]+k_nlrp3_ita*dt*(pCell->custom_data[nlrp3_i]))/(1+dt*k_nlrp3_atb+dt*d_nlrp3); // OLD
+	//pCell->custom_data[nlrp3_b] = pCell->custom_data[nlrp3_b] + dt * k_nlrp3_atb * F_ib * pCell->custom_data[nlrp3_a]; // OLD
+	
+	pCell->custom_data[nlrp3_i] = ((pCell->custom_data[nlrp3_i])+dt*a_nlrp3*hill_nfkb)/(1+dt*k_nlrp3_ita+dt*d_nlrp3); // FIONA: NEW		
+	pCell->custom_data[nlrp3_a]=(-(1+dt*d_nlrp3)+sqrt(((1+dt*d_nlrp3)*(1+dt*d_nlrp3))+4*(dt*k_nlrp3_atb)*(pCell->custom_data[nlrp3_a]+dt*k_nlrp3_ita*pCell->custom_data[nlrp3_i])))/(2*dt*k_nlrp3_atb); // FIONA: NEW
+	pCell->custom_data[nlrp3_b] = pCell->custom_data[nlrp3_b] + dt * k_nlrp3_atb * pCell->custom_data[nlrp3_a]* pCell->custom_data[nlrp3_a]; // FIONA: NEW
+	
+	
+	// Define F_no FIONA ADDED
+	double F_no = 1/(1+pow(((pCell->custom_data[nlrp3_b]-no_a)/no_b),-no_c)); // define new function for ASC binding
 
 	//Update bound ASC (updated backward)
-	pCell->custom_data[asc_b] = (pCell->custom_data[asc_b] + dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]))/(1+dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]));
+	// pCell->custom_data[asc_b] = (pCell->custom_data[asc_b] + dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]))/(1+dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]));// OLD
+	pCell->custom_data[asc_b]=(pCell->custom_data[asc_b]+dt*k_asc_ftb*F_no*pCell->custom_data[nlrp3_b])/(1+dt*k_asc_ftb*F_no*pCell->custom_data[nlrp3_b]); // FIONA: NEW	
+	
 
 	//Update bound caspase1 (updated backward)
-	pCell->custom_data[caspase1_b] = (pCell->custom_data[caspase1_b] + dt*k_c1_ftb*(pCell->custom_data[asc_b]))/(1+dt*k_c1_ftb*(pCell->custom_data[asc_b])); 
+	// pCell->custom_data[caspase1_b] = (pCell->custom_data[caspase1_b] + dt*k_c1_ftb*(pCell->custom_data[asc_b]))/(1+dt*k_c1_ftb*(pCell->custom_data[asc_b])); //OLD
+	pCell->custom_data[caspase1_b]=(pCell->custom_data[caspase1_b]+dt*k_c1_ftb*pCell->custom_data[asc_b])/(1+dt*k_c1_ftb*pCell->custom_data[asc_b]); // FIONA: NEW
+	
 
 	//Set Hill function 2
-	double hill_caspase1 = (pow(pCell->custom_data[caspase1_b],hex_c1))/(pow(hm_c1,hex_c1)+pow(pCell->custom_data[caspase1_b],hex_c1));
+	//double hill_caspase1 = (pow(pCell->custom_data[caspase1_b],hex_c1))/(pow(hm_c1,hex_c1)+pow(pCell->custom_data[caspase1_b],hex_c1));//OLD
+	double hill_c1 = (pow(pCell->custom_data[caspase1_b],hex_c1))/(pow(hm_c1,hex_c1)+pow(pCell->custom_data[caspase1_b],hex_c1)); // FIONA: NEW
 	
 	//Update cleaved GSDMD (updated backward)
-	pCell->custom_data[gsdmd_c] = (pCell->custom_data[gsdmd_c]+dt*a_gsdmd*hill_caspase1)/(1+dt*a_gsdmd*hill_caspase1);
+	// pCell->custom_data[gsdmd_c] = (pCell->custom_data[gsdmd_c]+dt*a_gsdmd*hill_caspase1)/(1+dt*a_gsdmd*hill_caspase1); //OLD
+	pCell->custom_data[gsdmd_c] = (pCell->custom_data[gsdmd_c]+dt*a_gsdmd*hill_c1)/(1+dt*a_gsdmd*hill_c1); // FIONA: NEW
+
 
 	//Set G function (same now that total GSDMD concentration is 1 au of concentration)
 	double g_gsdmd = pCell->custom_data[gsdmd_c]/1;
 
 	//Update IL1b (pro, cytoplasmic, external)	We want to relate this to secreted cytokine IL1b (updated backward)
-	pCell->custom_data[il_1b_p] = (pCell->custom_data[il_1b_p]+dt*a_il1b_p*hill_nfkb)/(1+dt*a_il1b_c*hill_caspase1+dt*d_il);
-	pCell->custom_data[il_1b_c] = (pCell->custom_data[il_1b_c]+dt*a_il1b_c*hill_caspase1*(pCell->custom_data[il_1b_p]))/(1+dt*d_il+dt*k_il1b_cte*g_gsdmd);		
-	pCell->custom_data[il_1b_e] = pCell->custom_data[il_1b_e] + dt * (k_il1b_cte*g_gsdmd*pCell->custom_data[il_1b_c]);
+	// pCell->custom_data[il_1b_p] = (pCell->custom_data[il_1b_p]+dt*a_il1b_p*hill_nfkb)/(1+dt*a_il1b_c*hill_caspase1+dt*d_il); // OLD
+	// pCell->custom_data[il_1b_c] = (pCell->custom_data[il_1b_c]+dt*a_il1b_c*hill_caspase1*(pCell->custom_data[il_1b_p]))/(1+dt*d_il+dt*k_il1b_cte*g_gsdmd);// OLD		 
+	// pCell->custom_data[il_1b_e] = pCell->custom_data[il_1b_e] + dt * (k_il1b_cte*g_gsdmd*pCell->custom_data[il_1b_c]);// OLD
+	
+	pCell->custom_data[il_1b_p] = (pCell->custom_data[il_1b_p]+dt*a_il1b_p*hill_nfkb)/(1+dt*a_il1b_c*hill_c1+dt*d_il); //FIONA:NEW
+	pCell->custom_data[il_1b_c] = (pCell->custom_data[il_1b_c]+dt*a_il1b_c*hill_c1*(pCell->custom_data[il_1b_p]))/(1+dt*d_il+dt*k_il1b_cte*g_gsdmd); //FIONA:NEW		
+	pCell->custom_data[il_1b_e] = pCell->custom_data[il_1b_e] + dt * (k_il1b_cte*g_gsdmd*pCell->custom_data[il_1b_c]); //FIONA:NEW
+
 
 	//Update IL18 (cytoplasmic, external)(updated backward)
-	pCell->custom_data[il_18_c] = (pCell->custom_data[il_18_c]+dt*a_il18*hill_caspase1*(1-pCell->custom_data[il_18_e]))/((1+dt*a_il18*hill_caspase1)*(1+dt*k_il18_cte*g_gsdmd));
-	pCell->custom_data[il_18_e] = pCell->custom_data[il_18_e] +  dt * k_il18_cte*g_gsdmd*pCell->custom_data[il_18_c];
+	//pCell->custom_data[il_18_c] = (pCell->custom_data[il_18_c]+dt*a_il18*hill_caspase1*(1-pCell->custom_data[il_18_e]))/((1+dt*a_il18*hill_caspase1)*(1+dt*k_il18_cte*g_gsdmd)); //OLD
+	//pCell->custom_data[il_18_e] = pCell->custom_data[il_18_e] +  dt * k_il18_cte*g_gsdmd*pCell->custom_data[il_18_c]; //OLD
+	
+	pCell->custom_data[il_18_c] = (pCell->custom_data[il_18_c]+dt*a_il18*hill_c1*(1-pCell->custom_data[il_18_e]))/((1+dt*a_il18*hill_c1)*(1+dt*k_il18_cte*g_gsdmd)); //FIONA:NEW
+	pCell->custom_data[il_18_e] = pCell->custom_data[il_18_e] +  dt * k_il18_cte*g_gsdmd*pCell->custom_data[il_18_c]; //FIONA:NEW
 
-	//Update cytoplasmic volume (updated backward)
+
+	//Update cytoplasmic volume (updated backward) SAME
 	pCell->custom_data[volume_c] = pCell->custom_data[volume_c]/(1-dt * k_vol_c * g_gsdmd);
+	
 
-	// (Yafei) need to update the real radius 
+	// (Yafei) need to update the real radius SAME
 	phenotype.volume.total = pCell->custom_data[volume_c]; 
 
 	//Temporary: "super fast" apoptosis occurs when cell should burst. 
@@ -338,8 +398,9 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	static int apoptosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "apoptosis" );	
 	static double initial_total_volume = 2494;
 
-	if( pCell->custom_data[volume_c] > 1.2*initial_total_volume )
+	if( pCell->custom_data[volume_c] > 1.2*initial_total_volume ) // FIONA: SHOULD THIS BE 1.5 times
 	{
+		pCell->custom_data["cell_pyroptosis_flag"]=3;   // FIONA: ADDED REMOVE CELL PHENOTYPE
 		//std::cout<<"Pyroptotic cell burst!"<<std::endl;
 		//The cell's 'apoptosis death rate' is set to be "super high" 
 		phenotype.death.rates[apoptosis_model_index] = 9e9; 
@@ -350,6 +411,7 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
     // (Sara and Fiona)
 	static int propyroptotic_cytokine_index = microenvironment.find_density_index("pro-pyroptosis cytokine");
 	pCell->phenotype.secretion.secretion_rates[propyroptotic_cytokine_index] = k_il1b_cte*g_gsdmd*pCell->custom_data[il_1b_c];
+
 	
 	return; 
 }
