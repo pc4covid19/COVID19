@@ -125,7 +125,7 @@
 	<microenvironment_setup>
 		<variable name="virion" units="virion/micron^3" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">2.5</diffusion_coefficient> <!-- 10 --> 
+				<diffusion_coefficient units="micron^2/min">0.025</diffusion_coefficient> <!-- 10 --> 
 				<decay_rate units="1/min">0</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
@@ -409,7 +409,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -1067,6 +1067,8 @@
 				description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
 			<use_single_infected_cell type="bool" units="none" 
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
+			<use_uniform_dist type="bool" units="none" 
+				description="use a uniform distribution">true</use_uniform_dist>
 			
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>

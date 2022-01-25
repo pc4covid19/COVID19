@@ -244,7 +244,10 @@ void setup_tissue( void )
 		(*all_cells).size() ); 
 	double single_virion_density_change = 1.0 / microenvironment.mesh.dV; 
 	
-	// infect the cell closest to the center  
+	// infect the cell closest to the center 
+
+	std::default_random_engine generator;
+	std::normal_distribution<double> distribution(0,100);
 
 	if( parameters.bools( "use_single_infected_cell" ) == true )
 	{
@@ -253,19 +256,56 @@ void setup_tissue( void )
 	}
 	else
 	{
-		std::cout << "Placing " << number_of_virions << " virions ... " << std::endl; 
-		for( int n=0 ; n < number_of_virions ; n++ )
+		std::cout << "Placing " << number_of_virions << " virions ... " << std::endl;
+		if( parameters.bools( "use_uniform_dist" ) == true )
 		{
+			for( int n=0 ; n < number_of_virions ; n++ )
+			{
 			// pick a random voxel 
 			std::vector<double> position = {0,0,0}; 
 			position[0] = x_min + (x_max-x_min)*UniformRandom(); 
 			position[1] = y_min + (y_max-y_min)*UniformRandom(); 
 			
 			int m = microenvironment.nearest_voxel_index( position ); 
-			
-			// int n = (int) ( ( microenvironment.number_of_voxels()-1.0 ) * UniformRandom() ); 
-			// microenvironment(i,j)[nV] += single_virion_density_change; 
-			microenvironment(m)[nV] += single_virion_density_change; 
+			microenvironment(m)[nV] += single_virion_density_change;
+			}			
+		}
+		else
+		{
+			for( int n=0 ; n < number_of_virions ; n++ )
+			{
+				// pick a random voxel in a dist
+				std::vector<double> position = {0,0,0};
+				double number = distribution(generator);
+				double number2 = distribution(generator);
+				if ((number>=-400)&&(number<=400)) {
+					//place at position
+					position[0] = number;
+				}
+				else if (number<-400) {
+					//place at edge
+					position[0] = -400;
+				}
+				else {
+					//place at edge
+					position[0] = 400;
+				}
+				if ((number2>=-400)&&(number2<=400)) {
+					//place at position
+					position[1] = number2;
+				}
+				else if (number2<-400) {
+					//place at edge
+					position[1] = -400;
+				}
+				else {
+					//place at edge
+					position[1] = 400;
+				}
+				
+				int m = microenvironment.nearest_voxel_index( position ); 
+				microenvironment(m)[nV] += single_virion_density_change; 
+			}
 		}
 	}
 	
