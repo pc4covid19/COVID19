@@ -1003,23 +1003,23 @@
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
-				description="TC death rate">0.0000014</TC_death_rate>
+				description="TC death rate">1.4e-6</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
 				description="max activation TC">0.01</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
-				description="half max activation TC">2000</half_max_activation_TC>
+				description="half max activation TC">4000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
 				description="max clearance TC">0.0007</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">200</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
-				description="TC population threshold">10</TC_population_threshold>
+				description="TC population threshold">1000</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
-				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
+				description="T cell recruitment factor to tissue">0.001</T_Cell_Recruitment>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<Th1_max_activation type="double" units="cells/min"
-				description="Th1 max activation speed">0.001</Th1_max_activation>
+				description="Th1 max activation speed">0.0000001</Th1_max_activation>
 			<Th1_damping type="double" units="cells/min"
 				description="Th1 damping factor">0.00002</Th1_damping>
 			<Th1_decay type="double" units="cells/min"
@@ -1027,7 +1027,7 @@
 			<Th_base_decay type="double" units="cells/min"
 				description="Th base dacay rates">0.0000156</Th_base_decay>
 			<Th2_self_feeback type="double" units="cells/min"
-				description="Th2 max self feeback speed">0.00004</Th2_self_feeback>
+				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
 				description="Th2 max conversion speed">0.000002</Th2_max_conversion>
 			<Th1_Th2_conversion_wieght type="double" units="cells/min"
@@ -1037,7 +1037,7 @@
 			<BCell_base_value type="double" units="cells/min"
 				description="BCell basal value">3000</BCell_base_value>
 			<BCell_DC_proliferation type="double" units="cells/min"
-				description="BCell DC influenced proliferation">0.004</BCell_DC_proliferation>
+				description="BCell DC influenced proliferation">0.0004</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
 				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
 			<BCell_damping type="double" units="cells/min"

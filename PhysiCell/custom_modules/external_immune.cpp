@@ -34,6 +34,7 @@ void external_immune_model( double dt )
 	// bookkeeping -- find microenvironment variables we need
 
 	extern double DM;
+	extern double DL;
 	extern double TC;
 	extern double TH1;
 	extern double TH2;
@@ -42,10 +43,13 @@ void external_immune_model( double dt )
 	extern double Bc;
 	extern double Ps;
 	extern double Ig;
+	extern double TCN;
+	extern double THN;
+	extern double BN;
 	extern double EPICOUNT;
 	static double dC = parameters.doubles( "TC_death_rate" ); 
-	static double pT1 = parameters.doubles( "max_activation_TC" ); 
-	static double pT2 = parameters.doubles( "half_max_activation_TC" ); 
+	static double rT1 = parameters.doubles( "max_activation_TC" ); 
+	static double rT2 = parameters.doubles( "half_max_activation_TC" ); 
 	static double dT1 = parameters.doubles( "max_clearance_TC" ); 
 	static double dT2 = parameters.doubles( "half_max_clearance_TC" ); 
 	static double Tc0 = parameters.doubles( "TC_population_threshold" ); 
@@ -71,26 +75,9 @@ void external_immune_model( double dt )
 	double lypmh_scale = EPICOUNT / 500000;
 	// actual model goes here 
 	
-	double x[4][9]={{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize x
-	double f[4][9]={{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize f
+	double x[4][13]={{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize x
+	double f[4][13]={{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};//initialize f
 	int j;
-	
-	// TC update
-	double dR_TC = dC * Tc0;
-
-/* 	// DM Tc recruitment
-	double dR_TCD = pT1 * C[0]/immunevolume * C[1]/immunevolume / ( C[0]/immunevolume + pT2/immunevolume) ;
-	
-	// DM Tc decay
-	double dR_TC16 = dT1 * C[0]/immunevolume * C[1]/immunevolume / ( C[0]/immunevolume + dT2/immunevolume) ;
-	
-	// TC decay
-	double dR_TC14 = dC * C[1] / immunevolume ;
-	
-	// DM decay
-	double dR_DM = dDm * C[0] / immunevolume; */
-	
-	
 	
 	extern std::vector<int>history;
 	
@@ -103,17 +90,58 @@ void external_immune_model( double dt )
 	x[0][6] = Bc;
 	x[0][7] = Ps;
 	x[0][8] = Ig/lypmh_scale;
+	x[0][9] = TCN;
+	x[0][10] = THN;
+	x[0][11] = BN;
+	x[0][12] = (DL+(THN+TH1+TH2)/(THN+TH1+TH2+5000)*history.back())/lypmh_scale;
+    
+	double pT=0.002;
+	double pT2=100;
+	//(pT/(y(5)+pT2) added
+	//rT1->pT1
+	//rT2->pT2
+
+    
+/*     g*y(6) - (y(8)+y(9)+y(15))/(y(8)+y(9)+y(15)+5000)*dT1*y(7)*y(4)/(y(4)+dT2) % y(7) = Tct
+    
+    sTh1*y(5)*y(15)*(sig1*(1+y(9))+y(8))/((1+y(9))^2) + pTh1*y(5)*(y(8)^2)/((1+y(9))^2) - dTh1*y(5)*(y(8)^3)/(KTh1+y(9)) - mTh*y(8)  % y(8) = Th1
+    
+    sTh2*y(5)*y(15)*(sig2+y(9))/(1+y(9)) + pTh2*(ro+y(8))*y(5)*(y(9)^2)/((1+y(9))*(1+y(8)+y(9))) - mTh*y(9)  % y(9) = Th2
+    
+    g*(y(8)+y(9)) - mTh*y(10) % y(10) = Tct
+    
+    3*y(5)/(y(5)+10000)*y(17) + rB1*(y(11))*(y(5) + h*y(9))/(rB2 + y(5) + h*y(9)) - pS*y(11) - pL*y(11)*y(9) - db*y(11)   % y(11) = B
+    
+    pS*y(11) - dS*y(12)  % y(12) = pS
+    
+    pAS*y(12)+pAL*y(18) - dM*y(13)  - eV*y(3)*y(13) - eV*y(2)*y(13)      %    y(13) = Ig
+
+    dD0*(D0-y(14)) - bD*y(14)*y(3)  %    y(14) = Dn
+    
+    dHn*(1000-y(15)) - sTh1*y(5)*y(15)*(sig1*(1+y(9))+y(8))/((1+y(9))^2) - sTh2*y(5)*y(15)*(sig2+y(9))/(1+y(9)) %    y(15) = Thn
+    
+    dC*(Tc0-y(16)) - pT/(y(5)+pT2)*y(16)*y(5)  %    y(16) = Tcn
+    
+    1E-3*(1000-y(17))-3*y(5)/(y(5)+10000)*y(17) %    y(17) = Bn
+    
+    pL*y(11)*y(9) - 3E-2*y(18)];%    y(18) = pL */
+	
+	
 	
     for(j = 0; j < 4; j++){
 		f[j][0] = {-dDm*x[j][0]}; //DM
-        f[j][1] = {dR_TC-dC*x[j][1]+pT1*((100000-x[j][1])/(100000))*x[j][0]*x[j][1]/(x[j][0]+pT2)*(x[j][2]+x[j][3])/3000-dT1*x[j][0]*x[j][1]/(x[j][0]+dT2)}; //Tc
-		f[j][2] = {(sTh1*x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //Th1
-		f[j][3] = {(sTh2*x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //Th2
+        f[j][1] = {pT/(x[j][12]+pT2)*x[j][9]*x[j][12]+rT1*x[j][1]*x[j][12]/(x[j][12]+rT2) - dT1*x[j][1]*x[j][12]/(x[j][12]+dT2)}; //Tc
+		f[j][2] = {sTh1*x[j][0]*x[j][10]*(0.1*(1+x[j][3])+x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //Th1
+		f[j][3] = {sTh2*x[j][0]*x[j][10]*(0.1+x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //Th2
 		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //CD8 export
-		f[j][5] = {10*CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //CD4 export
-		f[j][6] = {dB*B0+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //B-Cell
+		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //CD4 export
+		f[j][6] = {0.0021*x[j][0]/(x[j][0]+10000)*x[j][11]+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //B-Cell
 		f[j][7] = {pSc*x[j][6]-dS*x[j][7]}; //P-Cell
 		f[j][8] = {pAS*x[j][7]-dMc*x[j][8]}; //Ig
+		f[j][9] = {dC*(Tc0-x[j][9]) - pT/(x[j][0]+pT2)*x[j][9]*x[j][0]}; //TcN
+		f[j][10] = {dC*(Tc0-x[j][10]) - sTh1*x[j][0]*x[j][10]*(0.1*(1+x[j][3])+x[j][2])/((1+x[j][3])*(1+x[j][3])) - sTh2*x[j][0]*x[j][10]*(0.1+x[j][3])/(1+x[j][3])}; //ThN
+		f[j][11] = {1E-3*(Tc0-x[j][11])-0.0021*x[j][0]/(x[j][0]+10000)*x[j][11]}; //bN
+		f[j][12] = {-dDm*x[j][12]}; //DM
         if (j== 0 || j==1){
             x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 			x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
@@ -124,6 +152,10 @@ void external_immune_model( double dt )
 			x[j+1][6]=x[0][6]+dt/2*f[j][6]; //first and second x approximations
 			x[j+1][7]=x[0][7]+dt/2*f[j][7]; //first and second x approximations
 			x[j+1][8]=x[0][8]+dt/2*f[j][8]; //first and second x approximations
+			x[j+1][9]=x[0][9]+dt/2*f[j][9]; //first and second x approximations
+			x[j+1][10]=x[0][10]+dt/2*f[j][10]; //first and second x approximations
+			x[j+1][11]=x[0][11]+dt/2*f[j][11]; //first and second x approximations
+			x[j+1][12]=x[0][12]+dt/2*f[j][12]; //first and second x approximations
 		}
         if (j== 2){
             x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
@@ -135,6 +167,10 @@ void external_immune_model( double dt )
 			x[j+1][6]=x[0][6]+dt*f[j][6]; //third approximation
 			x[j+1][7]=x[0][7]+dt*f[j][7]; //third approximation
 			x[j+1][8]=x[0][8]+dt*f[j][8]; //third approximation
+			x[j+1][9]=x[0][9]+dt*f[j][9]; //third approximation
+			x[j+1][10]=x[0][10]+dt*f[j][10]; //third approximation
+			x[j+1][11]=x[0][11]+dt*f[j][11]; //third approximation
+			x[j+1][12]=x[0][12]+dt*f[j][12]; //third approximation
 		}
     } 
 
@@ -147,6 +183,10 @@ void external_immune_model( double dt )
 	Bc=x[0][6]+dt*(f[0][6]/6+f[1][6]/3+f[2][6]/3+f[3][6]/6);
 	Ps=x[0][7]+dt*(f[0][7]/6+f[1][7]/3+f[2][7]/3+f[3][7]/6);
 	Ig=(x[0][8]+dt*(f[0][8]/6+f[1][8]/3+f[2][8]/3+f[3][8]/6))*lypmh_scale;
+	TCN=(x[0][9]+dt*(f[0][9]/6+f[1][9]/3+f[2][9]/3+f[3][9]/6));
+	THN=(x[0][10]+dt*(f[0][10]/6+f[1][10]/3+f[2][10]/3+f[3][10]/6));
+	BN=(x[0][11]+dt*(f[0][11]/6+f[1][11]/3+f[2][11]/3+f[3][11]/6));
+	DL=(x[0][12]+dt*(f[0][12]/6+f[1][12]/3+f[2][12]/3+f[3][12]/6))*lypmh_scale;
 	
 	double x_min = microenvironment.mesh.bounding_box[0] + 1e-6; 
 	double x_max = microenvironment.mesh.bounding_box[3] - 1e-6; 
