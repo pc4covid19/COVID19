@@ -993,12 +993,13 @@
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract DC">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract DC">0.7</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 
 			<!-- (Michael) added parameters for external_immune-->
@@ -1011,7 +1012,7 @@
 			<max_clearance_TC type="double" units="cells/min"
 				description="max clearance TC">0.0007</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
-				description="half max clearance TC">200</half_max_clearance_TC>
+				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">1000</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
@@ -1029,7 +1030,7 @@
 			<Th2_self_feeback type="double" units="cells/min"
 				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
-				description="Th2 max conversion speed">0.000002</Th2_max_conversion>
+				description="Th2 max conversion speed">0.000001</Th2_max_conversion>
 			<Th1_Th2_conversion_wieght type="double" units="cells/min"
 				description="Th1 to Th2 conversion wieght">1</Th1_Th2_conversion_wieght>
 			<BCell_base_rate type="double" units="cells/min"

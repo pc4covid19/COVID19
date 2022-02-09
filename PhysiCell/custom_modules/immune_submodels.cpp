@@ -1491,6 +1491,15 @@ void immune_cell_recruitment( double dt )
 		{ create_infiltrating_neutrophil(); }
 	}
 	
+	extern double TC; 
+	extern double TH1; 
+	extern double TH2; 
+	extern double EPICOUNT;
+	extern double tissueCD8; 
+	extern double tissueCD4; 
+	double cd4report = tissueCD4/(EPICOUNT / 500000)/(TH1+TH2);
+	double cd8report = tissueCD8/(EPICOUNT / 500000)/(TC);
+	
 	// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
 	
 	extern double TCt; 
@@ -1515,12 +1524,11 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_CD8_T_cell_recruitment_time )
 		{ first_CD8_T_cell_recruitment_time = PhysiCell_globals.current_time; }
 		
-		std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << std::endl; 
+		std::cout << "\tRecruiting " << historyTc.back() << " CD8 T cells ... " << cd8report  << std::endl; 
 
 		for( int n = 0; n < historyTc.back() ; n++ )
 		{ create_infiltrating_Tcell(); }
 	}
-	
 	
 	// CD4 recruitment (Michael) changed to take floor of ODE value
 	extern double Tht; 
@@ -1539,10 +1547,22 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_CD4_T_cell_recruitment_time )
 		{ first_CD4_T_cell_recruitment_time = PhysiCell_globals.current_time; }
 		
-		std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << std::endl; 
+		std::cout << "\tRecruiting " << historyTh.back() << " CD4 T cells ... " << cd4report << std::endl; 
 
 		for( int n = 0; n < historyTh.back() ; n++ )
 		{ create_infiltrating_CD4Tcell(); }
+	}
+	
+	tissueCD4=0;
+	tissueCD8=0;
+	//try counting CD8 and CD4
+	for( int n =0 ; n < (*all_cells).size() ; n++ )
+	{
+		Cell* pC = (*all_cells)[n]; 
+		if( pC->type == 3 )
+		{ tissueCD8++; }
+		if( pC->type == 7 )
+		{ tissueCD4++; }
 	}
 	
 	// (Adrianne) DC recruitment - *** This section will be changed to be Tarun's model  so I've left recruitment parameters to be mac cell parameters**

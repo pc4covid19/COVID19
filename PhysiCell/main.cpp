@@ -101,6 +101,8 @@ double TCN = 1000;
 double THN = 1000;
 double BN = 1000;
 double EPICOUNT = 1;
+double tissueCD4=0;
+double tissueCD8=0;
 
 std::vector<int> history(72000); //144000 - full day delay
 std::vector<int> historyTc(60); //120 - half day delay

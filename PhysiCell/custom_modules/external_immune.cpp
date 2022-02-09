@@ -47,6 +47,9 @@ void external_immune_model( double dt )
 	extern double THN;
 	extern double BN;
 	extern double EPICOUNT;
+	extern double tissueCD8; 
+	extern double tissueCD4; 
+	
 	static double dC = parameters.doubles( "TC_death_rate" ); 
 	static double rT1 = parameters.doubles( "max_activation_TC" ); 
 	static double rT2 = parameters.doubles( "half_max_activation_TC" ); 
@@ -60,7 +63,7 @@ void external_immune_model( double dt )
 	static double mTh = parameters.doubles( "Th_base_decay" );
 	static double sTh2 = parameters.doubles( "Th2_self_feeback" );
 	static double pTh2 = parameters.doubles( "Th2_max_conversion" );
-	static double ro = parameters.doubles( "Th1_Th2_conversion_wieght" );
+	// static double ro = parameters.doubles( "Th1_Th2_conversion_wieght" );
 	static double CD8_Tcell_recruitment_rate = parameters.doubles( "T_Cell_Recruitment" ); 
 	static double dB = parameters.doubles( "BCell_base_rate" );
 	static double B0 = parameters.doubles( "BCell_base_value" );
@@ -95,12 +98,13 @@ void external_immune_model( double dt )
 	x[0][11] = BN;
 	x[0][12] = (DL+(THN+TH1+TH2)/(THN+TH1+TH2+5000)*history.back())/lypmh_scale;
     
-	double pT=0.002;
+	double pT=0.001;
 	double pT2=100;
+	double kh=1e-2;
 	//(pT/(y(5)+pT2) added
 	//rT1->pT1
 	//rT2->pT2
-
+	static double ro=pTh1/(10*pTh2);
     
 /*     g*y(6) - (y(8)+y(9)+y(15))/(y(8)+y(9)+y(15)+5000)*dT1*y(7)*y(4)/(y(4)+dT2) % y(7) = Tct
     
@@ -131,15 +135,15 @@ void external_immune_model( double dt )
     for(j = 0; j < 4; j++){
 		f[j][0] = {-dDm*x[j][0]}; //DM
         f[j][1] = {pT/(x[j][12]+pT2)*x[j][9]*x[j][12]+rT1*x[j][1]*x[j][12]/(x[j][12]+rT2) - dT1*x[j][1]*x[j][12]/(x[j][12]+dT2)}; //Tc
-		f[j][2] = {sTh1*x[j][0]*x[j][10]*(0.1*(1+x[j][3])+x[j][2])/((1+x[j][3])*(1+x[j][3]))+(pTh1*x[j][0]*x[j][2]*x[j][2])/((1+x[j][3])*(1+x[j][3]))-(dTh1*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(500+x[j][3])-mTh*x[j][2]}; //Th1
-		f[j][3] = {sTh2*x[j][0]*x[j][10]*(0.1+x[j][3])/(1+x[j][3])+(pTh2*(ro+x[j][2])*x[j][0]*x[j][3]*x[j][3])/((1+x[j][3])*(1+x[j][2]+x[j][3]))-mTh*x[j][3]}; //Th2
-		f[j][4] = {CD8_Tcell_recruitment_rate*x[j][1]}; //CD8 export
-		f[j][5] = {CD8_Tcell_recruitment_rate*(x[j][2]+x[j][3])}; //CD4 export
+		f[j][2] = {sTh1*x[j][0]*x[j][10]*(0.1/kh*(1+kh*x[j][3])+x[j][2])/((1+kh*x[j][3])*(1+kh*x[j][3]))+(pTh1*kh*x[j][0]*x[j][2]*x[j][2])/((1+kh*x[j][3])*(1+kh*x[j][3]))-(dTh1*(kh*kh)*x[j][0]*x[j][2]*x[j][2]*x[j][2])/(1+kh*x[j][3])-mTh*x[j][2]}; //Th1
+		f[j][3] = {sTh2*x[j][0]*x[j][10]*(0.1/kh+x[j][3])/(1+kh*x[j][3])+(pTh2*(kh*kh)*(ro+x[j][2]/(1+kh*x[j][3]))*x[j][0]*x[j][3]*x[j][3])/((1+kh*x[j][2]+kh*x[j][3]))-mTh*x[j][3]}; //Th2
+		f[j][4] = {CD8_Tcell_recruitment_rate*(1-(tissueCD8/lypmh_scale)/(0.01*x[j][1]+(tissueCD8/lypmh_scale)+1E-4))*x[j][1]}; //CD8 export
+		f[j][5] = {CD8_Tcell_recruitment_rate*(1-(tissueCD4/lypmh_scale)/(0.01*(x[j][2]+x[j][3])+(tissueCD4/lypmh_scale)+1E-4))*(x[j][2]+x[j][3])}; //CD4 export
 		f[j][6] = {0.0021*x[j][0]/(x[j][0]+10000)*x[j][11]+rB1*x[j][6]*(x[j][0]+h*x[j][3])/(x[j][0]+h*x[j][3]+rB2)-dB*x[j][6]-2*pSc*x[j][6]}; //B-Cell
 		f[j][7] = {pSc*x[j][6]-dS*x[j][7]}; //P-Cell
 		f[j][8] = {pAS*x[j][7]-dMc*x[j][8]}; //Ig
 		f[j][9] = {dC*(Tc0-x[j][9]) - pT/(x[j][0]+pT2)*x[j][9]*x[j][0]}; //TcN
-		f[j][10] = {dC*(Tc0-x[j][10]) - sTh1*x[j][0]*x[j][10]*(0.1*(1+x[j][3])+x[j][2])/((1+x[j][3])*(1+x[j][3])) - sTh2*x[j][0]*x[j][10]*(0.1+x[j][3])/(1+x[j][3])}; //ThN
+		f[j][10] = {dC*(Tc0-x[j][10]) - sTh1*x[j][0]*x[j][10]*(0.1/kh*(1+kh*x[j][3])+x[j][2])/((1+kh*x[j][3])*(1+kh*x[j][3])) - sTh2*x[j][0]*x[j][10]*(0.1/kh+x[j][3])/(1+kh*x[j][3])}; //ThN
 		f[j][11] = {1E-3*(Tc0-x[j][11])-0.0021*x[j][0]/(x[j][0]+10000)*x[j][11]}; //bN
 		f[j][12] = {-dDm*x[j][12]}; //DM
         if (j== 0 || j==1){
