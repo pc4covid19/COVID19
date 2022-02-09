@@ -1017,6 +1017,8 @@
 				description="TC population threshold">1000</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
 				description="T cell recruitment factor to tissue">0.001</T_Cell_Recruitment>
+			<transport_ratio type="double" units="cells/min"
+				description="ratio to achieve a 95% reduction in transport">0.2</transport_ratio>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<Th1_max_activation type="double" units="cells/min"
@@ -1031,12 +1033,12 @@
 				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
 				description="Th2 max conversion speed">0.000001</Th2_max_conversion>
-			<Th1_Th2_conversion_wieght type="double" units="cells/min"
-				description="Th1 to Th2 conversion wieght">1</Th1_Th2_conversion_wieght>
 			<BCell_base_rate type="double" units="cells/min"
-				description="BCell basal rates">1.74e-6</BCell_base_rate>
-			<BCell_base_value type="double" units="cells/min"
-				description="BCell basal value">3000</BCell_base_value>
+				description="BCell basal degradation">1.74e-6</BCell_base_rate>
+			<BCell_activation type="double" units="cells/min"
+				description="BCell activation rate">0.0021</BCell_activation>
+			<BCell_activation_half type="double" units="cells/min"
+				description="BCell activation rate">1e4</BCell_activation_half>
 			<BCell_DC_proliferation type="double" units="cells/min"
 				description="BCell DC influenced proliferation">0.0004</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
@@ -1053,6 +1055,12 @@
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
 				description="probability of DC leaving to lymph node">0.0000033</DC_leave_prob>
+			<TC_activation type="double" units="cells/min"
+				description="naive TC activation rate">0.001</TC_activation>
+			<TC_activation_half type="double" units="cells/min"
+				description="naive TC activation rate half max">100</TC_activation_half>
+			<Th_half type="double" units="cells/min"
+				description="Th half max for cytokine feedback (inverse)">1e-2</Th_half>
 
 			<!-- (Michael) added parameters for external_immune-->
 			
