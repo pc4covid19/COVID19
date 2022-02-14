@@ -424,8 +424,6 @@
 					description="viral load at which cells reach half max apoptosis rate">250</max_apoptosis_half_max> <!-- 500 -->
 				<apoptosis_hill_power type="double" units="none" 
 					description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
-				<virus_fraction_released_at_death type="double" units="none" 
-					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
 					description="max rate that infected cells secrete chemokine">1</infected_cell_chemokine_secretion_rate>
 				<debris_secretion_rate units="1/min" type="double"
@@ -1175,7 +1173,9 @@
 		
 			<antibody_half_effect type="double" units="none"
 				description="Half effect of antibody on macrophage phagocytosis">0.1</antibody_half_effect>
-		
+		<!-- fraction of virion released upon cell death-->
+		<virus_fraction_released_at_death type="double" units="none" 
+					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 	</user_parameters>
 	
 </PhysiCell_settings>
