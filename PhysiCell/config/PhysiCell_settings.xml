@@ -492,7 +492,7 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.2</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
 					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.5</max_interferon_secretion_rate_via_paracrine>
@@ -995,22 +995,22 @@
 				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max DC recruitment rate (for saturated signal)">1.5e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract DC">0.7</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract DC">1</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
 				description="TC death rate">1.4e-6</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
-				description="max activation TC">0.01</max_activation_TC>
+				description="max activation TC">0.0018</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
 				description="half max activation TC">4000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.0007</max_clearance_TC>
+				description="max clearance TC">0.00007</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
@@ -1054,15 +1054,19 @@
 			<Ig_degradation type="double" units="cells/min"
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
-				description="probability of DC leaving to lymph node">0.0000033</DC_leave_prob>
+				description="probability of DC leaving to lymph node">0.000033</DC_leave_prob>
 			<TC_activation type="double" units="cells/min"
 				description="naive TC activation rate">0.001</TC_activation>
 			<TC_activation_half type="double" units="cells/min"
 				description="naive TC activation rate half max">100</TC_activation_half>
 			<Th_half type="double" units="cells/min"
 				description="Th half max for cytokine feedback (inverse)">1e-2</Th_half>
+			<Death_rates_of_old_Tcells type="double" units="cells/min"
+				description="value to kill T Cells post generation limit">100</Death_rates_of_old_Tcells>
+			<RNA_lower_bound type="double" units="cells/min"
+				description="lowest value to start probability draws for pyroptosis">125</RNA_lower_bound>
 
-			<!-- (Michael) added parameters for external_immune-->
+			<!-- added parameters for fibroblast-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max fibroblast cell recruitment rate (for saturated signal)">4e-9</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
@@ -1103,7 +1107,7 @@
 			<departure_rate_of_DCs type="double" units="cells/min/micron^3"
 				description="Departure rate of activated DCs">0.001</departure_rate_of_DCs>
 		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
-			<virions_needed_for_DC_activation type="int" units="virions"
+			<virions_needed_for_DC_activation type="double" units="virions"
 				descriptions="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
 		<!-- (Adrianne) multiple of the radii of the two immune cells interacting to check they are close enough-->		
 		<epsilon_distance type="double" units="dimensionless"

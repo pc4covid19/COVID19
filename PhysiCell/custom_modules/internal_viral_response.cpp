@@ -140,7 +140,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// Sara&Fiona: Internalise pro-pyroptotic cytokine from the microenvironment
 	static int pro_pyroptotic_cytokine = microenvironment.find_density_index("pro-pyroptosis cytokine"); 
 	double pyroptotic_cytokine_concentration = phenotype.molecular.internalized_total_substrates[pro_pyroptotic_cytokine]; 
-
+	double RNAlow=parameters.doubles("RNA_lower_bound");
 	//printf("PCC: %lf\n",pyroptotic_cytokine_concentration);
 
     //phenotype.secretion.uptake_rates[propyroptotic_cytokine_index] = 1.; // What should the secretion intake depend on ?
@@ -150,11 +150,11 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
 	
 	// FIONA: NOTE IN OUR OURS IT IS R>2 and I added cell_bystander check
-	if( R>=200 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0)
+	if( R>=RNAlow && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0)
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
 		// FIONA THIS IS DIFFERENT FROM OURS AS WE SET THE PROBABILITY
-		double cell_death_pyroptosis_probability = (R-200)/(1000-200); 
+		double cell_death_pyroptosis_probability = (R-RNAlow)/(1000-RNAlow); 
 		if( cell_death_pyroptosis_probability > 1.0 )
 		{ cell_death_pyroptosis_probability = 1.0; } 
 		// FIONA FOR SOME REASON THEY DIVIDE BY 3
@@ -175,7 +175,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 		return;
 	}
 	// (Sara&Fiona)  FIONA added cell_bystander check
-    else if(R<200 && pyroptotic_cytokine_concentration>100.0 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0) 
+    else if(R<RNAlow && pyroptotic_cytokine_concentration>100.0 && (int)pCell->custom_data["cell_pyroptosis_flag"]==0 && (int)pCell->custom_data["cell_virus_induced_apoptosis_flag"]==0 && (int)pCell->custom_data["cell_bystander_pyroptosis_flag"]==0) 
     {
 		pCell->custom_data["cell_pyroptosis_flag"]=2; // Pyroptosis bystander cascade is initiated
 		pCell->custom_data["cell_bystander_pyroptosis_flag"]=1; // Pyroptosis cascade is initiated

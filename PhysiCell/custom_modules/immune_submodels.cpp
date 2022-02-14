@@ -962,9 +962,9 @@ void DC_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		// (adrianne) DCs become activated if there is an infected cell in their neighbour with greater 1 viral protein or if the local amount of virus is greater than 10
 		static int virus_index = microenvironment.find_density_index("virion");
 		double virus_amount = pCell->nearest_density_vector()[virus_index];
-		if( virus_amount*microenvironment.mesh.voxels[1].volume > parameters.doubles("virions_needed_for_DC_activation")) // (Adrianne) amount of virus in local voxel with DC is greater than 10
-		{
-			
+		double dt_act = virus_amount * microenvironment.mesh.dV/parameters.doubles("virions_needed_for_DC_activation"); //check for activation prob
+		if( dt_act>0 && UniformRandom()<= dt_act) // (Adrianne) see if activated, maxing at 10
+		{		
 			pCell->custom_data["activated_immune_cell"] = 1.0; // (Adrianne) DC becomes activated
 		}
 		else //(Adrianne) check for infected cells nearby
@@ -1045,8 +1045,7 @@ void CD4_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	if(generation_value<0)
 	{
 		
-		pCell->phenotype.death.rates[apoptosis_index] = parameters.doubles("Death_rates_of_old_Tcells");
-		pCell->phenotype.death.rates[apoptosis_index] = 100; // new death rate of T cells when they have exceeded generation
+		pCell->phenotype.death.rates[apoptosis_index] = parameters.doubles("Death_rates_of_old_Tcells");// new death rate of T cells when they have exceeded generation
 		
 		pCell->phenotype.cycle.data.transition_rate(cycle_G0G1_index,cycle_S_index) = 0;
 		
