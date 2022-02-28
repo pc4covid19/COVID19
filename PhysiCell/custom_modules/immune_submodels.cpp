@@ -520,7 +520,38 @@ void vir_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		// replace_out_of_bounds_cell( pCell, 10.0 );
 		// return; 
 	}
+
+	static int vir_type = get_cell_definition( "virion" ).type; 
 	
+	// bookkeeping -- find microenvironment variables we need
+
+	// bookkeeping -- find custom data we need 
+	static double DCprob = parameters.doubles( "DC_leave_prob" );
+	// do nothing if dead 
+	if( phenotype.death.dead == true )
+	{ return; } 
+
+	// if not DC, do nothing 
+	if( pCell->type != vir_type )
+	{ return; } 
+	
+	//find microenvirionment index and local concentration
+	static int nAb = microenvironment.find_density_index( "Ig" ); 
+	std::vector<double> cellpos(3, 0);
+	cellpos[0]=pCell->position[0]; //x
+	cellpos[1]=pCell->position[1]; //y
+	cellpos[2]=pCell->position[2]; //z
+	static int dummy_voxel_index= microenvironment.nearest_voxel_index( cellpos );
+	double removal_prob = dt * 1.5 * pCell->nearest_density_vector()[nAb]/ microenvironment.mesh.dV;
+
+	// check to see if removed
+	if( UniformRandom() < removal_prob)
+	{
+		// passing test removed one virion and one Ig
+		std::cout<<"virion removed"<<std::endl;
+		microenvironment(dummy_voxel_index)[nAb] -= 1.0 / microenvironment.mesh.dV; 
+		pCell->lyse_cell(); 
+	}
 	return; 
 }
 

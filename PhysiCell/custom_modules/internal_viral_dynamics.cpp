@@ -158,8 +158,8 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 		while( i < alpha1 ) {
 			double theta = 2*3.14*UniformRandom();
 			double rad = phenotype.geometry.radius*UniformRandom();
-			double positionpass0=pCell->position[0]+rad*cos(theta);
-			double positionpass1=pCell->position[1]+rad*sin(theta);
+			double positionpass0=pCell->position[0];
+			double positionpass1=pCell->position[1];
 			create_secreting_agentcallvir(positionpass0, positionpass1);
 			i++; 
 		}

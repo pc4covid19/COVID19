@@ -161,10 +161,6 @@ void external_immune_model( double dt )
 	static int nV = microenvironment.find_density_index( "virion" ); 
 	
 	//std::cout << "Placing " << number_of_Ig << " Ig ... " << std::endl; 
-	if( number_of_Ig > 1000)
-	{
-		number_of_Ig=1000;
-	}
 	for( int n=0 ; n < number_of_Ig ; n++ )
 		{
 			// pick a random voxel 
@@ -175,26 +171,7 @@ void external_immune_model( double dt )
 			int m = microenvironment.nearest_voxel_index( position ); 
 
 			microenvironment(m)[nAb] += 1.0 / microenvironment.mesh.dV; 
-		}
-	#pragma omp parallel for
-	for( int n=0 ; n < microenvironment.number_of_voxels() ; n++ )
-		{
-			if (microenvironment(n)[nV]>0 && microenvironment(n)[nAb]>0) {
-			double rate = 1.5 * microenvironment(n)[nAb] * microenvironment(n)[nV] * dt; //rate is 1.5 after conversions for now - set to zero in no Ig cases
-			if (rate < 0) {
-				rate=0;
-			}
-			if (rate > microenvironment(n)[nAb]) {
-				rate = microenvironment(n)[nAb];
-			}
-			if (rate > microenvironment(n)[nV]) {
-				rate = microenvironment(n)[nV];
-			}
-			microenvironment(n)[nAb] -= rate;
-			microenvironment(n)[nV] -= rate;
-			}
-		}
-	
+		}	
 	return; 
 }
 	

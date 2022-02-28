@@ -500,7 +500,7 @@
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.975</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.9</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -979,7 +979,7 @@
 					</model> 
 				</death>
 				<volume>  
-					<total units="micron^3">10</total>
+					<total units="micron^3">1</total>
 					<fluid_fraction units="dimensionless">0</fluid_fraction>
 					<nuclear units="micron^3">0</nuclear>
 					
@@ -1005,8 +1005,8 @@
 				</mechanics>
 				
 				<motility>  
-					<speed units="micron/min">4</speed>
-					<persistence_time units="min">0.01</persistence_time>
+					<speed units="micron/min">10</speed>
+					<persistence_time units="min">0.1</persistence_time>
 					<migration_bias units="dimensionless">0</migration_bias>
 					
 					<options>

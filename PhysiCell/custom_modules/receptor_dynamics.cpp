@@ -167,7 +167,7 @@ bool attempt_immune_cell_attachmentv( Cell* pAttacker, Cell* pTarget , double dt
 
 	// now, get the uptake probability 
 	// check binding
-	double dt_bind = dt* pAttacker->custom_data[nR_bind]* pAttacker->custom_data[nR_EU]*0.01;
+	double dt_bind = dt* pAttacker->custom_data[nR_bind]* pAttacker->custom_data[nR_EU];
 
 	// don't need to cap it at 1.00: if prob > 100%, 
 	// then this statement always evaluates as true, 
