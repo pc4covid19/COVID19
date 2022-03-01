@@ -619,6 +619,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		if( pContactCell != pCell && pContactCell->phenotype.death.dead == false && pContactCell->type == CD8_Tcell_type 
 			&& pCell->custom_data["activated_immune_cell"] > 0.5 && cell_cell_distance<=parameters.doubles("epsilon_distance")*(radius_mac+radius_test_cell)) 
 		{
+			pCell->custom_data["M2_phase"] = 1; // counter for finding if cell is in M2 phase
 			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
 			phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
 			n=neighbors.size();
@@ -1512,11 +1513,7 @@ void immune_cell_recruitment( double dt )
 	
 	
 	
-	recruited_Tcells += historyTc.back();
-
-
-	static int nAb = microenvironment.find_density_index( "Ig" ); 
-	static int nV = microenvironment.find_density_index( "virion" ); 		
+	recruited_Tcells += historyTc.back();		
 	
 	if( historyTc.back() )
 	{

@@ -541,6 +541,9 @@
 				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be able to phagocytose infected cells --> 
 				<ability_to_phagocytose_infected_cell units="dimensionless" type="int"
 					description="Boolean for whether macrophages can phagocytose infected cells">0</ability_to_phagocytose_infected_cell>
+				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be M2 --> 
+				<M2_phase units="dimensionless" type="int"
+					description="Boolean for whether macrophages can phagocytose infected cells">0</M2_phase>
 				<!-- (adrianne) time (mins) after DC activation when it will leave tissue, assigned uniform random variable at activation--> 
 				<time_of_DC_departure units="min" type="double"
 					description="Time DC leaves tissue after activation">0</time_of_DC_departure>
@@ -1079,7 +1082,7 @@
 			<use_single_infected_cell type="bool" units="none" 
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			<use_uniform_dist type="bool" units="none" 
-				description="use a uniform distribution">true</use_uniform_dist>
+				description="use a uniform distribution">false</use_uniform_dist>
 			
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
