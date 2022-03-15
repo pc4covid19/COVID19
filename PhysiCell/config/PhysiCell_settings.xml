@@ -125,8 +125,8 @@
 	<microenvironment_setup>
 		<variable name="virion" units="virion/micron^3" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">0.025</diffusion_coefficient> <!-- 10 --> 
-				<decay_rate units="1/min">0</decay_rate>  
+				<diffusion_coefficient units="micron^2/min">0.25</diffusion_coefficient> <!-- 10 --> 
+				<decay_rate units="1/min">0.001</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -986,7 +986,7 @@
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract macrophages">0.3</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max neutrophil recruitment rate (for saturated signal)">6e-9</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
@@ -1041,7 +1041,7 @@
 			<BCell_activation_half type="double" units="cells/min"
 				description="BCell activation rate">1e4</BCell_activation_half>
 			<BCell_DC_proliferation type="double" units="cells/min"
-				description="BCell DC influenced proliferation">0.0004</BCell_DC_proliferation>
+				description="BCell DC influenced proliferation">0.001</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
 				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
 			<BCell_damping type="double" units="cells/min"

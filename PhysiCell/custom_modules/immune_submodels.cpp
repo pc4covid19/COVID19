@@ -620,12 +620,13 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 			&& pCell->custom_data["activated_immune_cell"] > 0.5 && cell_cell_distance<=parameters.doubles("epsilon_distance")*(radius_mac+radius_test_cell)) 
 		{
 			pCell->custom_data["M2_phase"] = 1; // counter for finding if cell is in M2 phase
+			pCell->custom_data["ability_to_phagocytose_infected_cell"] = 0; // turn off hyperactivity
 			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
 			phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
 			n=neighbors.size();
 		}
 		// (Adrianne) if it is not me, not dead and is a CD4 T cell that is within a very short distance from me, I will be able to phagocytose infected (but not neccesarily dead) cells
-		else if( pContactCell != pCell && pContactCell->phenotype.death.dead == false && pContactCell->type == CD4_Tcell_type 
+		else if( pContactCell != pCell && pContactCell->phenotype.death.dead == false && pContactCell->type == CD4_Tcell_type  && pCell->custom_data["M2_phase"] < 0.5
 			&& pCell->custom_data["activated_immune_cell"] > 0.5 && cell_cell_distance<=parameters.doubles("epsilon_distance")*(radius_mac+radius_test_cell))
 		{
 			pCell->custom_data["ability_to_phagocytose_infected_cell"] = 1; // (Adrianne) contact with CD4 T cell induces macrophage's ability to phagocytose infected cells
@@ -649,6 +650,18 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	{return;}	
 		
 	double probability_of_phagocytosis = pCell->custom_data["phagocytosis_rate"] * dt; 
+	
+	// testing a microenv switch to M2 phase
+	static int nAI = microenvironment.find_density_index( "anti-inflammatory cytokine" );
+	double AnitI = pCell->nearest_density_vector()[nAI];
+	if(UniformRandom() < 0.5*(AnitI)/(AnitI+25) && pCell->custom_data["activated_immune_cell"] > 0.5)
+	{
+		pCell->custom_data["M2_phase"] = 1; // counter for finding if cell is in M2 phase
+		pCell->custom_data["ability_to_phagocytose_infected_cell"] = 0; // turn off hyperactivity
+		phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
+		phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
+	}
+	
 	/* // remove in v 3.2 
 		double max_phagocytosis_volume = pCell->custom_data["phagocytosis_relative_target_cutoff_size" ] * pCD->phenotype.volume.total; 
 	 */
@@ -707,22 +720,7 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 					double time_to_ingest = volume_ingested_cell*material_internalisation_rate;// convert volume to time taken to phagocytose
 					// (Adrianne) update internal time vector in macrophages that tracks time it will spend phagocytosing the material so they can't phagocytose again until this time has elapsed
 					pCell->custom_data.variables[time_to_next_phagocytosis_index].value = PhysiCell_globals.current_time+time_to_ingest;				
-				}	
-
-				// activate the cell 
-				phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
-					pCell->custom_data["activated_cytokine_secretion_rate"]; // 10;
-				phenotype.secretion.saturation_densities[proinflammatory_cytokine_index] = 1;
-
-				phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 0.0; 
-				
-				//(adrianne v5) adding virus uptake by phagocytes
-				phenotype.secretion.uptake_rates[virus_index] = parameters.doubles("phagocytes_virus_uptake_rate");
-
-				phenotype.motility.migration_speed = pCell->custom_data["activated_speed"]; 
-					
-				pCell->custom_data["activated_immune_cell"] = 1.0; 
-				
+				}
 				return; 
 			}
 			else if( pTestCell != pCell && pTestCell->phenotype.death.dead == false &&  
