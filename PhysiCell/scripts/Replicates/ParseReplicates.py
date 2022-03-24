@@ -188,7 +188,7 @@ stdaI = np.std(aaI, axis=0)
 stdcol = np.std(acol, axis=0)
 stdepi = np.std(aepi, axis=0)
 
-data.append( np.vstack((meanCD8, meanmac, meanmacM2, meanmaci,meanmach,meanmacex, meanneut, meanDC, meanCD4, meanfib, meanvir, meanIFN, meanIg, meanpI, meanaI, meancol,meanepi, stdCD8, stdmac, stdmacM2, stdmaci,stdmach,stdmacex, stdneut, stdDC, stdCD4, stdfib, stdvir, stdIFN, stdIg,stdpI,stdaI,stdcol,stdepi)) )
+data.append( np.vstack((meanCD8, meanmac, meanmacM2, meanmaci, meanmach, meanmacex, meanneut, meanDC, meanCD4, meanfib, meanvir, meanIFN, meanIg, meanpI, meanaI, meancol,meanepi, stdCD8, stdmac, stdmacM2, stdmaci,stdmach,stdmacex, stdneut, stdDC, stdCD4, stdfib, stdvir, stdIFN, stdIg,stdpI,stdaI,stdcol,stdepi)) )
 
 
 # In[10]:

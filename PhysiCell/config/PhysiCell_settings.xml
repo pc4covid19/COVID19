@@ -126,7 +126,7 @@
 		<variable name="virion" units="virion/micron^3" ID="0">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">0.25</diffusion_coefficient> <!-- 10 --> 
-				<decay_rate units="1/min">0.001</decay_rate>  
+				<decay_rate units="1/min">0.0001</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -727,6 +727,11 @@
 					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
 				</volume>
 				
+				<secretion>
+					<substrate name="virion">
+						<uptake_rate units="1/min">0.01</uptake_rate>
+					</substrate> 	
+				</secretion>
 				
 			</phenotype>
 			<custom_data>
@@ -770,7 +775,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.1</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.01</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -982,25 +987,25 @@
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">6e-9</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">1e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">6e-9</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">1e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract neutrophils">0.5</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract DC">1</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract DC">0.5</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 
 			<!-- (Michael) added parameters for external_immune-->
@@ -1011,7 +1016,7 @@
 			<half_max_activation_TC type="double" units="cells"
 				description="half max activation TC">4000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.00007</max_clearance_TC>
+				description="max clearance TC">0.0001</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
