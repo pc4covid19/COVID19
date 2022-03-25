@@ -31,6 +31,6 @@ if rank == 0:
 recvbuf = np.empty(numDataPerRank , dtype='d')
 comm.Scatter(data, recvbuf, root=0)
 
-for i in range(recvbuf):
+for i in range(recvbuf.shape[0]):
     print('Rank: ',rank, 'recvbuf received: ',recvbuf[i])
     model(recvbuf[i])
