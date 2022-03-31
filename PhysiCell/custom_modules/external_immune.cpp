@@ -64,7 +64,7 @@ void external_immune_model( double dt )
 	static double sTh2 = parameters.doubles( "Th2_self_feeback" );
 	static double pTh2 = parameters.doubles( "Th2_max_conversion" );
 	static double CD8_Tcell_recruitment_rate = parameters.doubles( "T_Cell_Recruitment" ); 
-	static double dB = parameters.doubles( "BCell_base_rate" );
+	static double dB = parameters.doubles( "BCell_removal" );
 	static double Bh = parameters.doubles( "BCell_activation" );
 	static double Bh2 = parameters.doubles( "BCell_activation_half" );
 	static double rB1 = parameters.doubles( "BCell_DC_proliferation" );

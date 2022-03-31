@@ -12,6 +12,7 @@ Submodel_Information Neutrophil_submodel_info;
 Submodel_Information DC_submodel_info; 
 Submodel_Information CD4_submodel_info;
 Submodel_Information fibroblast_submodel_info;
+Submodel_Information residual_submodel_info;
 
 std::vector<Cell*> cells_to_move_from_edge; 
 
@@ -621,8 +622,8 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		{
 			pCell->custom_data["M2_phase"] = 1; // counter for finding if cell is in M2 phase
 			pCell->custom_data["ability_to_phagocytose_infected_cell"] = 0; // turn off hyperactivity
-			phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
-			phenotype.secretion.secretion_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
+			pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0;// Contact with CD8 T cell turns off pro-inflammatory cytokine secretion
+			pCell->phenotype.secretion.net_export_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_macrophage"];// and turns on anti-inflammatory cytokine secretion
 			n=neighbors.size();
 		}
 		// (Adrianne) if it is not me, not dead and is a CD4 T cell that is within a very short distance from me, I will be able to phagocytose infected (but not neccesarily dead) cells
@@ -1075,7 +1076,7 @@ void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
 	static int collagen_index = microenvironment.find_density_index("collagen");
-	double TGF_beta = pCell->nearest_density_vector()[antiinflammatory_cytokine_index];
+	double TGF_beta = (pCell->nearest_density_vector()[antiinflammatory_cytokine_index])*1e12;
 	static int apoptosis_index = phenotype.death.find_death_model_index( "Apoptosis" );
 	static Cell_Definition* pCD = find_cell_definition( "fibroblast" );
 
@@ -1096,7 +1097,7 @@ void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 
     for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
     {
-        double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
+        double TGF_beta = (microenvironment(n)[antiinflammatory_cytokine_index])*1e12;
 
         if( TGF_beta > 0 )
         {
@@ -1106,6 +1107,28 @@ void fibroblast_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
          }
     }
 	
+	return;
+}
+
+void residual_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
+{
+    static int antiinflammatory_cytokine_index = microenvironment.find_density_index("anti-inflammatory cytokine");
+    pCell->phenotype.secretion.net_export_rates[antiinflammatory_cytokine_index] = pCell->custom_data["antiinflammatory_cytokine_secretion_rate_by_damagedSite"];
+	return;
+}
+
+void residual_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
+{
+
+	// bounds check
+	if( check_for_out_of_bounds( pCell , 10.0 ) )
+	{
+		#pragma omp critical
+		{ cells_to_move_from_edge.push_back( pCell ); }
+		// replace_out_of_bounds_cell( pCell, 10.0 );
+		// return;
+	}
+
 	return;
 }
 
@@ -1255,6 +1278,21 @@ void immune_submodels_setup( void )
 	fibroblast_submodel_info.main_function = NULL; 
 	fibroblast_submodel_info.phenotype_function = fibroblast_phenotype; 
 	fibroblast_submodel_info.mechanics_function = fibroblast_mechanics; 
+	
+	// set up residual
+	residual_submodel_info = CD8_submodel_info; // much shared information
+	residual_submodel_info.name = "residual model";
+	residual_submodel_info.version = immune_submodels_version;
+
+	residual_submodel_info.main_function = NULL;
+	residual_submodel_info.phenotype_function = residual_phenotype;
+	residual_submodel_info.mechanics_function = residual_mechanics;
+
+	residual_submodel_info.register_model();
+	// set functions for the corresponding cell definition
+	pCD = find_cell_definition( "residual" );
+	pCD->functions.update_phenotype = residual_submodel_info.phenotype_function;
+	pCD->functions.custom_cell_rule = residual_submodel_info.mechanics_function;
 	
 	fibroblast_submodel_info.register_model();	
 		// set functions for the corresponding cell definition 
@@ -1607,13 +1645,12 @@ void immune_cell_recruitment( double dt )
 	static double f_max_minus_min = f_sat_signal - f_min_signal;
 
 	total_rate = 0;
-	// integrate \int_domain r_max * (signal-signal_min)/(signal_max-signal_min) * dV
 	total_scaled_signal= 0.0;
 	for( int n=0; n<microenvironment.mesh.voxels.size(); n++ )
 	{
 		// (signal(x)-signal_min)/(signal_max/signal_min)
-		double TGF_beta = microenvironment(n)[antiinflammatory_cytokine_index];
-		double dRate = ( 0.0492*pow(TGF_beta,3) -0.9868*pow(TGF_beta,2) +6.5408*TGF_beta + 7 - f_min_signal );
+		double TGF_beta = (microenvironment(n)[antiinflammatory_cytokine_index])*1e12;
+		double dRate = ( 0.0492*pow(TGF_beta,3) -0.9868*pow(TGF_beta,2) +6.5408*TGF_beta);
 		dRate /= f_max_minus_min;
 		// crop to [0,1]
 		if( dRate > 1 )
