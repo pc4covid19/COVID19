@@ -34,7 +34,7 @@ temp2_aI = []   # env
 temp2_col = []   # env
 temp2_epi = []  # 1
 
-for j in range(1): 
+for j in range(12): 
 
     temp1_CD8 = []  # 3
     temp1_mac = []  # 4

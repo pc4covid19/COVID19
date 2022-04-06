@@ -45,6 +45,11 @@ void internal_virus_model_setup( void )
 
 void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
+	if( phenotype.death.dead == true )
+	{ 
+		return; 
+	}
+	
 	// bookkeeping -- find microenvironment variables we need
 
 	static int nV_external = microenvironment.find_density_index( "virion" ); 
