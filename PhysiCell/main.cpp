@@ -314,10 +314,10 @@ int main( int argc, char* argv[] )
 			move_exported_to_viral_field(); 
 			
 			immune_cell_recruitment( diffusion_dt );
-
+			/*
 			if( check_all() )
 			{ SVG_plot( "weird.svg" , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function ); system("pause"); }
-
+			*/
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 		
