@@ -828,7 +828,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.1</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.01</uptake_rate> <!-- 0.001 --> 
 					</substrate> 	
 				</secretion>
 
