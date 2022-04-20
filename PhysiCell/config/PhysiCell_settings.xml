@@ -475,7 +475,7 @@
 				<cell_pyroptosis_time type="int" units="dimensionless"
 					description="bool for pyropotosis time">0</cell_pyroptosis_time>
 					
-						<cell_apo_time type="int" units="dimensionless"
+				<cell_apo_time type="int" units="dimensionless"
 					description="bool for apoptosis time">0</cell_apo_time>
 					
 				<cell_pyroptosis_flag type="int" units="dimensionless"

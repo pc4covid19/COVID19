@@ -80,8 +80,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	x[0][1] = pCell->custom_data[nR_EB];
 	x[0][2] = pCell->custom_data[nR_IB]; 
 	x[0][3] = pCell->custom_data[nR_IU]; 
-	x[0][4] = pCell->custom_data[nV_internal]; 
-	x[0][5] = 0; 
+	x[0][4] = pCell->custom_data[nV_internal];
 	
 /* 	// internalize
 	double dR_IB = pCell->custom_data[nR_endo]*pCell->custom_data[nR_EB];	
@@ -106,26 +105,23 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
-			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
 				x[j+1][2]=x[0][2]+dt/2*f[j][2]; //first and second x approximations
 				x[j+1][3]=x[0][3]+dt/2*f[j][3]; //first and second x approximations
 				x[j+1][4]=x[0][4]+dt/2*f[j][4]; //first and second x approximations
-				x[j+1][5]=x[0][5]+dt/2*f[j][5]; //first and second x approximations
 			}
-			if (j== 2){
+			else if (j== 2){
 				x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
 				x[j+1][1]=x[0][1]+dt*f[j][1]; //third approximation
 				x[j+1][2]=x[0][2]+dt*f[j][2]; //third approximation
 				x[j+1][3]=x[0][3]+dt*f[j][3]; //third approximation
 				x[j+1][4]=x[0][4]+dt*f[j][4]; //third approximation
-				x[j+1][5]=x[0][5]+dt*f[j][5]; //third approximation
 			}
 		}
 
@@ -161,26 +157,23 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 		for(j = 0; j < 4; j++){
 			f[j][0] = {pCell->custom_data[nR_recycle]*x[j][3]}; //define SPECIAL function
-			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]-0*x[j][1]}; //define SPECIAL function
+			f[j][1] = {-pCell->custom_data[nR_endo]*x[j][1]}; //define SPECIAL function
 			f[j][2] = {pCell->custom_data[nR_endo]*x[j][1]-pCell->custom_data[nR_release]*x[j][2]}; //define function
 			f[j][3] = {pCell->custom_data[nR_release]*x[j][2]-pCell->custom_data[nR_recycle]*x[j][3]}; //define function
 			f[j][4] = {pCell->custom_data[nR_release]*x[j][2]}; //define function
-			f[j][5] = {0*x[j][1]}; //counter for export
 			if (j== 0 || j==1){
 				x[j+1][0]=x[0][0]+dt/2*f[j][0]; //first and second x approximations
 				x[j+1][1]=x[0][1]+dt/2*f[j][1]; //first and second x approximations
 				x[j+1][2]=x[0][2]+dt/2*f[j][2]; //first and second x approximations
 				x[j+1][3]=x[0][3]+dt/2*f[j][3]; //first and second x approximations
 				x[j+1][4]=x[0][4]+dt/2*f[j][4]; //first and second x approximations
-				x[j+1][5]=x[0][5]+dt/2*f[j][5]; //first and second x approximations
 			}
-			if (j== 2){
+			else if (j== 2){
 				x[j+1][0]=x[0][0]+dt*f[j][0]; //third approximation
 				x[j+1][1]=x[0][1]+dt*f[j][1]; //third approximation
 				x[j+1][2]=x[0][2]+dt*f[j][2]; //third approximation
 				x[j+1][3]=x[0][3]+dt*f[j][3]; //third approximation
 				x[j+1][4]=x[0][4]+dt*f[j][4]; //third approximation
-				x[j+1][5]=x[0][5]+dt*f[j][5]; //third approximation
 			}
 		}
 

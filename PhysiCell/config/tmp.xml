@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">21600</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">17280</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -108,12 +108,12 @@
 		<folder>output</folder> <!-- use . for root --> 
 
 		<full_data>
-			<interval units="min">60</interval>
+			<interval units="min">120</interval>
 			<enable>true</enable>
 		</full_data>
 		
 		<SVG>
-			<interval units="min">60</interval>
+			<interval units="min">360</interval>
 			<enable>true</enable>
 		</SVG>
 		
@@ -125,8 +125,8 @@
 	<microenvironment_setup>
 		<variable name="virion" units="virion/micron^3" ID="0">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">2.5</diffusion_coefficient> <!-- 10 --> 
-				<decay_rate units="1/min">0</decay_rate>  
+				<diffusion_coefficient units="micron^2/min">0.25</diffusion_coefficient> <!-- 10 --> 
+				<decay_rate units="1/min">0.0001</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="virion/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -193,7 +193,7 @@
 		<!-- tissue damage model -->
 		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
 			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
+				<diffusion_coefficient units="micron^2/min">3000</diffusion_coefficient>
 				<decay_rate units="1/min">1.04e-2</decay_rate>
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
@@ -348,7 +348,7 @@
 						<secretion_target units="dimensionless substrate concentration">1</secretion_target>
 					</substrate>
 						<substrate name="anti-inflammatory cytokine">
-						<secretion_target units="dimensionless substrate concentration">10</secretion_target>
+						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
 					</substrate> 
 						<substrate name="collagen">
 						<secretion_target units="dimensionless substrate concentration">0</secretion_target>
@@ -409,7 +409,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.001</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -424,8 +424,6 @@
 					description="viral load at which cells reach half max apoptosis rate">250</max_apoptosis_half_max> <!-- 500 -->
 				<apoptosis_hill_power type="double" units="none" 
 					description="Hill power for viral load apoptosis response">1</apoptosis_hill_power> 
-				<virus_fraction_released_at_death type="double" units="none" 
-					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 				<infected_cell_chemokine_secretion_rate units="1/min" type="double"
 					description="max rate that infected cells secrete chemokine">1</infected_cell_chemokine_secretion_rate>
 				<debris_secretion_rate units="1/min" type="double"
@@ -473,7 +471,13 @@
 
 				<cytoplasmic_volume type="double" units="a.u. of volume"
 					description="cytoplasmic cell volume">2494</cytoplasmic_volume>
-		<!-- (Sara & Fiona) flags for different cell death modes-->		
+		<!-- (Sara & Fiona) flags for different cell death modes ADDED TIME DEPENDENT-->	
+				<cell_pyroptosis_time type="int" units="dimensionless"
+					description="bool for pyropotosis time">0</cell_pyroptosis_time>
+					
+				<cell_apo_time type="int" units="dimensionless"
+					description="bool for apoptosis time">0</cell_apo_time>
+					
 				<cell_pyroptosis_flag type="int" units="dimensionless"
 					description="bool for pyropotosis">0</cell_pyroptosis_flag>
 				<cell_bystander_pyroptosis_flag type="int" units="dimensionless"
@@ -486,17 +490,17 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.1</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.01</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">1</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.025</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.975</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.95</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -537,6 +541,9 @@
 				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be able to phagocytose infected cells --> 
 				<ability_to_phagocytose_infected_cell units="dimensionless" type="int"
 					description="Boolean for whether macrophages can phagocytose infected cells">0</ability_to_phagocytose_infected_cell>
+				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be M2 --> 
+				<M2_phase units="dimensionless" type="int"
+					description="Boolean for whether macrophages can phagocytose infected cells">0</M2_phase>
 				<!-- (adrianne) time (mins) after DC activation when it will leave tissue, assigned uniform random variable at activation--> 
 				<time_of_DC_departure units="min" type="double"
 					description="Time DC leaves tissue after activation">0</time_of_DC_departure>
@@ -551,8 +558,7 @@
 				
 				
 				
-				
-					
+									
 				<phagocytosis_relative_target_cutoff_size unit="dimensionless" type="double"
 					desription="do not phagocytose anything over this size (relative to cell's volume)">1.1</phagocytosis_relative_target_cutoff_size>
 
@@ -571,9 +577,9 @@
 					
 				<!-- tissue damage model -->
 				<antiinflammatory_cytokine_secretion_rate_by_damagedSite units="1/min" type="double" 
-					description="secretion rate of anti-inflammatory from infected epithelium cell">1</antiinflammatory_cytokine_secretion_rate_by_damagedSite>
+					description="secretion rate of anti-inflammatory from infected epithelium cell">2e-9</antiinflammatory_cytokine_secretion_rate_by_damagedSite>
 				<antiinflammatory_cytokine_secretion_rate_by_macrophage units="1/min" type="double" 
-					description="secretion rate of anti-inflammatory from macrophage">0.07</antiinflammatory_cytokine_secretion_rate_by_macrophage>
+					description="secretion rate of anti-inflammatory from macrophage">2e-9</antiinflammatory_cytokine_secretion_rate_by_macrophage>
 
 				<collagen_secretion_rate units="1/min" type="double" 
 					description="secretion rate of collagen from fibroblast">1</collagen_secretion_rate>
@@ -721,6 +727,11 @@
 					<!-- set this higher so that cells "digest" phagocytosed materials faster -->
 				</volume>
 				
+				<secretion>
+					<substrate name="virion">
+						<uptake_rate units="1/min">0.01</uptake_rate>
+					</substrate> 	
+				</secretion>
 				
 			</phenotype>
 			<custom_data>
@@ -764,7 +775,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.1</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.01</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -817,7 +828,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.1</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.01</uptake_rate> <!-- 0.001 --> 
 					</substrate> 	
 				</secretion>
 
@@ -893,8 +904,8 @@
 				</motility>
 				
 				<volume>
-					<total units="micron^3">1767</total>
-					<nuclear units="micron^3">176.7</nuclear>
+					<total units="micron^3">2500</total>
+					<nuclear units="micron^3">500</nuclear>
 				</volume>
 
 				<secretion>
@@ -909,7 +920,6 @@
 			<custom_data>
 			</custom_data>
 		</cell_definition>
-					<!-- generic immune cell type --> 
 		<cell_definition name="residual" parent_type="default" ID="9">
 			<phenotype>
 				<mechanics> 
@@ -935,34 +945,14 @@
 						</chemotaxis>
 					</options>
 				</motility>
-
-				<volume>  
-					<total units="micron^3">2</total>
-					<fluid_fraction units="dimensionless">1</fluid_fraction>
-					<nuclear units="micron^3">1</nuclear>
-					
-					<fluid_change_rate units="1/min">0</fluid_change_rate>
-					<cytoplasmic_biomass_change_rate units="1/min">0</cytoplasmic_biomass_change_rate>
-					<nuclear_biomass_change_rate units="1/min">0</nuclear_biomass_change_rate>
-					
-					<calcified_fraction units="dimensionless">0</calcified_fraction>
-					<calcification_rate units="1/min">0</calcification_rate>
-					
-					<relative_rupture_volume units="dimensionless">100</relative_rupture_volume>
-				</volume> 
-
-				<secretion>
-					<substrate name="anti-inflammatory cytokine">
-						<secretion_rate units="1/min">1247</secretion_rate>
-					</substrate> 	
+				<secretion>	
 					<substrate name="chemokine">
 						<uptake_rate units="1/min">0</uptake_rate>
-					</substrate> 	
+					</substrate> 
 					<substrate name="debris">
 						<uptake_rate units="1/min">0</uptake_rate>
-					</substrate> 	
+					</substrate> 
 				</secretion>
-
 			</phenotype>
 			<custom_data>
 			</custom_data>
@@ -974,55 +964,56 @@
 	<user_parameters>
 		<random_seed type="int" units="dimensionless">0</random_seed> 
 		<!-- example parameters from the template --> 
-		
 		<ignore_smoothing_flag type="int" units="dimensionless">1</ignore_smoothing_flag> 
 		
 		<div_immune type="divider" description="--Immune activation parameters--"/>
-			<immune_dt type="double" units="min" description="how often we check to introduce immune cells">10</immune_dt> 
 			
 			<immune_z_offset type="double" units="micron" 
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">6e-9</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">2e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract macrophages">0.3</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">6e-9</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">2e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract neutrophils">0.3</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract neutrophils">0.5</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
 			<DC_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max DC recruitment rate (for saturated signal)">1e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max DC recruitment rate (for saturated signal)">2e-9</DC_max_recruitment_rate> <!-- 4e-9 debug -->
 			<DC_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract DC">0.3</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract DC">0.5</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+
 
 			<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
-				description="TC death rate">0.0000014</TC_death_rate>
+				description="TC death rate">1.4e-6</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
-				description="max activation TC">0.01</max_activation_TC>
+				description="max activation TC">0.0018</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
-				description="half max activation TC">2000</half_max_activation_TC>
+				description="half max activation TC">4000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.0007</max_clearance_TC>
+				description="max clearance TC">0.0002</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
-				description="half max clearance TC">200</half_max_clearance_TC>
+				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"
-				description="TC population threshold">10</TC_population_threshold>
+				description="TC population threshold">1000</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
-				description="T cell recruitment rate to tissue">0.00011</T_Cell_Recruitment>
+				description="T cell recruitment factor to tissue">0.001</T_Cell_Recruitment>
+			<transport_ratio type="double" units="cells/min"
+				description="ratio to achieve a 95% reduction in transport">0.2</transport_ratio>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<Th1_max_activation type="double" units="cells/min"
-				description="Th1 max activation speed">0.001</Th1_max_activation>
+				description="Th1 max activation speed">0.0000001</Th1_max_activation>
 			<Th1_damping type="double" units="cells/min"
 				description="Th1 damping factor">0.00002</Th1_damping>
 			<Th1_decay type="double" units="cells/min"
@@ -1030,17 +1021,17 @@
 			<Th_base_decay type="double" units="cells/min"
 				description="Th base dacay rates">0.0000156</Th_base_decay>
 			<Th2_self_feeback type="double" units="cells/min"
-				description="Th2 max self feeback speed">0.00004</Th2_self_feeback>
+				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
-				description="Th2 max conversion speed">0.000002</Th2_max_conversion>
-			<Th1_Th2_conversion_wieght type="double" units="cells/min"
-				description="Th1 to Th2 conversion wieght">1</Th1_Th2_conversion_wieght>
-			<BCell_base_rate type="double" units="cells/min"
-				description="BCell basal rates">1.74e-6</BCell_base_rate>
-			<BCell_base_value type="double" units="cells/min"
-				description="BCell basal value">3000</BCell_base_value>
+				description="Th2 max conversion speed">0.000001</Th2_max_conversion>
+			<BCell_removal type="double" units="cells/min"
+				description="BCell basal degradation">6e-4</BCell_removal>
+			<BCell_activation type="double" units="cells/min"
+				description="BCell activation rate">0.0021</BCell_activation>
+			<BCell_activation_half type="double" units="cells/min"
+				description="BCell activation rate">1e4</BCell_activation_half>
 			<BCell_DC_proliferation type="double" units="cells/min"
-				description="BCell DC influenced proliferation">0.004</BCell_DC_proliferation>
+				description="BCell DC influenced proliferation">0.0014</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
 				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
 			<BCell_damping type="double" units="cells/min"
@@ -1054,21 +1045,34 @@
 			<Ig_degradation type="double" units="cells/min"
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
-				description="probability of DC leaving to lymph node">0.0000033</DC_leave_prob>
-			<!-- (Michael) added parameters for external_immune-->
+				description="probability of DC leaving to lymph node">0.000033</DC_leave_prob>
+			<TC_activation type="double" units="cells/min"
+				description="naive TC activation rate">0.001</TC_activation>
+			<TC_activation_half type="double" units="cells/min"
+				description="naive TC activation rate half max">100</TC_activation_half>
+			<Th_half type="double" units="cells/min"
+				description="Th half max for cytokine feedback (inverse)">1e-2</Th_half>
+			<Death_rates_of_old_Tcells type="double" units="cells/min"
+				description="value to kill T Cells post generation limit">100</Death_rates_of_old_Tcells>
+			<RNA_lower_bound type="double" units="cells/min"
+				description="lowest value to start probability draws for pyroptosis">125</RNA_lower_bound>
+
+			<!-- added parameters for fibroblast-->
 			
 			<fibroblast_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max fibroblast cell recruitment rate (for saturated signal)">4e-9</fibroblast_max_recruitment_rate> <!-- 4e-9 debug -->
 			<fibroblast_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract fibroblast cells">7</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
+				description="min concentration to attract fibroblast cells">7.1092</fibroblast_recruitment_min_signal> <!-- 0.3 debug -->
 			<fibroblast_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract fibroblast cells">22</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
+				description="saturating concentration to attract fibroblast cells">22.928</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
 			<multiplicity_of_infection type="double" units="none" 
 				description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
 			<use_single_infected_cell type="bool" units="none" 
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
+			<use_uniform_dist type="bool" units="none" 
+				description="use a uniform distribution">false</use_uniform_dist>
 			
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
@@ -1094,7 +1098,7 @@
 			<departure_rate_of_DCs type="double" units="cells/min/micron^3"
 				description="Departure rate of activated DCs">0.001</departure_rate_of_DCs>
 		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
-			<virions_needed_for_DC_activation type="int" units="virions"
+			<virions_needed_for_DC_activation type="double" units="virions"
 				descriptions="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
 		<!-- (Adrianne) multiple of the radii of the two immune cells interacting to check they are close enough-->		
 		<epsilon_distance type="double" units="dimensionless"
@@ -1146,11 +1150,9 @@
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
 				description="fibroblast cell color">blueviolet</fibroblast_color>
-				
 		<!-- (Adrianne V5)  Rate that neutrophils and macs uptake virus, needs to be determined from literature-->
 			<phagocytes_virus_uptake_rate type="double" units="none"
 				description="Rate that phagocytes uptake virus after activation">0.0001</phagocytes_virus_uptake_rate>
-		
 		<!-- (Adrianne v5) Rate that neutrophils (activated) secrete ROS -->
 			<ROS_secretion_rate type="double" units="none"
 				description="Rate that neutrophils secrete ROS">0.01</ROS_secretion_rate>
@@ -1164,7 +1166,9 @@
 		
 			<antibody_half_effect type="double" units="none"
 				description="Half effect of antibody on macrophage phagocytosis">0.1</antibody_half_effect>
-		
+		<!-- fraction of virion released upon cell death-->
+		<virus_fraction_released_at_death type="double" units="none" 
+					description="fraction of internal virus released at cell death">0</virus_fraction_released_at_death>
 	</user_parameters>
 	
 </PhysiCell_settings>
