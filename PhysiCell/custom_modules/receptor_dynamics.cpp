@@ -71,8 +71,8 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	// actual model goes here 
 	// reaction set
 	
-	double x[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize x
-	double f[4][6]={{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0},{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}};//initialize f
+	double x[4][5]={{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};//initialize x
+	double f[4][5]={{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};//initialize f
 	int j;//initialize counter
 	
 	//initial values for RK4
@@ -131,9 +131,6 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 		pCell->custom_data[nR_IU]=x[0][3]+dt*(f[0][3]/6+f[1][3]/3+f[2][3]/3+f[3][3]/6); //detirmine n+1
 		pCell->custom_data[nV_internal]=x[0][4]+dt*(f[0][4]/6+f[1][4]/3+f[2][4]/3+f[3][4]/6); //detirmine n+1
 		
-		#pragma omp critical
-		{ pCell->nearest_density_vector()[nV_external] += dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6) / microenvironment.mesh.dV; }
-		
 		//START STOCHASTIC PORTION
 		if( dt_bind>0 && UniformRandom()<= dt_bind )
 		{
@@ -186,10 +183,6 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 		//attempting proper integration to stochastic portion, still needs some thought
 		double alpha = dt_bind;
 		double n_virion = pCell->nearest_density_vector()[nV_external]* microenvironment.mesh.dV;
-		
-		//not used
-		#pragma omp critical
-		{ pCell->nearest_density_vector()[nV_external] += dt*(f[0][5]/6+f[1][5]/3+f[2][5]/3+f[3][5]/6) / microenvironment.mesh.dV; }
 		
 		//limit to number of virons in a voxel
 		if(alpha > n_virion)
