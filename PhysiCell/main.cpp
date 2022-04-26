@@ -309,9 +309,7 @@ int main( int argc, char* argv[] )
 			/*
 			  Custom add-ons could potentially go here. 
 			*/
-            process_tagged_cells_on_edge(); 
-			
-			move_exported_to_viral_field(); 
+            process_tagged_cells_on_edge();
 			
 			immune_cell_recruitment( diffusion_dt );
 			/*

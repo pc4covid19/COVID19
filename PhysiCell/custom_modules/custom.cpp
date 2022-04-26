@@ -88,8 +88,7 @@ void create_cell_types( void )
 	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL; 
 	cell_defaults.functions.calculate_distance_to_membrane = NULL; 
 	
-	int virion_index = microenvironment.find_density_index( "virion" ); 
-	int assembled_virion_index = microenvironment.find_density_index( "assembled virion" );
+	int virion_index = microenvironment.find_density_index( "virion" );
 	
 	/*
 	   This parses the cell definitions in the XML config file. 
@@ -108,9 +107,7 @@ void create_cell_types( void )
 	
 	Cell_Definition* pCD = find_cell_definition( "lung epithelium" ); 
 	pCD->phenotype.molecular.fraction_released_at_death[virion_index] = 
-		parameters.doubles("virus_fraction_released_at_death"); 
-	pCD->phenotype.molecular.fraction_released_at_death[assembled_virion_index] = 
-		parameters.doubles("virus_fraction_released_at_death"); 
+		parameters.doubles("virus_fraction_released_at_death");
 
 	immune_submodels_setup();
 	// receptor_dynamics_model_setup(); 
@@ -319,13 +316,9 @@ void setup_tissue( void )
 std::vector<std::string> epithelium_coloring_function( Cell* pCell )
 {
 	std::vector<std::string> output( 4, "black" ); 
-
-	// static int color_index = cell_defaults.custom_data.find_variable_index( "assembled virion" ); 
 	static int color_index = 
 		cell_defaults.custom_data.find_variable_index( parameters.strings["color_variable"].value ); 
 	static int nV = cell_defaults.custom_data.find_variable_index( "virion" ); 
-	
-	// color by assembled virion 
 	
 	if( pCell->phenotype.death.dead == false )
 	{
@@ -357,21 +350,6 @@ std::vector<std::string> epithelium_coloring_function( Cell* pCell )
 	}
 	
 	return output; 
-}
-
-void move_exported_to_viral_field( void )
-{
-	static int nV = microenvironment.find_density_index( "virion" ); 
-	static int nA = microenvironment.find_density_index( "assembled virion" ); 
-	
-	#pragma omp parallel for 
-	for( int n = 0 ; n < microenvironment.number_of_voxels() ; n++ )
-	{
-		microenvironment(n)[nV] += microenvironment(n)[nA]; 
-		microenvironment(n)[nA] = 0; 
-	}
-	
-	return;
 }
 
 std::string blue_yellow_interpolation( double min, double val, double max )

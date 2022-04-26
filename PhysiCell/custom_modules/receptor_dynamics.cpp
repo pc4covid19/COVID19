@@ -16,8 +16,7 @@ void receptor_dynamics_model_setup( void )
 	receptor_dynamics_info.phenotype_function = NULL; // pushed into the "main" model  
 	receptor_dynamics_info.mechanics_function = NULL; 	
 		// what microenvironment variables do you need 
-	receptor_dynamics_info.microenvironment_variables.push_back( "virion" ); 		
-	receptor_dynamics_info.microenvironment_variables.push_back( "assembled virion" ); 		
+	receptor_dynamics_info.microenvironment_variables.push_back( "virion" );		
 		// what cell variables and parameters do you need? 
 	receptor_dynamics_info.cell_variables.push_back( "unbound_external_ACE2" ); 
 	receptor_dynamics_info.cell_variables.push_back( "bound_external_ACE2" ); 
@@ -41,8 +40,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	// bookkeeping -- find microenvironment variables we need
 
-	static int nV_external = microenvironment.find_density_index( "virion" ); 
-	static int nA_external = microenvironment.find_density_index( "assembled virion" ); 
+	static int nV_external = microenvironment.find_density_index( "virion" );
 	
 	static int nV_internal = pCell->custom_data.find_variable_index( "virion" ); 
 	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" ); 

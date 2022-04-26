@@ -41,7 +41,6 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// bookkeeping -- find microenvironment variables we need
 
 	static int nV_external = microenvironment.find_density_index( "virion" ); 
-	static int nA_external = microenvironment.find_density_index( "assembled virion" ); 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" );
 	static int nINF1 = microenvironment.find_density_index( "interferon 1" );
 	

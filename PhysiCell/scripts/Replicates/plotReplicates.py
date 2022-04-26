@@ -34,8 +34,11 @@ set6 = ['epi']
 innate_r = np.vstack((mac, np.squeeze(cells[:,1,:]), np.squeeze(cells[:,2,:]),np.squeeze(cells[:,3,:]),np.squeeze(cells[:,4,:]), np.squeeze(cells[:,6,:])))
 innate_v = np.vstack((mac_v, np.squeeze(cells[:,1+17,:]),np.squeeze(cells[:,2+17,:]),np.squeeze(cells[:,3+17,:]),np.squeeze(cells[:,4+17,:]), np.squeeze(cells[:,6+17,:])))
 
-immun_r = np.vstack((np.squeeze(cells[:,0,:]), np.squeeze(cells[:,7,:]),np.squeeze(cells[:,8,:]),np.squeeze(cells[:,9,:])))
-immun_v = np.vstack((np.squeeze(cells[:,0+17,:]), np.squeeze(cells[:,7+17,:]),np.squeeze(cells[:,8+17,:]),np.squeeze(cells[:,9+17,:])))
+immun_r = np.vstack((np.squeeze(cells[:,0,:]), np.squeeze(cells[:,7,:]),np.squeeze(cells[:,8,:]),np.squeeze(cells[:,12,:])))
+immun_v = np.vstack((np.squeeze(cells[:,0+17,:]), np.squeeze(cells[:,7+17,:]),np.squeeze(cells[:,8+17,:]),np.squeeze(cells[:,12+17,:])))
+
+repair_r = np.vstack((np.squeeze(cells[:,16,:]), np.squeeze(cells[:,9,:])))
+repair_v = np.vstack((np.squeeze(cells[:,16+17,:]), np.squeeze(cells[:,9+17,:])))
 
 Dat = ['DM', 'TC', 'TH1', 'TH2', 'BC', 'PS', 'DL']
 
@@ -163,30 +166,6 @@ plt.clf()
 
 fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
-    
-    for j in range( len(counter1)+len(set2), len(counter1)+len(set2)+len(set3) , 1):
-        ax.plot(t, cells[i,j,:], linewidth=2)
-        ax.fill_between(t, cells[i,j,:]-cells[i,j+17,:], cells[i,j,:]+cells[i,j+17,:], 
-                           label=immune_cells[j], alpha=0.35)   
-    
-    ax.legend(fontsize=12, ncol=2)
-          
-    ax.set_xlabel('Time (days)', fontsize=16)
-
-    ax.set_ylabel('Antibody [Count]', fontsize=16)
-        
-    #ax.set_ylim([-50, 400])
-    ax.tick_params(axis='both', which='major', labelsize=16)
-
-    # Customize the major grid
-    ax.grid(which='major', linestyle='solid', linewidth='2', color='w')
-    ax.set_facecolor("#EEEEEE")  # #E6E6E6, #D3D3D3
-
-plt.tight_layout()
-fig.savefig('populationIg.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
-plt.clf()
-
-for i in range(1):
     # Creating plot with dataset_1
     fig, ax1 = plt.subplots(figsize=(6, 4)) 
   
@@ -223,10 +202,10 @@ plt.clf()
 fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
     
-    for j in range( len(counter1)+len(set2)+len(set3)+len(set4), len(counter1)+len(set2)+len(set3)+len(set4)+len(set5) , 1):
-        ax.plot(t, cells[i,j,:], linewidth=2)
-        ax.fill_between(t, cells[i,j,:]-cells[i,j+17,:], cells[i,j,:]+cells[i,j+17,:], 
-                           label=immune_cells[j], alpha=0.35)   
+    for j in range(len(set5), 1):
+        ax.plot(t, repair_r, linewidth=2)
+        ax.fill_between(t, repair_r-repair_v, repair_r+repair_v, 
+                           label=set5[j], alpha=0.35)   
     
     ax.legend(fontsize=12, ncol=2)
           
@@ -259,7 +238,7 @@ for i in range(1):
 
     ax.set_ylabel('epi [Count]', fontsize=16)
         
-    #ax.set_ylim([-50, 400])
+    ax.set_ylim([0, 3000])
     ax.tick_params(axis='both', which='major', labelsize=16)
 
     # Customize the major grid

@@ -16,10 +16,9 @@ void internal_virus_model_setup( void )
 	internal_viral_dynamics_info.main_function = NULL; 
 	internal_viral_dynamics_info.phenotype_function = internal_virus_model; 
 	internal_viral_dynamics_info.mechanics_function = NULL; 
-		// what microenvironment variables do I need? 
+	// what microenvironment variables do I need? 
 
-		// what custom data do I need? 
-	internal_viral_dynamics_info.microenvironment_variables.push_back( "assembled virion" ); 	
+	// what custom data do I need? 	
 
 	internal_viral_dynamics_info.cell_variables.push_back( "virion" ); // adhered, in process of endocytosis 
 	internal_viral_dynamics_info.cell_variables.push_back( "uncoated_virion" ); 
@@ -52,8 +51,7 @@ void internal_virus_model( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	// bookkeeping -- find microenvironment variables we need
 
-	static int nV_external = microenvironment.find_density_index( "virion" ); 
-	static int nA_external = microenvironment.find_density_index( "assembled virion" ); 
+	static int nV_external = microenvironment.find_density_index( "virion" );
 	
 	static int nV_internal = pCell->custom_data.find_variable_index( "virion" ); 
 	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" ); 
