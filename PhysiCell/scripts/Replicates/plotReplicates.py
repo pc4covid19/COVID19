@@ -26,9 +26,9 @@ innate = ['totalMac', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Neut']
 set1 = ['CD8 T', 'DC', 'CD4 T','Ig']
 counter1 = ['CD8 T', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Macexh', 'Neut', 'DC', 'CD4 T', 'Fib']
 set2 = ['vir', 'IFN']
-set3 = []
+set3 = ['Ig']
 set4 = ['pI', 'aI']
-set5 = ['col', 'Fib']
+repair = ['col', 'Fib']
 set6 = ['epi']
 
 innate_r = np.vstack((mac, np.squeeze(cells[:,1,:]), np.squeeze(cells[:,2,:]),np.squeeze(cells[:,3,:]),np.squeeze(cells[:,4,:]), np.squeeze(cells[:,6,:])))
@@ -37,8 +37,8 @@ innate_v = np.vstack((mac_v, np.squeeze(cells[:,1+17,:]),np.squeeze(cells[:,2+17
 immun_r = np.vstack((np.squeeze(cells[:,0,:]), np.squeeze(cells[:,7,:]),np.squeeze(cells[:,8,:]),np.squeeze(cells[:,12,:])))
 immun_v = np.vstack((np.squeeze(cells[:,0+17,:]), np.squeeze(cells[:,7+17,:]),np.squeeze(cells[:,8+17,:]),np.squeeze(cells[:,12+17,:])))
 
-repair_r = np.vstack((np.squeeze(cells[:,16,:]), np.squeeze(cells[:,9,:])))
-repair_v = np.vstack((np.squeeze(cells[:,16+17,:]), np.squeeze(cells[:,9+17,:])))
+repair_r = np.vstack((np.squeeze(cells[:,15,:]), np.squeeze(cells[:,9,:])))
+repair_v = np.vstack((np.squeeze(cells[:,15+17,:]), np.squeeze(cells[:,9+17,:])))
 
 Dat = ['DM', 'TC', 'TH1', 'TH2', 'BC', 'PS', 'DL']
 
@@ -202,10 +202,10 @@ plt.clf()
 fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
     
-    for j in range(len(set5), 1):
-        ax.plot(t, repair_r, linewidth=2)
-        ax.fill_between(t, repair_r-repair_v, repair_r+repair_v, 
-                           label=set5[j], alpha=0.35)   
+    for j in range(len(repair_r)):
+        ax.plot(t, repair_r[j,:], linewidth=2)
+        ax.fill_between(t, repair_r[j,:]-repair_v[j,:], repair_r[j,:]+repair_v[j,:], 
+                           label=repair[j], alpha=0.35)                          
     
     ax.legend(fontsize=12, ncol=2)
           
@@ -227,7 +227,7 @@ plt.clf()
 fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
     
-    for j in range( len(counter1)+len(set2)+len(set3)+len(set4)+len(set5), len(counter1)+len(set2)+len(set3)+len(set4)+len(set5)+len(set6) , 1):
+    for j in range( len(counter1)+len(set2)+len(set4)+len(repair), len(counter1)+len(set2)+len(set4)+len(repair)+len(set6) , 1):
         ax.plot(t, cells[i,j,:], linewidth=2)
         ax.fill_between(t, cells[i,j,:]-cells[i,j+17,:], cells[i,j,:]+cells[i,j+17,:], 
                            label=immune_cells[j], alpha=0.35)   
