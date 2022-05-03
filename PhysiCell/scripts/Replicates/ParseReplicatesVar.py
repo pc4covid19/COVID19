@@ -56,7 +56,7 @@ for q in range(10):
         temp1_col = []   # env
         temp1_epi = []  # 1
 
-        for k in range(145):
+        for k in range(13):
             str_name = 'output{:08d}.xml'.format(k)
             path = 'output_S'+str("%06d"%q)+'_R'+str("%02d"%j)
             mcds = pyMCDS(str_name, path)  # /case1/run3/output

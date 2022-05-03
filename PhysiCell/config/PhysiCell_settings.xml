@@ -97,7 +97,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>1</omp_num_threads>
+		<omp_num_threads>8</omp_num_threads>
 	</parallel> 
 
 	<options>
@@ -481,10 +481,10 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.01</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.2</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.025</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.05</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -720,7 +720,7 @@
 				
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0.004</uptake_rate>
 					</substrate> 	
 				</secretion>
 				
@@ -766,7 +766,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0.004</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -819,7 +819,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.004</uptake_rate> <!-- 0.001 --> 
 					</substrate> 	
 				</secretion>
 

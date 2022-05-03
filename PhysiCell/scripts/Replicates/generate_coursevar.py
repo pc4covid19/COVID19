@@ -33,8 +33,6 @@ def generate_parSamples(parameters, default_value, variation, Samples_number,Rep
             # create a seed
             seed_value = random.randrange(sys.maxsize)
             # set reduced size for data and output
-            SVG_interval = 2880
-            full_data_interval = 240
             # save this seed somewhere. So if you like the result you can use this seed to reproduce it
             # Set of parameters
             for id_par in range(0, len(parameters)):
@@ -51,6 +49,10 @@ def generate_configXML(params_file):
     xml_root = tree.getroot()
     first_time = True
     output_dirs = []
+    #reduce save intervals
+    SVG_interval = "2880"
+    full_data_interval = "1440"
+    
     with open(params_file) as f:
         for line in f:
             print(len(line),line)
@@ -79,13 +81,15 @@ def generate_configXML(params_file):
                     print('creating ' + val)
                     os.makedirs(val)
                 xml_root.find('.//' + key).text = val
-
+            xml_root.find('save/full_data/interval').text = full_data_interval
+            xml_root.find('save/SVG/interval').text = SVG_interval
     tree.write(xml_file_out)
     print(output_dirs)
 
 if __name__ == '__main__':
     parameters = np.array(["multiplicity_of_infection"])
     default_value = np.array([0.1])
+    
     variation = 1
     file = "ParameterSamples.txt"
     Samples_number = 10

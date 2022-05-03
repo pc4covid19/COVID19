@@ -132,16 +132,7 @@
 			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="assembled virion" units="virion/micron^3" ID="1">
-			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">2.5</diffusion_coefficient> <!-- 10 --> 
-				<decay_rate units="1/min">0</decay_rate>  
-			</physical_parameter_set>
-			<initial_condition units="virion/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="virion/micron^3" enabled="false">0</Dirichlet_boundary_condition>
-		</variable>
-
-		<variable name="interferon 1" units="mol/micron^3" ID="2">
+		<variable name="interferon 1" units="mol/micron^3" ID="1">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">25</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -150,7 +141,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="pro-inflammatory cytokine" units="mol/micron^3" ID="3">
+		<variable name="pro-inflammatory cytokine" units="mol/micron^3" ID="2">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -159,7 +150,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="chemokine" units="mol/micron^3" ID="4">
+		<variable name="chemokine" units="mol/micron^3" ID="3">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -168,7 +159,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
-		<variable name="debris" units="mol/micron^3" ID="5">
+		<variable name="debris" units="mol/micron^3" ID="4">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">555.56</diffusion_coefficient>
 				<decay_rate units="1/min">1.02e-2</decay_rate>  
@@ -180,7 +171,7 @@
 		<!-- Sara and Fiona -->
         <!-- Pyroptosis related variables (Diffusion) -->
 
-		<variable name="pro-pyroptosis cytokine" units="mol/micron^3" ID="6">
+		<variable name="pro-pyroptosis cytokine" units="mol/micron^3" ID="5">
 			<physical_parameter_set>
 			 <!-- (Sara & Fiona) pro-pyroptotic cytokine. Values copied from "chemokine". Diffusion constant is D_"chemokine"/100 to keep bystander effects local. -->
 				<diffusion_coefficient units="micron^2/min">5.56</diffusion_coefficient>
@@ -191,7 +182,7 @@
 		</variable>
 		
 		<!-- tissue damage model -->
-		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="7">
+		<variable name="anti-inflammatory cytokine" units="mol/micron^3" ID="6">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">3000</diffusion_coefficient>
 				<decay_rate units="1/min">1.04e-2</decay_rate>
@@ -200,7 +191,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
-		<variable name="collagen" units="mol/micron^3" ID="8">
+		<variable name="collagen" units="mol/micron^3" ID="7">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">0</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">0</decay_rate>
@@ -209,7 +200,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
-		<variable name="Ig" units="mol/micron^3" ID="9">
+		<variable name="Ig" units="mol/micron^3" ID="8">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">0.00139</decay_rate>  
@@ -218,7 +209,7 @@
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
-		<variable name="ROS" units="mol/micron^3" ID="10">
+		<variable name="ROS" units="mol/micron^3" ID="9">
 			<physical_parameter_set> 
 				<diffusion_coefficient units="micron^2/min">1e-6</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">60</decay_rate>  
@@ -490,10 +481,10 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.01</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.2</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.025</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.05</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -729,7 +720,7 @@
 				
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0.004</uptake_rate>
 					</substrate> 	
 				</secretion>
 				
@@ -775,7 +766,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate>
+						<uptake_rate units="1/min">0.004</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -828,7 +819,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.01</uptake_rate> <!-- 0.001 --> 
+						<uptake_rate units="1/min">0.004</uptake_rate> <!-- 0.001 --> 
 					</substrate> 	
 				</secretion>
 
