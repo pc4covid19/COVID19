@@ -1,4 +1,4 @@
-/*
+	/*
 ###############################################################################
 # If you use PhysiCell in your project, please cite PhysiCell and the version #
 # number, such as below:                                                      #
@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2018, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2022, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -64,40 +64,117 @@
 #                                                                             #
 ###############################################################################
 */
+ 
+#include <vector>
+#include <string>
 
-#include "../core/PhysiCell.h"
-#include "../modules/PhysiCell_standard_modules.h"
-#include "../addons/dFBA/src/dfba_intracellular.h"
+#ifndef __PhysiCell_signal_response__
+#define __PhysiCell_signal_response__
 
-using namespace BioFVM;
-using namespace PhysiCell;
+#include "./PhysiCell_constants.h" 
+#include "./PhysiCell_phenotype.h" 
+#include "./PhysiCell_cell.h" 
+
+namespace PhysiCell{
+
+// scales for the signals 
+extern std::vector<double> signal_scales; 
+// easy access to get or set scales 
+double& signal_scale( std::string signal_name ); // done 
+double& signal_scale( int signal_index ); // done 
+
+// create the signal and behavior dictionaries 
+void setup_signal_behavior_dictionaries( void ); // done 
+
+// display dictionaries 
+void display_signal_dictionary( void ); // done 
+void display_behavior_dictionary( void ); // done 
+
+void display_signal_dictionary_with_synonyms( void ); // done 
+void display_behavior_dictionary_with_synonyms( void ); // done 
+
+/* signal functions */ 
+
+// find index for named signal (returns -1 if not found)
+int find_signal_index( std::string signal_name ); // done 
+
+// coming soon: 
+std::vector<int> find_signal_indices( std::vector<std::string> signal_names ); // done 
+
+// get the name of a signal index 
+std::string signal_name( int i ); // done 
+
+// create a full signal vector 
+std::vector<double> construct_signals( Cell* pCell ); // done 
+
+// create a signal vector of only the cell contacts 
+std::vector<double> construct_cell_contact_signals( Cell* pCell ); // done 
+
+// create a subset of the signal vector with the supplied indicies 
+std::vector<double> construct_selected_signals( Cell* pCell , std::vector<int> indices ); // done 
+std::vector<double> construct_selected_signals( Cell* pCell , std::vector<std::string> names );  // done 
 
 
-// any additional cell types (beyond cell_defaults)
+/*
+void set_selected_behaviors( Cell* pCell , std::vector<int> indices , std::vector<double> parameters ); // done 
+void set_selected_behaviors( Cell* pCell , std::vector<std::string> names , std::vector<double> parameters ); // done 
+*/
 
-extern Cell_Definition motile_cell;
+// grab a single signal by its index or name 
+double single_signal( Cell* pCell, int index ); // done 
+double single_signal( Cell* pCell, std::string name ); // done 
 
-// custom cell phenotype functions could go here
+/* behavior functions */ 
 
-// setup functions to help us along
+// find index for named behavior / response / parameter (returns -1 if not found)
+int find_parameter_index( std::string response_name ); // done
+int find_behavior_index( std::string response_name ); // done 
 
-void create_cell_types( void );
-void setup_tissue( void );
+std::vector<int> find_behavior_indices( std::vector<std::string> behavior_names ); // done 
 
-// set up the BioFVM microenvironment
-void setup_microenvironment( void );
+// get the name of a behavior index 
+std::string behavior_name( int i ); // done 
 
+// make a properly sized behavior vector 
+std::vector<double> create_empty_behavior_vector(); // done 
 
-// custom pathology coloring function
+// write a full behavior vector (phenotype parameters) to the cell 
+void set_behaviors( Cell* pCell , std::vector<double> parameters ); // done 
 
-std::vector<double> integrate_total_substrates( void );
+// write a selected set of behavior parameters to the cell 
+void set_selected_behaviors( Cell* pCell , std::vector<int> indices , std::vector<double> parameters ); // done 
+void set_selected_behaviors( Cell* pCell , std::vector<std::string> names , std::vector<double> parameters ); // done 
 
-void anuclear_volume_model (Cell* pCell, Phenotype& phenotype, double dt);
+// write a single behavior parameter 
+void set_single_behavior( Cell* pCell, int index , double parameter ); // done  
+void set_single_behavior( Cell* pCell, std::string name , double parameter ); // done 
 
-void setup_default_metabolic_model( void );
+/* get current behaviors */ 
 
-void update_cell(PhysiCell::Cell* pCell, PhysiCell::Phenotype& phenotype, double dt );
+// get all current behavior
+std::vector<double> get_behaviors( Cell* pCell ); // done 
 
-void metabolic_cell_phenotype( Cell* pCell, Phenotype& phenotype, double dt );
+// get selected current behavior
+std::vector<double> get_behaviors( Cell* pCell , std::vector<int> indices ); // doen 
+std::vector<double> get_behaviors( Cell* pCell , std::vector<std::string> names ); // done 
 
-std::vector<std::string> my_coloring_function( Cell* );
+// get single current behavior 
+double get_single_behavior( Cell* pCell , int index ); // done 
+double get_single_behavior( Cell* pCell , std::string name ); // done 
+
+/* get base behaviors (from cell definition) */ 
+
+// get all base behaviors (from cell's definition) 
+std::vector<double> get_base_behaviors( Cell* pCell );  // done 
+
+// get selected base behaviors (from cell's definition)
+std::vector<double> get_base_behaviors( Cell* pCell , std::vector<int> indices ); // done 
+std::vector<double> get_base_behaviors( Cell* pCell , std::vector<std::string> names ); // done 
+
+// get single base behavior (from cell's definition)
+double get_single_base_behavior( Cell* pCell , int index ); // done 
+double get_single_base_behavior( Cell* pCell , std::string name ); // done 
+
+}; 
+
+#endif 

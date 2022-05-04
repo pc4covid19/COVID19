@@ -39,14 +39,10 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static Cell_Definition* pCD = find_cell_definition( "lung epithelium" ); 
 	
 	// bookkeeping -- find microenvironment variables we need
-
-	static int nV_external = microenvironment.find_density_index( "virion" ); 
 	static int chemokine_index = microenvironment.find_density_index( "chemokine" );
 	static int nINF1 = microenvironment.find_density_index( "interferon 1" );
 	
-	static int nV_internal = pCell->custom_data.find_variable_index( "virion" ); 
 	static int nA_internal = pCell->custom_data.find_variable_index( "assembled_virion" );
-	static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 	
 	 
 	
 	// actual model goes here 
@@ -75,24 +71,6 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	// if we're infected, secrete a chemokine for the immune model
 	double AV = pCell->custom_data[nA_internal];  
 	
-/* old 
-	if( P > 0.001 )
-	{
-		phenotype.secretion.secretion_rates[chemokine_index] = 
-			pCell->custom_data[ "infected_cell_chemokine_secretion_rate" ];
-		phenotype.secretion.saturation_densities[chemokine_index] = 1.0; 		
-	}
-	else
-	{
-		phenotype.secretion.secretion_rates[chemokine_index] = 0.0;
-	}
-*/	
-	
-	// if I am dead, make sure to still secrete the chemokine 
-	
-	// static int chemokine_index = microenvironment.find_density_index( "chemokine" ); 
-	// static int nP = pCell->custom_data.find_variable_index( "viral_protein"); 
-	// double P = pCell->custom_data[nP];
 	static int proinflammatory_cytokine_index = microenvironment.find_density_index( "pro-inflammatory cytokine");
 		
 	static int nR = pCell->custom_data.find_variable_index( "viral_RNA");
@@ -102,10 +80,10 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	
 	// FIONA ADDED FOLLOWING 4 line 28th April
 	if( pCell->custom_data["cell_virus_induced_apoptosis_flag"]>=1 )
-{
-	pCell->custom_data["cell_apo_time"]=pCell->custom_data["cell_apo_time"]+dt;
-}
-//
+	{
+		pCell->custom_data["cell_apo_time"]=pCell->custom_data["cell_apo_time"]+dt;
+	}
+	//
 	
 	if( R >= 1.00 - 1e-16 ) 
 	{
@@ -140,11 +118,6 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int pro_pyroptotic_cytokine = microenvironment.find_density_index("pro-pyroptosis cytokine"); 
 	double pyroptotic_cytokine_concentration = phenotype.molecular.internalized_total_substrates[pro_pyroptotic_cytokine]; 
 	double RNAlow=parameters.doubles("RNA_lower_bound");
-	//printf("PCC: %lf\n",pyroptotic_cytokine_concentration);
-
-    //phenotype.secretion.uptake_rates[propyroptotic_cytokine_index] = 1.; // What should the secretion intake depend on ?
-    //double pyroptotic_cytokine_concentration = phenotype.molecular.internalized_total_substrates[propyroptotic_cytokine_index];
-    //phenotype.secretion.uptake_rates[nV_external] = pCell->custom_data[nR_bind] * pCell->custom_data[nR_EU]; 
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
 	
@@ -236,55 +209,10 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	static int il_18_c = pCell->custom_data.find_variable_index( "cytoplasmic_IL_18" );
 	static int il_18_e = pCell->custom_data.find_variable_index( "external_IL_18" );
 	static int volume_c = pCell->custom_data.find_variable_index( "cytoplasmic_volume" );
-	//Not needed components (can be implicitely found via conservation laws)
-	//static double nfkb_c = pCell->custom_data.find_variable_index( "cytoplasmic_NFkB_fraction" ); 
-	//static double asc_f = pCell->custom_data.find_variable_index( "free_ASC" );
-	//static double caspase1_f = pCell->custom_data.find_variable_index( "free_caspase1" );
-	//static double gsdmd_uc = pCell->custom_data.find_variable_index( "uncleaved_gasderminD" );
-	//static double il_18_e = pCell->custom_data.find_variable_index( "external_IL_1b" );
-
-//We can add these to the xml later..
-/**
-	// Rate constants
-	double k_nfkb_ctn = pCell->custom_data.find_variable_index( "rate_NFkB_cytoplasm_to_nucleus" ); 
-	double k_nfkb_ntc = pCell->custom_data.find_variable_index( "rate_NFkB_nucleus_to_cytoplasm" );
-	double k_nlrp3_ita = pCell->custom_data.find_variable_index( "rate_NLRP3_incactive_to_active" );
-	double k_nlrp3_atb = pCell->custom_data.find_variable_index( "rate_NLRP3_active_to_bound" );
-	double k_asc_ftb = pCell->custom_data.find_variable_index( "rate_ASC_free_to_bound" );
-	double k_c1_ftb = pCell->custom_data.find_variable_index( "rate_caspase1_free_to_bound" );
-	double k_il1b_cte = pCell->custom_data.find_variable_index( "rate_Il1b_cytoplasmic_to_external" );
-	double k_il18_cte = 1;//pCell->custom_data.find_variable_index( "rate_Il18_cytoplasmic_to_external" );
-	double k_vol_c = 1;// pCell->custom_data.find_variable_index( "rate_pyroptosis_volume_increase" );
-	// Decay constants
-	double d_nlrp3 = pCell->custom_data.find_variable_index( "decay_NLRPR_inactive_and_active" );
-	double d_il = pCell->custom_data.find_variable_index( "decay_IL1b" );
-	// Hill function rates
-	double a_nlrp3 = pCell->custom_data.find_variable_index( "rate_constant_NLRP3_production" );
-	double a_il1b_p = pCell->custom_data.find_variable_index( "rate_constant_IL1b_production" );
-	double a_gsdmd = pCell->custom_data.find_variable_index( "rate_constant_GSDMD_cleavage" );
-	double a_il1b_c = pCell->custom_data.find_variable_index( "rate_constant_Il1b_cleavage" );
-	double a_il18 = pCell->custom_data.find_variable_index( "rate_constant_Il18_cleavage" );
-	double hm_nfkb = pCell->custom_data.find_variable_index( "halfmax_NFkB_transcription" );
-	
-	//std::cout<<pCell->custom_data.find_variable_index( "halfmax_caspase1_cleavage" )<<std::endl;
-	//double hm_c1 = 1;//pCell->custom_data.find_variable_index( "halfmax_caspase1_cleavage" );
-	double hm_c1 = pCell->custom_data.find_variable_index("halfmax_caspase1_cleavage");
-	double hex_nfkb = pCell->custom_data.find_variable_index( "hillexponent_NFkB_transcription" );
-	double hex_c1 = pCell->custom_data.find_variable_index( "hillexponent_caspase1_cleavage" );
-	// Total concentrations (let's have them all as 1 now and compute fractions)
-	//static double tot_nfkb = pCell->custom_data.find_variable_index( "total_NFkB_concentration" );	
-	//static double tot_asc = pCell->custom_data.find_variable_index( "total_ASC_concentration" );
-	//static double tot_c1 = pCell->custom_data.find_variable_index( "total_caspase1_concentration" );
-	//static double tot_gsdmd = pCell->custom_data.find_variable_index( "total_GSDMD_concentration" );
-	//static double tot_il18 = pCell->custom_data.find_variable_index( "total_IL18_concentration" );
-
-*/
 
 
 	// System of pyroptosis equations starts here
     //Model constants (definitions could be moved to xml file)
-   // static double k_nfkb_ctn = 0.3; // THIS CAN BE REMOVED NO LONGER USED
-    // static double k_nfkb_ntc =  0.03; // THIS CAN BE REMOVED NO LONGER USED
     static double k_nlrp3_ita =  0.7; // FIONA: VALUE UPDATED FROM 0.07
     static double k_nlrp3_atb = 1; // FIONA: VALUE UPDATED FROM 0.07
     static double k_asc_ftb = 0.04; // FIONA: VALUE UPDATED FROM 0.02
@@ -316,26 +244,14 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	double nf_tt=10; // FIONA: ADDED
 	double t_i=pCell->custom_data["cell_pyroptosis_time"]-dt;	// FIONA: ADDED - this is time dependence
 
-	
-	
-	//If the inflammsome base is formed set F_ib = 0. NO LONGER NEEDED
-	//double F_ib = 1;
-	//if( pCell->custom_data[nlrp3_b] >= 1)
-	//{F_ib=0;}
-
 	//Update nuclear NFkB (updated backward)
-	//pCell->custom_data[nfkb_n] = (pCell->custom_data[nfkb_n]+k_nfkb_ctn*F_ib*dt)/(1+dt*k_nfkb_ntc+k_nfkb_ctn*F_ib*dt); // OLD
 	pCell->custom_data[nfkb_n]= (nf_hh)*exp(-(log((t_i)/nf_tt)*log((t_i)/nf_tt))/nf_ss)+nf_orig; // FIONA: NEW
 
 	//Set Hill function 1
-	// double hill_nfkb = (pow(pCell->custom_data[nfkb_n],hex_nfkb))/(pow(hm_nfkb,hex_nfkb)+pow(pCell->custom_data[nfkb_n],hex_nfkb)); // OLD
 	double hill_nfkb = (pow((pCell->custom_data[nfkb_n]-nf_orig),hex_nfkb))/(pow(hm_nfkb,hex_nfkb)+pow((pCell->custom_data[nfkb_n]-nf_orig),hex_nfkb)); // FIONA: NEW
 	
 	
 	//Update NLRP3 (inactive, active and bound) (updated backward)
- 	//pCell->custom_data[nlrp3_i] = (pCell->custom_data[nlrp3_i]+dt*a_nlrp3*hill_nfkb)/(1+dt*k_nlrp3_ita+dt*d_nlrp3); // OLD
-	//pCell->custom_data[nlrp3_a] = (pCell->custom_data[nlrp3_a]+k_nlrp3_ita*dt*(pCell->custom_data[nlrp3_i]))/(1+dt*k_nlrp3_atb+dt*d_nlrp3); // OLD
-	//pCell->custom_data[nlrp3_b] = pCell->custom_data[nlrp3_b] + dt * k_nlrp3_atb * F_ib * pCell->custom_data[nlrp3_a]; // OLD
 	
 	pCell->custom_data[nlrp3_i] = ((pCell->custom_data[nlrp3_i])+dt*a_nlrp3*hill_nfkb)/(1+dt*k_nlrp3_ita+dt*d_nlrp3); // FIONA: NEW		
 	pCell->custom_data[nlrp3_a]=(-(1+dt*d_nlrp3)+sqrt(((1+dt*d_nlrp3)*(1+dt*d_nlrp3))+4*(dt*k_nlrp3_atb)*(pCell->custom_data[nlrp3_a]+dt*k_nlrp3_ita*pCell->custom_data[nlrp3_i])))/(2*dt*k_nlrp3_atb); // FIONA: NEW
@@ -346,21 +262,17 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	double F_no = 1/(1+pow(((pCell->custom_data[nlrp3_b]-no_a)/no_b),-no_c)); // define new function for ASC binding
 
 	//Update bound ASC (updated backward)
-	// pCell->custom_data[asc_b] = (pCell->custom_data[asc_b] + dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]))/(1+dt*k_asc_ftb*(1-F_ib)*(pCell->custom_data[nlrp3_b]));// OLD
 	pCell->custom_data[asc_b]=(pCell->custom_data[asc_b]+dt*k_asc_ftb*F_no*pCell->custom_data[nlrp3_b])/(1+dt*k_asc_ftb*F_no*pCell->custom_data[nlrp3_b]); // FIONA: NEW	
 	
 
 	//Update bound caspase1 (updated backward)
-	// pCell->custom_data[caspase1_b] = (pCell->custom_data[caspase1_b] + dt*k_c1_ftb*(pCell->custom_data[asc_b]))/(1+dt*k_c1_ftb*(pCell->custom_data[asc_b])); //OLD
 	pCell->custom_data[caspase1_b]=(pCell->custom_data[caspase1_b]+dt*k_c1_ftb*pCell->custom_data[asc_b])/(1+dt*k_c1_ftb*pCell->custom_data[asc_b]); // FIONA: NEW
 	
 
 	//Set Hill function 2
-	//double hill_caspase1 = (pow(pCell->custom_data[caspase1_b],hex_c1))/(pow(hm_c1,hex_c1)+pow(pCell->custom_data[caspase1_b],hex_c1));//OLD
 	double hill_c1 = (pow(pCell->custom_data[caspase1_b],hex_c1))/(pow(hm_c1,hex_c1)+pow(pCell->custom_data[caspase1_b],hex_c1)); // FIONA: NEW
 	
 	//Update cleaved GSDMD (updated backward)
-	// pCell->custom_data[gsdmd_c] = (pCell->custom_data[gsdmd_c]+dt*a_gsdmd*hill_caspase1)/(1+dt*a_gsdmd*hill_caspase1); //OLD
 	pCell->custom_data[gsdmd_c] = (pCell->custom_data[gsdmd_c]+dt*a_gsdmd*hill_c1)/(1+dt*a_gsdmd*hill_c1); // FIONA: NEW
 
 
@@ -368,9 +280,6 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	double g_gsdmd = pCell->custom_data[gsdmd_c]/1;
 
 	//Update IL1b (pro, cytoplasmic, external)	We want to relate this to secreted cytokine IL1b (updated backward)
-	// pCell->custom_data[il_1b_p] = (pCell->custom_data[il_1b_p]+dt*a_il1b_p*hill_nfkb)/(1+dt*a_il1b_c*hill_caspase1+dt*d_il); // OLD
-	// pCell->custom_data[il_1b_c] = (pCell->custom_data[il_1b_c]+dt*a_il1b_c*hill_caspase1*(pCell->custom_data[il_1b_p]))/(1+dt*d_il+dt*k_il1b_cte*g_gsdmd);// OLD		 
-	// pCell->custom_data[il_1b_e] = pCell->custom_data[il_1b_e] + dt * (k_il1b_cte*g_gsdmd*pCell->custom_data[il_1b_c]);// OLD
 	
 	pCell->custom_data[il_1b_p] = (pCell->custom_data[il_1b_p]+dt*a_il1b_p*hill_nfkb)/(1+dt*a_il1b_c*hill_c1+dt*d_il); //FIONA:NEW
 	pCell->custom_data[il_1b_c] = (pCell->custom_data[il_1b_c]+dt*a_il1b_c*hill_c1*(pCell->custom_data[il_1b_p]))/(1+dt*d_il+dt*k_il1b_cte*g_gsdmd); //FIONA:NEW		
@@ -378,8 +287,6 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 
 
 	//Update IL18 (cytoplasmic, external)(updated backward)
-	//pCell->custom_data[il_18_c] = (pCell->custom_data[il_18_c]+dt*a_il18*hill_caspase1*(1-pCell->custom_data[il_18_e]))/((1+dt*a_il18*hill_caspase1)*(1+dt*k_il18_cte*g_gsdmd)); //OLD
-	//pCell->custom_data[il_18_e] = pCell->custom_data[il_18_e] +  dt * k_il18_cte*g_gsdmd*pCell->custom_data[il_18_c]; //OLD
 	
 	pCell->custom_data[il_18_c] = (pCell->custom_data[il_18_c]+dt*a_il18*hill_c1*(1-pCell->custom_data[il_18_e]))/((1+dt*a_il18*hill_c1)*(1+dt*k_il18_cte*g_gsdmd)); //FIONA:NEW
 	pCell->custom_data[il_18_e] = pCell->custom_data[il_18_e] +  dt * k_il18_cte*g_gsdmd*pCell->custom_data[il_18_c]; //FIONA:NEW
@@ -400,8 +307,6 @@ void pyroptosis_cascade( Cell* pCell, Phenotype& phenotype, double dt )
 	if( pCell->custom_data[volume_c] > 1.2*initial_total_volume ) // FIONA: SHOULD THIS BE 1.5 times
 	{
 		pCell->custom_data["cell_pyroptosis_flag"]=3;   // FIONA: ADDED REMOVE CELL PHENOTYPE
-		//std::cout<<"Pyroptotic cell burst!"<<std::endl;
-		//The cell's 'apoptosis death rate' is set to be "super high" 
 		phenotype.death.rates[apoptosis_model_index] = 9e9; 
 	}
 	// (Adrianne) update cell pro-inflammatory secretion rate based on IL18 secretion rate - need to double check unit conversion
