@@ -10,7 +10,7 @@ rank = comm.Get_rank()
 
 os.chdir('../../')
 
-def model(Sample=-1, Replica=-1):    
+def model(Sample=-1, Replica=-1):
     # Write input for simulation & execute
     callingModel = ['./COVID19', 'output_S'+str("%06d"%Sample)+'_R'+str("%02d"%Replica)+'/config.xml']
     cache = subprocess.run( callingModel,universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

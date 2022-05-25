@@ -2,15 +2,10 @@
 # coding: utf-8
 
 import scipy.io as sio
-from scipy import integrate
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 os.chdir('../../')
-
-vir_t=[]
-epi_l=[]
-epi_l_v=[]
 
 for q in range(10):
     a = sio.loadmat('timeReplicate{:06d}.mat'.format(q))
@@ -22,9 +17,6 @@ for q in range(10):
 
     t = np.linspace(0, 12, 13)
 
-    #vir_t.append
-    epi_l.append(np.squeeze(cells[:,16,-1]))
-    epi_l_v.append(np.squeeze(cells[:,16+17,-1]))
 
     immune_cells = ['CD8 T', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Macexh', 'Neut', 'DC', 'CD4 T', 'Fib', 'virion', 'IFN', 'Ig', 'pro-I', 'anti-I', 'collagen', 'epi']
     innate = ['totalMac', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Neut']
@@ -199,14 +191,3 @@ for q in range(10):
 
     plt.tight_layout()
     fig.savefig('populationepi{:06d}.png'.format(q), dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
-
-epi_l = np.array(epi_l)
-epi_l_v = np.array(epi_l_v)
-k=np.linspace(2.5, 97.5, 10)
-
-fig, ax = plt.subplots(figsize=(6, 4))
-
-ax.plot(k,epi_l, linewidth=2)  
-ax.fill_between(k,np.subtract(epi_l,epi_l_v), np.add(epi_l,epi_l_v), alpha=0.35)  
-plt.tight_layout()
-fig.savefig('epi_k.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 

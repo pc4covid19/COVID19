@@ -51,7 +51,7 @@ def generate_configXML(params_file):
     output_dirs = []
     #reduce save intervals
     SVG_interval = "2880"
-    full_data_interval = "1440"
+    full_data_interval = "720"
     
     with open(params_file) as f:
         for line in f:
