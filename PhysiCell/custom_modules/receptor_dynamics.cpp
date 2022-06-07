@@ -87,12 +87,6 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	// receptor recycling 	
 	double dR_EU = pCell->custom_data[nR_recycle]*pCell->custom_data[nR_IU];
  */
-	//int ignore_smoothing_flag=1;
-	static int ignore_smoothing_flag = parameters.ints( "ignore_smoothing_flag" ); 
-	double x_min = microenvironment.mesh.bounding_box[0]; 
-	double x_max = microenvironment.mesh.bounding_box[3]; 
-	double y_min = microenvironment.mesh.bounding_box[1]; 
-	double y_max = microenvironment.mesh.bounding_box[4]; 
 	
     double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
      					phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter

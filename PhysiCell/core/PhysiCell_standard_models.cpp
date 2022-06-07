@@ -976,13 +976,22 @@ void advanced_chemotaxis_function( Cell* pCell, Phenotype& phenotype , double dt
 void standard_elastic_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype& p2 , double dt )
 {
 	if( pC1->position.size() != 3 || pC2->position.size() != 3 )
-	{
-		return; 
-	}
+	{ return; }
 	
 	std::vector<double> displacement = pC2->position;
 	displacement -= pC1->position; 
-	axpy( &(pC1->velocity) , p1.mechanics.attachment_elastic_constant , displacement ); 
+
+	// update May 2022 - effective adhesion 
+	int ii = find_cell_definition_index( pC1->type ); 
+	int jj = find_cell_definition_index( pC2->type ); 
+
+	double adhesion_ii = pC1->phenotype.mechanics.attachment_elastic_constant * pC1->phenotype.mechanics.cell_adhesion_affinities[jj]; 
+	double adhesion_jj = pC2->phenotype.mechanics.attachment_elastic_constant * pC2->phenotype.mechanics.cell_adhesion_affinities[ii]; 
+
+	double effective_attachment_elastic_constant = sqrt( adhesion_ii*adhesion_jj ); 
+
+	// axpy( &(pC1->velocity) , p1.mechanics.attachment_elastic_constant , displacement ); 
+	axpy( &(pC1->velocity) , effective_attachment_elastic_constant , displacement ); 
 	return; 
 }
 
@@ -1167,7 +1176,7 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 		{
 			// dead phagocytosis 
 			probability = phenotype.cell_interactions.dead_phagocytosis_rate * dt; 
-			if( UniformRandom() <= probability ) 
+			if( UniformRandom() < probability ) 
 			{ pCell->ingest_cell(pTarget); } 
 		}
 		else
@@ -1175,7 +1184,7 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 			// live phagocytosis
 			// assume you can only phagocytose one at a time for now 
 			probability = phenotype.cell_interactions.live_phagocytosis_rate(type_name) * dt; // s[type] * dt;  
-			if( UniformRandom() <= probability && phagocytosed == false ) 
+			if( UniformRandom() < probability && phagocytosed == false ) 
 			{
 				pCell->ingest_cell(pTarget);
 				phagocytosed = true; 
@@ -1184,7 +1193,7 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 			// attack 
 			// assume you can only attack one cell at a time 
 			probability = phenotype.cell_interactions.attack_rate(type_name)*dt; // s[type] * dt;  
-			if( UniformRandom() <= probability && attacked == false ) 
+			if( UniformRandom() < probability && attacked == false ) 
 			{
 				pCell->attack_cell(pTarget,dt); 
 				attacked = true;
@@ -1193,7 +1202,7 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 			// fusion 
 			// assume you can only fuse once cell at a time 
 			probability = phenotype.cell_interactions.fusion_rate(type_name)*dt; // s[type] * dt;  
-			if( UniformRandom() <= probability && fused == false  ) 
+			if( UniformRandom() < probability && fused == false  ) 
 			{
 				pCell->fuse_cell(pTarget);
 				fused = true; 
