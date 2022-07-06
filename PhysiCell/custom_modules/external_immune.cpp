@@ -105,30 +105,6 @@ void external_immune_model( double dt )
 	//rT1->pT1
 	//rT2->pT2
 	static double ro=pTh1/(10*pTh2);
-    
-/*     g*y(6) - (y(8)+y(9)+y(15))/(y(8)+y(9)+y(15)+5000)*dT1*y(7)*y(4)/(y(4)+dT2) % y(7) = Tct
-    
-    sTh1*y(5)*y(15)*(sig1*(1+y(9))+y(8))/((1+y(9))^2) + pTh1*y(5)*(y(8)^2)/((1+y(9))^2) - dTh1*y(5)*(y(8)^3)/(KTh1+y(9)) - mTh*y(8)  % y(8) = Th1
-    
-    sTh2*y(5)*y(15)*(sig2+y(9))/(1+y(9)) + pTh2*(ro+y(8))*y(5)*(y(9)^2)/((1+y(9))*(1+y(8)+y(9))) - mTh*y(9)  % y(9) = Th2
-    
-    g*(y(8)+y(9)) - mTh*y(10) % y(10) = Tct
-    
-    3*y(5)/(y(5)+10000)*y(17) + rB1*(y(11))*(y(5) + h*y(9))/(rB2 + y(5) + h*y(9)) - pS*y(11) - pL*y(11)*y(9) - db*y(11)   % y(11) = B
-    
-    pS*y(11) - dS*y(12)  % y(12) = pS
-    
-    pAS*y(12)+pAL*y(18) - dM*y(13)  - eV*y(3)*y(13) - eV*y(2)*y(13)      %    y(13) = Ig
-
-    dD0*(D0-y(14)) - bD*y(14)*y(3)  %    y(14) = Dn
-    
-    dHn*(1000-y(15)) - sTh1*y(5)*y(15)*(sig1*(1+y(9))+y(8))/((1+y(9))^2) - sTh2*y(5)*y(15)*(sig2+y(9))/(1+y(9)) %    y(15) = Thn
-    
-    dC*(Tc0-y(16)) - pT/(y(5)+pT2)*y(16)*y(5)  %    y(16) = Tcn
-    
-    1E-3*(1000-y(17))-3*y(5)/(y(5)+10000)*y(17) %    y(17) = Bn
-    
-    pL*y(11)*y(9) - 3E-2*y(18)];%    y(18) = pL */
 	
 	
 	
@@ -203,12 +179,9 @@ void external_immune_model( double dt )
 	
 	static int nAb = microenvironment.find_density_index( "Ig" ); 
 	static int nV = microenvironment.find_density_index( "virion" ); 
+
+	static double kv = parameters.doubles("Ig_neutralization_rate");
 	
-	//std::cout << "Placing " << number_of_Ig << " Ig ... " << std::endl; 
-	if( number_of_Ig > 1000)
-	{
-		number_of_Ig=1000;
-	}
 	for( int n=0 ; n < number_of_Ig ; n++ )
 		{
 			// pick a random voxel 
@@ -224,7 +197,7 @@ void external_immune_model( double dt )
 	for( int n=0 ; n < microenvironment.number_of_voxels() ; n++ )
 		{
 			if (microenvironment(n)[nV]>0 && microenvironment(n)[nAb]>0) {
-			double rate = 1.5 * microenvironment(n)[nAb] * microenvironment(n)[nV] * dt; //rate is 1.5 after conversions for now - set to zero in no Ig cases
+			double rate = kv * microenvironment(n)[nAb] * microenvironment(n)[nV] * dt; 
 			if (rate < 0) {
 				rate=0;
 			}

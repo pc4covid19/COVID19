@@ -1223,6 +1223,9 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 	// make this thread safe 
 	#pragma omp critical
 	{
+		
+		// mark it as dead 
+		pCell_to_eat->phenotype.death.dead = true; 
 		/*
 		if( pCell_to_eat->phenotype.death.dead == true )
 		{ std::cout << this->type_name << " (" << this << ")" << " eats dead " << pCell_to_eat->type_name << " (" << pCell_to_eat 
@@ -1292,9 +1295,7 @@ void Cell::ingest_cell( Cell* pCell_to_eat )
 		// pCell_to_eat->die(); // I don't think this is safe if it's in an OpenMP loop 
 		
 		// flag it for removal 
-		// pCell_to_eat->flag_for_removal(); 
-		// mark it as dead 
-		pCell_to_eat->phenotype.death.dead = true; 
+		// pCell_to_eat->flag_for_removal();
 		// set secretion and uptake to zero 
 		pCell_to_eat->phenotype.secretion.set_all_secretion_to_zero( );  
 		pCell_to_eat->phenotype.secretion.set_all_uptake_to_zero( ); 

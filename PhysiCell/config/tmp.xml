@@ -102,6 +102,7 @@
 
 	<options>
 		<legacy_random_points_on_sphere_in_divide>false</legacy_random_points_on_sphere_in_divide>
+		<virtual_wall_at_domain_edge>true</virtual_wall_at_domain_edge>
 	</options>	
 	
 	<save>
@@ -491,7 +492,7 @@
 				<interferon_activation type="double" units="dimensionless"
 					description="Current interferon signaling activation state (between 0 and 1)">0</interferon_activation>
 				<interferon_max_virus_inhibition type="double" units="dimensionless"
-					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">0.95</interferon_max_virus_inhibition>
+					description="At max interferon activation, max inhibition of viral replication (between 0 and 1)">1</interferon_max_virus_inhibition>
 				<interferon_viral_RNA_threshold type="double" units="dimensionless" 
 					description="infected cell interferon secretion saturates at this viral RNA level">100</interferon_viral_RNA_threshold>
 				<interferon_viral_RNA_detection type="double" units="dimensionless" 
@@ -963,7 +964,7 @@
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">2e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">0</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
@@ -990,9 +991,9 @@
 			<max_activation_TC type="double" units="cells/min"
 				description="max activation TC">0.0018</max_activation_TC>
 			<half_max_activation_TC type="double" units="cells"
-				description="half max activation TC">4000</half_max_activation_TC>
+				description="half max activation TC">5000</half_max_activation_TC>
 			<max_clearance_TC type="double" units="cells/min"
-				description="max clearance TC">0.0002</max_clearance_TC>
+				description="max clearance TC">0.00018</max_clearance_TC>
 			<half_max_clearance_TC type="double" units="cells"
 				description="half max clearance TC">1</half_max_clearance_TC>
 			<TC_population_threshold type="double" units="cells"

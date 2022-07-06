@@ -5,6 +5,7 @@
 
 import xml.etree.ElementTree as ET
 from shutil import copyfile
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
@@ -12,22 +13,29 @@ import random
 import time
 
 os.chdir('../../')
-def generate_parSamples(Replicas_number, fileOut):
+
+def generate_parSamples(parameters, default_value, variation, Samples_number,Replicas_number, fileOut):
 
     file = open(fileOut, "w")
+    
+    #generate logspace variation for num samples
+    samples = np.logspace(-1.6, 2, num=Samples_number)
 
     #Write file with samples
-    for replica_id in range(Replicas_number):
-        folder = 'output_R'+str("%02d"%replica_id)
-        file.write("folder"+" "+folder+"\n")
-        # set system time as seed
-        # create a seed
-        seed_value = random.randrange(sys.maxsize)
-        omp_num_threads = 8
-        # save this seed somewhere. So if you like the result you can use this seed to reproduce it
-        file.write("random_seed"+" "+str(seed_value)+"\n")
-        file.write("omp_num_threads"+" "+str(omp_num_threads)+"\n")
-        file.write("#"+"\n")
+    for sample_id in range(Samples_number):
+        for replica_id in range(Replicas_number):
+            folder = 'output_S'+str("%06d"%sample_id)+'_R'+str("%02d"%replica_id)
+            file.write("folder"+" "+folder+"\n")
+            # set system time as seed
+            # create a seed
+            seed_value = random.randrange(sys.maxsize)
+            # set reduced size for data and output
+            # save this seed somewhere. So if you like the result you can use this seed to reproduce it
+            # Set of parameters
+            for id_par in range(0, len(parameters)):
+                file.write(parameters[id_par]+" "+str(samples[sample_id])+"\n")
+                file.write("random_seed"+" "+str(seed_value)+"\n")
+            file.write("#"+"\n")
     file.close()
 
 def generate_configXML(params_file):
@@ -38,6 +46,10 @@ def generate_configXML(params_file):
     xml_root = tree.getroot()
     first_time = True
     output_dirs = []
+    #reduce save intervals
+    SVG_interval = "2880"
+    full_data_interval = "720"
+    
     with open(params_file) as f:
         for line in f:
             print(len(line),line)
@@ -66,14 +78,20 @@ def generate_configXML(params_file):
                     print('creating ' + val)
                     os.makedirs(val)
                 xml_root.find('.//' + key).text = val
-
+            xml_root.find('save/full_data/interval').text = full_data_interval
+            xml_root.find('save/SVG/interval').text = SVG_interval
     tree.write(xml_file_out)
     print(output_dirs)
 
 if __name__ == '__main__':
-    file = "Seeds.txt"
+    parameters = np.array(['microenvironment_setup/variable/physical_parameter_set/diffusion_coefficient'])
+    default_value = np.array([0.25])
+    
+    variation = 1
+    file = "ParameterSamples.txt"
+    Samples_number = 10
     Replicas_number = 12
     # Generate samples from Latin Hypercube
-    generate_parSamples(Replicas_number, file)
+    generate_parSamples(parameters, default_value, variation, Samples_number,Replicas_number, file)
     # Create .xml and folder to each simulation
     generate_configXML(file)

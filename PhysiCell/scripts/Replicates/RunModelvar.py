@@ -20,7 +20,7 @@ def model(Sample=-1, Replica=-1):
 
 
 Samples = len(range(0,10,1))
-Replicas = 12
+Replicas = 6
 numDataPerRank  = int(Samples/size)
 mod = Samples%size 
 if ( mod != 0): numDataPerRank = numDataPerRank + 1

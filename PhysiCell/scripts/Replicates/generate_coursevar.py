@@ -31,13 +31,15 @@ def generate_parSamples(parameters, default_value, variation, Samples_number,Rep
             file.write("folder"+" "+folder+"\n")
             # set system time as seed
             # create a seed
-            seed_value = random.randrange(sys.maxsize)
+            seed_value = round(random.randrange(sys.maxsize)/100000000)
+            omp_num_threads = 1
             # set reduced size for data and output
             # save this seed somewhere. So if you like the result you can use this seed to reproduce it
             # Set of parameters
             for id_par in range(0, len(parameters)):
                 file.write(parameters[id_par]+" "+str(samples[sample_id])+"\n")
                 file.write("random_seed"+" "+str(seed_value)+"\n")
+                file.write("omp_num_threads"+" "+str(omp_num_threads)+"\n")
             file.write("#"+"\n")
     file.close()
 
@@ -87,13 +89,13 @@ def generate_configXML(params_file):
     print(output_dirs)
 
 if __name__ == '__main__':
-    parameters = np.array(["multiplicity_of_infection"])
-    default_value = np.array([0.1])
+    parameters = np.array(["macrophage_max_recruitment_rate"])
+    default_value = np.array([2e-8])
     
     variation = 1
     file = "ParameterSamples.txt"
     Samples_number = 10
-    Replicas_number = 12
+    Replicas_number = 6
     # Generate samples from Latin Hypercube
     generate_parSamples(parameters, default_value, variation, Samples_number,Replicas_number, file)
     # Create .xml and folder to each simulation
