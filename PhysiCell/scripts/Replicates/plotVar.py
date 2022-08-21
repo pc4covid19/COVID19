@@ -11,8 +11,13 @@ os.chdir('../../')
 vir_t=[]
 epi_l=[]
 epi_l_v=[]
+proI_p=[]
+proI_pv=[]
+proI_pt=[]
+pt=[]
+proI_auc=[]
 
-for q in range(10):
+for q in range(6):
     a = sio.loadmat('timeReplicate{:06d}.mat'.format(q))
     cells = a['timedata']
     cells.shape
@@ -20,12 +25,19 @@ for q in range(10):
     mac = np.squeeze(np.sum([cells[:,1:5,:]], axis=2))
     mac_v = np.squeeze(np.sum([cells[:,1+17:5+17,:]], axis=2))
 
-    t = np.linspace(0, 12, 13)
+    t = np.linspace(0, 12, 25)
 
     #vir_t.append
     epi_l.append(np.squeeze(cells[:,16,-1]))
     epi_l_v.append(np.squeeze(cells[:,16+17,-1]))
 
+    #pro_I peak
+    proI_p.append(np.squeeze(np.amax(cells[:,13,:],axis=1)))
+    proI_pt.append(np.squeeze(np.argmax(cells[:,13,:],axis=1)))
+    
+    #proI auc
+    proI_auc.append(np.squeeze(np.trapz(cells[:,13,:], x=t, axis=1)))
+    
     immune_cells = ['CD8 T', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Macexh', 'Neut', 'DC', 'CD4 T', 'Fib', 'virion', 'IFN', 'Ig', 'pro-I', 'anti-I', 'collagen', 'epi']
     innate = ['totalMac', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Neut']
     set1 = ['CD8 T', 'DC', 'CD4 T','Ig']
@@ -202,7 +214,7 @@ for q in range(10):
 
 epi_l = np.array(epi_l)
 epi_l_v = np.array(epi_l_v)
-k=np.linspace(2.5, 97.5, 10)
+k=np.linspace(2.5, 97.5, 6)
 
 fig, ax = plt.subplots(figsize=(6, 4))
 
@@ -210,3 +222,40 @@ ax.plot(k,epi_l, linewidth=2)
 ax.fill_between(k,np.subtract(epi_l,epi_l_v), np.add(epi_l,epi_l_v), alpha=0.35)  
 plt.tight_layout()
 fig.savefig('epi_k.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
+
+fig.savefig('epi_k.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
+plt.clf()
+
+#Pro-I stats
+fig, ax = plt.subplots(figsize=(6, 4))
+# Creating plot with dataset_1
+fig, ax1 = plt.subplots(figsize=(6, 4)) 
+
+color = 'C0'
+ax1.set_xlabel('IFN threshold value', fontsize=16) 
+ax1.set_ylabel('Pro-I peak value', color = color, fontsize=16) 
+
+ax1.plot(k,proI_p, color = color, linewidth=2) 
+ax1.tick_params(axis ='y', which='major', labelsize=16, labelcolor = color) 
+ax1.tick_params(axis ='x', which='major', labelsize=16, labelcolor = color) 
+
+# Adding Twin Axes to plot using dataset_2
+ax2 = ax1.twinx() 
+
+color = 'C1'
+ax2.set_ylabel('Pro-I peak time', color = color, fontsize=16) 
+for i in range(len(proI_pt)):
+    pt.append(t[proI_pt[i]])
+ax2.plot(k,pt, color = color, linewidth=2) 
+ax2.tick_params(axis ='y', which='major', labelsize=16, labelcolor = color) 
+
+plt.tight_layout()
+fig.savefig('ProI_t.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600,  
+plt.clf()
+
+fig, ax = plt.subplots(figsize=(6, 4))
+
+ax.plot(k,proI_auc, linewidth=2) 
+plt.tight_layout()
+fig.savefig('proI_auc.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
+plt.clf() 

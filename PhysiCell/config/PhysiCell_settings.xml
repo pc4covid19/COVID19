@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">17280</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">28800</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -971,7 +971,7 @@
 				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">2e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">1.5e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
 				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
@@ -1011,7 +1011,7 @@
 			<Th1_decay type="double" units="cells/min"
 				description="Th1 active decay rate">7e-8</Th1_decay>
 			<Th_base_decay type="double" units="cells/min"
-				description="Th base dacay rates">0.0000156</Th_base_decay>
+				description="Th base dacay rates">0.000156</Th_base_decay>
 			<Th2_self_feeback type="double" units="cells/min"
 				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
@@ -1023,7 +1023,7 @@
 			<BCell_activation_half type="double" units="cells/min"
 				description="BCell activation rate">1e4</BCell_activation_half>
 			<BCell_DC_proliferation type="double" units="cells/min"
-				description="BCell DC influenced proliferation">0.0014</BCell_DC_proliferation>
+				description="BCell DC influenced proliferation">0.0012</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
 				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
 			<BCell_damping type="double" units="cells/min"
@@ -1099,8 +1099,23 @@
 				descriptions="Multiple of interaction distance for immune cells">1.75</epsilon_distance>
 				
 			<perecentage_tissue_vascularized units="percentage" type="double"
-				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>			
+				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>
 
+		<div_lymph type="divider" description="--Lymph Node Values--"/>
+			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">0</DM_init>
+			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">0</DL_init>
+			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">0</TC_init>
+			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">0</TH1_init>
+			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">0</TH2_init>
+			<TCt_init type="double" units="cells" descriptions="Initial value of TCt in the lymph (should be 0)">0</TCt_init>
+			<Tht_init type="double" units="cells" descriptions="Initial value of Tht in the lymph (should be 0)">0</Tht_init>
+			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">0</Bc_init>
+			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">0</Ps_init>
+			<Ig_init type="double" units="cells" descriptions="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
+			<TCN_init type="double" units="cells" descriptions="Initial value of Niave Cytotoxic T Cells in the lymph">1000</TCN_init>
+			<THN_init type="double" units="cells" descriptions="Initial value of Niave Helper T Cells in the lymph">1000</THN_init>
+			<BN_init type="double" units="cells" descriptions="Initial value of Niave B Cells in the lymph">1000</BN_init>
+			
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
 			

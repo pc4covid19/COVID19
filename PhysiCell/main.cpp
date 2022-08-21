@@ -145,14 +145,14 @@ double Tht = 0;
 double Bc = 0;
 double Ps = 0;
 double Ig = 0;
-double TCN = 1000;
-double THN = 1000;
-double BN = 1000;
+double TCN = 0;
+double THN = 0;
+double BN = 0;
 double EPICOUNT = 1;
 double tissueCD4=0;
 double tissueCD8=0;
 
-std::vector<int> history(72000); //144000 - full day delay
+std::vector<int> history(72000); //144000 - full day delay - set max (lets say a day) delay, let user define up to that amt delay.
 std::vector<int> historyTc(60); //120 - half day delay
 std::vector<int> historyTh(60);
 //size 72000 - 0.5 day -> 0.01min
@@ -168,6 +168,21 @@ int main( int argc, char* argv[] )
 	{ XML_status = load_PhysiCell_config_file( "./config/PhysiCell_settings.xml" ); }
 	if( !XML_status )
 	{ exit(-1); }
+
+	//Define initial values for Globals
+	DM = parameters.doubles("DM_init");
+	DL = parameters.doubles("DL_init");
+	TC = parameters.doubles("TC_init");
+	TH1 = parameters.doubles("TH1_init");
+	TH2 = parameters.doubles("TH2_init");
+	TCt = parameters.doubles("TCt_init");
+	Tht = parameters.doubles("Tht_init");
+	Bc = parameters.doubles("Bc_init");
+	Ps = parameters.doubles("Ps_init");
+	Ig = parameters.doubles("Ig_init");
+	TCN = parameters.doubles("TCN_init");
+	THN= parameters.doubles("THN_init");
+	BN = parameters.doubles("BN_init");
 	
 	// OpenMP setup
 	omp_set_num_threads(PhysiCell_settings.omp_num_threads);
