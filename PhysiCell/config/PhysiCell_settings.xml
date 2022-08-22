@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">28800</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">17280</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -1011,7 +1011,7 @@
 			<Th1_decay type="double" units="cells/min"
 				description="Th1 active decay rate">7e-8</Th1_decay>
 			<Th_base_decay type="double" units="cells/min"
-				description="Th base dacay rates">0.000156</Th_base_decay>
+				description="Th base decay rates">0.000156</Th_base_decay>
 			<Th2_self_feeback type="double" units="cells/min"
 				description="Th2 max self feeback speed">0.00000004</Th2_self_feeback>
 			<Th2_max_conversion type="double" units="cells/min"
@@ -1112,9 +1112,9 @@
 			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">0</Bc_init>
 			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">0</Ps_init>
 			<Ig_init type="double" units="cells" descriptions="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
-			<TCN_init type="double" units="cells" descriptions="Initial value of Niave Cytotoxic T Cells in the lymph">1000</TCN_init>
-			<THN_init type="double" units="cells" descriptions="Initial value of Niave Helper T Cells in the lymph">1000</THN_init>
-			<BN_init type="double" units="cells" descriptions="Initial value of Niave B Cells in the lymph">1000</BN_init>
+			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">1000</TCN_init>
+			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">1000</THN_init>
+			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">1000</BN_init>
 			
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
