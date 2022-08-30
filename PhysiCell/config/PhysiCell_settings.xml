@@ -983,9 +983,14 @@
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract DC">0.5</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+			<Lymph_node_td type="double" units="days"
+						description="transport time of DC to lymph node">0.5</Lymph_node_td> <!-- 0.3 debug -->
+			<Lymph_node_Th type="double" units="days"
+						description="transport time of DC to lymph node">0.25</Lymph_node_Th>
+		<!-- 0.3 debug -->
 
 
-			<!-- (Michael) added parameters for external_immune-->
+		<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
 				description="TC death rate">1.4e-6</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"

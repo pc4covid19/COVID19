@@ -88,7 +88,11 @@ void external_immune_model( double dt )
 	
 	extern std::vector<int>history;
 	
-	x[0][0] = (DM+history.back())/lypmh_scale; 
+	static double timedelay = parameters.doubles( "Lymph_node_td" ); 
+	double td_l = round(timedelay*1440/dt);
+	//std::cout<<history[td_l]<<std::endl;
+	
+	x[0][0] = (DM+history[td_l])/lypmh_scale; 
 	x[0][1] = TC; //initial values
 	x[0][2] = TH1; //initial values
 	x[0][3] = TH2; //initial values
@@ -100,7 +104,7 @@ void external_immune_model( double dt )
 	x[0][9] = TCN;
 	x[0][10] = THN;
 	x[0][11] = BN;
-	x[0][12] = (DL+(THN+TH1+TH2)/(THN+TH1+TH2+5000)*history.back())/lypmh_scale;
+	x[0][12] = (DL+(THN+TH1+TH2)/(THN+TH1+TH2+5000)*history[td_l])/lypmh_scale;
 	//(pT/(y(5)+pT2) added
 	//rT1->pT1
 	//rT2->pT2

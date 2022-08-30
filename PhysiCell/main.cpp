@@ -84,7 +84,7 @@
 using namespace BioFVM;
 using namespace PhysiCell;
 
-bool sanity_check( Cell* pC )
+/* bool sanity_check( Cell* pC )
 {
 	if( std::isnan( pC->phenotype.volume.total ) || 
 		std::isnan( pC->position[0] ) ||
@@ -130,7 +130,7 @@ bool check_all( void )
 	}
 	return out; 
 
-}
+} */
 
 std::string COVID19_version = "0.6.0"; 
 
@@ -152,9 +152,9 @@ double EPICOUNT = 1;
 double tissueCD4=0;
 double tissueCD8=0;
 
-std::vector<int> history(72000); //144000 - full day delay - set max (lets say a day) delay, let user define up to that amt delay.
-std::vector<int> historyTc(60); //120 - half day delay
-std::vector<int> historyTh(60);
+std::vector<int> history(144001); //144000 - full day delay - set max (lets say a day) delay, let user define up to that amt delay.
+std::vector<int> historyTc(121); //120 - half day delay
+std::vector<int> historyTh(121);
 //size 72000 - 0.5 day -> 0.01min
 
 int main( int argc, char* argv[] )
@@ -326,7 +326,10 @@ int main( int argc, char* argv[] )
 			*/
             process_tagged_cells_on_edge();
 			
-			immune_cell_recruitment( diffusion_dt );
+			if( fmod(PhysiCell_globals.current_time, phenotype_dt) < 0.1*diffusion_dt )
+			{
+			immune_cell_recruitment( phenotype_dt );
+			}
 			/*
 			if( check_all() )
 			{ SVG_plot( "weird.svg" , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function ); system("pause"); }
