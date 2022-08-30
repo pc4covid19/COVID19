@@ -986,7 +986,7 @@
 			<Lymph_node_td type="double" units="days"
 						description="transport time of DC to lymph node">0.5</Lymph_node_td> <!-- 0.3 debug -->
 			<Lymph_node_Th type="double" units="days"
-						description="transport time of DC to lymph node">0.25</Lymph_node_Th>
+						description="transport time of T helper cells to lymph node">0.25</Lymph_node_Th>
 		<!-- 0.3 debug -->
 
 
