@@ -77,5 +77,19 @@ void DC_history_main_model( double dt )
 	/* std::copy(history.begin(), history.end(), std::ostream_iterator<int>(std::cout, " "));
 	std::cout << std::endl; 
 	 */
+	static double dose = parameters.doubles("Ig_dose");
+	static double therapy_dt = parameters.doubles("therapy_dt"); //when to insert antibody?
+	static double tolerance = 0.01 * diffusion_dt;
+	
+	if( PhysiCell_globals.current_time >= therapy_dt - tolerance && PhysiCell_globals.current_time <= therapy_dt + tolerance)
+	{ 
+		static int antibody_index = microenvironment.find_density_index( "Ig");
+		#pragma omp parallel for
+		for( int i=0 ; i < microenvironment.mesh.voxels.size() ;i++ )
+		{
+			microenvironment(i)[antibody_index] += 1.0;
+		}	
+	}
+	 
 	return; 
 }

@@ -1120,6 +1120,10 @@
 			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">1000</TCN_init>
 			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">1000</THN_init>
 			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">1000</BN_init>
+
+		<div_Therapy type="divider" description="--options for late Ig addition--"/>
+			<therapy_dt type="double" units="min" descriptions="time of Ig injection">0</therapy_dt>
+			<Ig_dose type="double" units="mol/micron^3" descriptions="amount of Ig injection">0</Ig_dose>
 			
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
