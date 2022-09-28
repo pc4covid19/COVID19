@@ -87,7 +87,7 @@ void DC_history_main_model( double dt )
 		#pragma omp parallel for
 		for( int i=0 ; i < microenvironment.mesh.voxels.size() ;i++ )
 		{
-			microenvironment(i)[antibody_index] += 1.0;
+			microenvironment(i)[antibody_index] += dose;
 		}	
 	}
 	 

@@ -89,7 +89,12 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	{
 		pCell->custom_data["infected_cell_chemokine_secretion_activated"] = 1.0; 
 		// (AJ-V5) Antibody binding starts once the cell is infected
-		pCell->phenotype.secretion.uptake_rates[antibody_index]=parameters.doubles("Antibody_binding_rate"); 
+		double uptakerate = parameters.doubles("Antibody_binding_rate")*(1000-phenotype.molecular.internalized_total_substrates[antibody_index])/1000;
+		if( uptakerate < 0)
+		{
+			uptakerate=0;
+		}
+		pCell->phenotype.secretion.uptake_rates[antibody_index]=uptakerate; 
 	}
 
 	if( pCell->custom_data["infected_cell_chemokine_secretion_activated"] > 0.1 && phenotype.death.dead == false )
