@@ -78,7 +78,7 @@ void DC_history_main_model( double dt )
 	std::cout << std::endl; 
 	 */
 	static double dose = parameters.doubles("Ig_dose");
-	static double therapy_dt = parameters.doubles("therapy_dt"); //when to insert antibody?
+	static double therapy_dt = parameters.doubles("therapy_dt")*1440; //when to insert antibody? days
 	static double tolerance = 0.01 * diffusion_dt;
 	
 	if( PhysiCell_globals.current_time >= therapy_dt - tolerance && PhysiCell_globals.current_time <= therapy_dt + tolerance)
