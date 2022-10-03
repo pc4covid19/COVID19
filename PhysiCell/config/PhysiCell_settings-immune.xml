@@ -204,7 +204,7 @@
 		<variable name="Ig" units="mol/micron^3" ID="8">
 			<physical_parameter_set>
 				<diffusion_coefficient units="micron^2/min">6</diffusion_coefficient>  <!-- reduce the diffusion -->
-				<decay_rate units="1/min">0.00139</decay_rate>  
+				<decay_rate units="1/min">0.0001</decay_rate>  
 			</physical_parameter_set>
 			<initial_condition units="mol/micron^3">0</initial_condition>
 			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
@@ -983,9 +983,14 @@
 				description="min concentration to attract DC">0.1</DC_recruitment_min_signal> <!--0.1 debug -->
 			<DC_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract DC">0.5</DC_recruitment_saturation_signal> <!-- 0.3 debug -->
+			<Lymph_node_td type="double" units="days"
+						description="transport time of DC to lymph node">0.5</Lymph_node_td> <!-- 0.3 debug -->
+			<Lymph_node_Th type="double" units="days"
+						description="transport time of T helper cells to lymph node">0.25</Lymph_node_Th>
+		<!-- 0.3 debug -->
 
 
-			<!-- (Michael) added parameters for external_immune-->
+		<!-- (Michael) added parameters for external_immune-->
 			<TC_death_rate type="double" units="cells/min"
 				description="TC death rate">1.4e-6</TC_death_rate>
 			<max_activation_TC type="double" units="cells/min"
@@ -1102,19 +1107,23 @@
 				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>
 
 		<div_lymph type="divider" description="--Lymph Node Values--"/>
-			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">0.057</DM_init>
-			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">0.041</DL_init>
-			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">75000</TC_init>
-			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">16</TH1_init>
-			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">1700</TH2_init>
+			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">4</DM_init>
+			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">2.8</DL_init>
+			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">2e5</TC_init>
+			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">110</TH1_init>
+			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">9e3</TH2_init>
 			<TCt_init type="double" units="cells" descriptions="Initial value of TCt in the lymph (should be 0)">0</TCt_init>
 			<Tht_init type="double" units="cells" descriptions="Initial value of Tht in the lymph (should be 0)">0</Tht_init>
-			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">630</Bc_init>
-			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">2000</Ps_init>
+			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">1.5e3</Bc_init>
+			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">1.2e3</Ps_init>
 			<Ig_init type="double" units="cells" descriptions="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
 			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">10</TCN_init>
 			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">10</THN_init>
 			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">20</BN_init>
+
+		<div_Therapy type="divider" description="--options for late Ig addition--"/>
+			<therapy_dt type="double" units="min" descriptions="time of Ig injection">0</therapy_dt>
+			<Ig_dose type="double" units="mol/micron^3" descriptions="amount of Ig injection">0</Ig_dose>
 			
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
