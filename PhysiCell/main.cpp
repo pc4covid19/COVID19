@@ -325,10 +325,9 @@ int main( int argc, char* argv[] )
 			  Custom add-ons could potentially go here. 
 			*/
             process_tagged_cells_on_edge();
-			
-			if( fmod(PhysiCell_globals.current_time, phenotype_dt) < 0.1*diffusion_dt )
+			if( fabs(remainder(PhysiCell_globals.current_time, phenotype_dt)) < 0.01 * diffusion_dt )
 			{
-			immune_cell_recruitment( phenotype_dt );
+				immune_cell_recruitment( phenotype_dt );
 			}
 			/*
 			if( check_all() )

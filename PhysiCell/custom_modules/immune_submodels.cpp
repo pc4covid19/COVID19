@@ -1524,7 +1524,6 @@ void immune_cell_recruitment( double dt )
 	
 	static double timedelay = parameters.doubles( "Lymph_node_Th" ); 
 	double td_l = round(timedelay*1440/dt);
-	
 	// CD8 Tcell recruitment (Michael) changed to take floor of ODE value
 	
 	extern double TCt; 
