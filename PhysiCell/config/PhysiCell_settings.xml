@@ -401,7 +401,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.002</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -964,11 +964,11 @@
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">1.5e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">1e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
+				description="min concentration to attract macrophages">0.05</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
-				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
+				description="saturating concentration to attract macrophages">0.25</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
 				description="max neutrophil recruitment rate (for saturated signal)">1.5e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->

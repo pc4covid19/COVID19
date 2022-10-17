@@ -88,9 +88,7 @@ void receptor_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 	double dR_EU = pCell->custom_data[nR_recycle]*pCell->custom_data[nR_IU];
  */
 	
-    double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]*
-     					phenotype.volume.total* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
-	const double PI  =3.141592653589793238463;
+    double dt_bind = dt* pCell->custom_data[nR_bind]* pCell->nearest_density_vector()[nV_external]* pCell->custom_data[nR_EU]; //use FE to find what loop to enter
 	if( dt_bind<1 )
 	{
 		//SOLVE ODE BEFORE STOCHASTIC PORTION

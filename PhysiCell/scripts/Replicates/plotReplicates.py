@@ -18,7 +18,7 @@ cellsb.shape
 mac = np.squeeze(np.sum([cells[:,1:5,:]], axis=2))
 mac_v = np.squeeze(np.sum([cells[:,1+17:5+17,:]], axis=2))
 
-t = np.linspace(0, 20, 241)
+t = np.linspace(0, 12, 145)
 
 
 immune_cells = ['CD8 T', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Macexh', 'Neut', 'DC', 'CD4 T', 'Fib', 'virion', 'IFN', 'Ig', 'pro-I', 'anti-I', 'collagen', 'epi']

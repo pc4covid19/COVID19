@@ -408,11 +408,17 @@ void CD8_Tcell_contact_function( Cell* pC1, Phenotype& p1, Cell* pC2, Phenotype&
 void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	int cycle_G0G1_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::G0G1_phase ); 
-	int cycle_S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase ); 
-	static int virus_index = microenvironment.find_density_index("virion");
-	int nV_external = virus_index;
-	double virus_amount = pCell->nearest_density_vector()[virus_index];
+	int cycle_S_index = flow_cytometry_separated_cycle_model.find_phase_index( PhysiCell_constants::S_phase );
+	static int debris_index = microenvironment.find_density_index( "debris");
 	
+	if( phenotype.death.dead == true )
+	{
+		pCell->functions.update_phenotype = NULL;
+		pCell->functions.custom_cell_rule = NULL; 
+
+		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+		return; 
+	}
 	
 	static int apoptosis_index = pCell->phenotype.death.find_death_model_index( "apoptosis" ); 
 	
@@ -431,17 +437,6 @@ void CD8_Tcell_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 		
 		pCell->phenotype.cycle.data.transition_rate(cycle_G0G1_index,cycle_S_index) = 0;
 		
-	}
-	
-	static int debris_index = microenvironment.find_density_index( "debris");
-	
-	if( phenotype.death.dead == true )
-	{
-		pCell->functions.update_phenotype = NULL;
-		pCell->functions.custom_cell_rule = NULL; 
-
-		phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
-		return; 
 	}
 
 	return; 
@@ -505,7 +500,6 @@ void CD8_Tcell_mechanics( Cell* pCell, Phenotype& phenotype, double dt )
 		phenotype.motility.is_motile = false; 
 		return; 
 	}
-	phenotype.motility.is_motile = true; // I suggest eliminating this. 
 	
 	return; 
 }
