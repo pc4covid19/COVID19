@@ -175,11 +175,11 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		
 		pCell->phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 0; 
 		pCell->phenotype.secretion.secretion_rates[debris_index] = pCell->custom_data["debris_secretion_rate"]; 
+		pCell->functions.update_phenotype = NULL; 
 		double positionpass0=pCell->position[0];
 		double positionpass1=pCell->position[1];
 		create_secreting_agentcall(positionpass0, positionpass1);
 		
-		pCell->functions.update_phenotype = NULL; 
 	}
 	
 	return; 

@@ -735,6 +735,21 @@ void macrophage_phenotype( Cell* pCell, Phenotype& phenotype, double dt )
 						double time_to_ingest = volume_ingested_cell*material_internalisation_rate;// convert volume to time taken to phagocytose
 						// (Adrianne) update internal time vector in macrophages that tracks time it will spend phagocytosing the material so they can't phagocytose again until this time has elapsed
 						pCell->custom_data.variables[time_to_next_phagocytosis_index].value = PhysiCell_globals.current_time+time_to_ingest;	
+						
+						// activate the cell if not already active 
+						if (pCell->custom_data["activated_immune_cell"] < 0.5){
+							phenotype.secretion.secretion_rates[proinflammatory_cytokine_index] = 
+							pCell->custom_data["activated_cytokine_secretion_rate"]; // 10;
+							phenotype.secretion.saturation_densities[proinflammatory_cytokine_index] = 1;
+
+							phenotype.secretion.uptake_rates[proinflammatory_cytokine_index] = 0.0; 
+
+							phenotype.motility.migration_speed = pCell->custom_data["activated_speed"]; 
+					
+						
+							pCell->custom_data["activated_immune_cell"] = 1.0; 
+						}
+						
 						return;						
 					}					
 			}
