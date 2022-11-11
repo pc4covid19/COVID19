@@ -1072,7 +1072,8 @@
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			<use_uniform_dist type="bool" units="none" 
 				description="use a uniform distribution">false</use_uniform_dist>
-			
+			<infection_std_dev type="double" units="micron"
+				description="std dev for normal distribution">100</infection_std_dev>
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" 

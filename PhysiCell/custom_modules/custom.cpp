@@ -240,11 +240,11 @@ void setup_tissue( void )
 	int number_of_virions = (int) ( parameters.doubles("multiplicity_of_infection") * 
 		(*all_cells).size() ); 
 	double single_virion_density_change = 1.0 / microenvironment.mesh.dV; 
-	
+	double viral_stddev = parameters.doubles("infection_std_dev");
 	// infect the cell closest to the center 
 
 	std::default_random_engine generator;
-	std::normal_distribution<double> distribution(0,100);
+	std::normal_distribution<double> distribution(0,viral_stddev);
 
 	if( parameters.bools( "use_single_infected_cell" ) == true )
 	{
@@ -275,29 +275,30 @@ void setup_tissue( void )
 				std::vector<double> position = {0,0,0};
 				double number = distribution(generator);
 				double number2 = distribution(generator);
-				if ((number>=-400)&&(number<=400)) {
+				if ((number>=x_min)&&(number<=x_max)) {
 					//place at position
 					position[0] = number;
+
 				}
-				else if (number<-400) {
+				else if (number<x_min) {
 					//place at edge
-					position[0] = -400;
+					position[0] = x_min + (x_max-x_min)*UniformRandom();
 				}
 				else {
 					//place at edge
-					position[0] = 400;
+					position[0] = x_min + (x_max-x_min)*UniformRandom();
 				}
-				if ((number2>=-400)&&(number2<=400)) {
+				if ((number2>=y_min)&&(number2<=y_max)) {
 					//place at position
 					position[1] = number2;
 				}
-				else if (number2<-400) {
+				else if (number2<y_min) {
 					//place at edge
-					position[1] = -400;
+					position[1] = y_min + (y_max-y_min)*UniformRandom(); 
 				}
 				else {
 					//place at edge
-					position[1] = 400;
+					position[1] = y_min + (y_max-y_min)*UniformRandom(); 
 				}
 				
 				int m = microenvironment.nearest_voxel_index( position ); 
