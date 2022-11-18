@@ -1066,6 +1066,8 @@
 				description="saturating concentration to attract fibroblast cells">22.928</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
+			<mech_voxel_size type="double" units="micron"
+				description="size of mechanics voxel">30</mech_voxel_size> <!-- 0.01 debug -->
 			<multiplicity_of_infection type="double" units="none" 
 				description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
 			<use_single_infected_cell type="bool" units="none" 
