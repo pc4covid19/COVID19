@@ -87,7 +87,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">17280</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
+		<max_time units="min">21600</max_time> <!-- 8640, 5 days * 24 h * 60 min -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -401,7 +401,7 @@
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
 				<ACE2_binding_rate type="double" units="1/min" 
-					description="ACE2 receptor-virus binding rate">0.0001</ACE2_binding_rate> 
+					description="ACE2 receptor-virus binding rate">0.002</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
 				<ACE2_cargo_release_rate type="double" units="1/min" 
@@ -482,10 +482,10 @@
 					
 				
 				<interferon_secretion_rate_via_infection type="double" units="1/min" 
-					description="Type-1 interferon secretion rate for infected cells">0.2</interferon_secretion_rate_via_infection>
+					description="Type-1 interferon secretion rate for infected cells">0.01</interferon_secretion_rate_via_infection>
 <!-- 0.01 to slow pread, 0.1 to halt --> 					
 				<max_interferon_secretion_rate_via_paracrine type="double" units="1/min" 
-					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.05</max_interferon_secretion_rate_via_paracrine>
+					description="Type-1 interferon secretion rate after activation by Type-1 interferon">0.1</max_interferon_secretion_rate_via_paracrine>
 <!-- 0.1 to slow spread, 1 to halt --> 					
 				<interferon_max_response_threshold type="double" units="dimensionless" 
 					description="Interferon response scales linearly until Int-1 exceeds this threshold">1</interferon_max_response_threshold>
@@ -509,7 +509,7 @@
 					description="the mean duration of a cell-cell attachment">0</cell_attachment_lifetime>
 				
 				<TCell_contact_death_threshold units="min" type="double"
-					description="threshold CD8 T cell contact time to trigger apoptosis">25</TCell_contact_death_threshold> <!-- 50 -->
+					description="threshold CD8 T cell contact time to trigger apoptosis">5</TCell_contact_death_threshold> <!-- 50 -->
 				<max_attachment_distance units="micron" type="double"
 					desription="max distance at which to form a cell-cell attachment">15</max_attachment_distance>
 				<elastic_attachment_coefficient units="1/min" type="double"
@@ -562,7 +562,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed>
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">0.01</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
 
 				<activated_immune_cell units="dimensionless" type="double" 
 					description="used internally to track activation state">0.0</activated_immune_cell>
@@ -721,7 +721,7 @@
 				
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.004</uptake_rate>
+						<uptake_rate units="1/min">0.01</uptake_rate>
 					</substrate> 	
 				</secretion>
 				
@@ -737,7 +737,7 @@
 				<activated_speed units="micron/min" type="double" 
 					description="speed after activation">0.4</activated_speed> <!-- 0.4 --> 
 				<activated_cytokine_secretion_rate units="1/min" type="double" 
-					description="rate of secreting pro-inflamatory cytokine after activation">1</activated_cytokine_secretion_rate>
+					description="rate of secreting pro-inflamatory cytokine after activation">10</activated_cytokine_secretion_rate>
 
 			</custom_data>
 		</cell_definition>		
@@ -767,7 +767,7 @@
 
 				<secretion>
 					<substrate name="virion">
-						<uptake_rate units="1/min">0.004</uptake_rate>
+						<uptake_rate units="1/min">0.01</uptake_rate>
 					</substrate> 	
 				</secretion>
 
@@ -964,16 +964,16 @@
 				description="immune cell position over the epithelium">0</immune_z_offset>
 
 			<macrophage_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max macrophage recruitment rate (for saturated signal)">1.5e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max macrophage recruitment rate (for saturated signal)">1e-8</macrophage_max_recruitment_rate> <!-- 4e-9 debug -->
 			<macrophage_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract macrophages">0.1</macrophage_recruitment_min_signal> <!--0.1 debug -->
+				description="min concentration to attract macrophages">0.05</macrophage_recruitment_min_signal> <!--0.1 debug -->
 			<macrophage_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract macrophages">0.5</macrophage_recruitment_saturation_signal> <!-- 0.3 debug -->
 
 			<neutrophil_max_recruitment_rate type="double" units="cells/min/micron^3"
-				description="max neutrophil recruitment rate (for saturated signal)">1.5e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
+				description="max neutrophil recruitment rate (for saturated signal)">1e-8</neutrophil_max_recruitment_rate> <!-- 4e-9 debug -->
 			<neutrophil_recruitment_min_signal type="double" units="substrate/micron^3"
-				description="min concentration to attract neutrophils">0.1</neutrophil_recruitment_min_signal> <!--0.1 debug -->
+				description="min concentration to attract neutrophils">0.05</neutrophil_recruitment_min_signal> <!--0.1 debug -->
 			<neutrophil_recruitment_saturation_signal type="double" units="substrate/micron^3"
 				description="saturating concentration to attract neutrophils">0.5</neutrophil_recruitment_saturation_signal> <!-- 0.3 debug -->
 				
@@ -1004,9 +1004,9 @@
 			<TC_population_threshold type="double" units="cells"
 				description="TC population threshold">1000</TC_population_threshold>
 			<T_Cell_Recruitment type="double" units="cells/min"
-				description="T cell recruitment factor to tissue">0.001</T_Cell_Recruitment>
+				description="T cell recruitment factor to tissue">0.005</T_Cell_Recruitment>
 			<transport_ratio type="double" units="cells/min"
-				description="ratio to achieve a 95% reduction in transport">0.2</transport_ratio>
+				description="ratio to achieve a 95% reduction in transport">0.05</transport_ratio>
 			<DM_decay type="double" units="cells/min"
 				description="DM decay rate">0.00035</DM_decay>
 			<Th1_max_activation type="double" units="cells/min"
@@ -1028,17 +1028,17 @@
 			<BCell_activation_half type="double" units="cells/min"
 				description="BCell activation rate">1e4</BCell_activation_half>
 			<BCell_DC_proliferation type="double" units="cells/min"
-				description="BCell DC influenced proliferation">0.0012</BCell_DC_proliferation>
+				description="BCell DC influenced proliferation">0.002</BCell_DC_proliferation>
 			<BCell_Th2_wieght_function type="double" units="cells/min"
-				description="BCell proliferation Th2 wieght function">6.6</BCell_Th2_wieght_function>
+				description="BCell proliferation Th2 wieght function">1.25</BCell_Th2_wieght_function>
 			<BCell_damping type="double" units="cells/min"
-				description="BCell damping value">8800</BCell_damping>
+				description="BCell damping value">20000</BCell_damping>
 			<PCell_recuitment type="double" units="cells/min"
 				description="PCell recuitment rate">0.0002</PCell_recuitment>
 			<PCell_degradation type="double" units="cells/min"
 				description="PCell degradation rate">0.00014</PCell_degradation>
 			<Ig_recuitment type="double" units="cells/min"
-				description="Ig recuitment rate">0.05</Ig_recuitment>
+				description="Ig recuitment rate">1</Ig_recuitment>
 			<Ig_degradation type="double" units="cells/min"
 				description="Ig degradation rate">0.00139</Ig_degradation>
 			<DC_leave_prob type="double" units="cells/min"
@@ -1066,13 +1066,16 @@
 				description="saturating concentration to attract fibroblast cells">22.928</fibroblast_recruitment_saturation_signal> <!-- 0.7 debug -->
 		
 		<div_initialization type="divider" description="---Initialization Options--"/>
+			<mech_voxel_size type="double" units="micron"
+				description="size of mechanics voxel">30</mech_voxel_size> <!-- 0.01 debug -->
 			<multiplicity_of_infection type="double" units="none" 
 				description="multiplicity of infection: virions/cells at t=0">0.1</multiplicity_of_infection> <!-- 0.01 debug -->
 			<use_single_infected_cell type="bool" units="none" 
 				description="Infect center cell with one virion (overrides MOI)">false</use_single_infected_cell>
 			<use_uniform_dist type="bool" units="none" 
 				description="use a uniform distribution">false</use_uniform_dist>
-			
+			<infection_std_dev type="double" units="micron"
+				description="std dev for normal distribution">100</infection_std_dev>
 			<number_of_CD8_Tcells type="int" units="none" 
 				description="initial number of CD8 T cells in tissue">0</number_of_CD8_Tcells>
 			<number_of_macrophages type="int" units="none" 
@@ -1107,19 +1110,19 @@
 				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>
 
 		<div_lymph type="divider" description="--Lymph Node Values--"/>
-			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">4</DM_init>
-			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">2.8</DL_init>
-			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">2e5</TC_init>
-			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">110</TH1_init>
-			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">9e3</TH2_init>
+			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">0.1</DM_init>
+			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">0.084</DL_init>
+			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">1.1e5</TC_init>
+			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">13</TH1_init>
+			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">3.5e3</TH2_init>
 			<TCt_init type="double" units="cells" descriptions="Initial value of TCt in the lymph (should be 0)">0</TCt_init>
 			<Tht_init type="double" units="cells" descriptions="Initial value of Tht in the lymph (should be 0)">0</Tht_init>
-			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">1.5e3</Bc_init>
-			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">1.2e3</Ps_init>
+			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">5.2e3</Bc_init>
+			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">2.5e4</Ps_init>
 			<Ig_init type="double" units="cells" descriptions="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
-			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">10</TCN_init>
-			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">10</THN_init>
-			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">20</BN_init>
+			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">1000</TCN_init>
+			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">1000</THN_init>
+			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">1000</BN_init>
 
 		<div_Therapy type="divider" description="--options for late Ig addition--"/>
 			<therapy_dt type="double" units="min" descriptions="time of Ig injection">0</therapy_dt>
