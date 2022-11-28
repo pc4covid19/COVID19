@@ -15,6 +15,7 @@ from pyMCDS import pyMCDS
 # In[ ]:
 
 data = []
+datatrace = []
     
 temp1_DM = []  # 3
 temp1_TC = []  # 3
@@ -24,7 +25,7 @@ temp1_BC = []  # 3
 temp1_PS = []  # 3
 temp1_DL = []  # 3
 
-for j in range(12): 
+for j in range(20): 
 
     file_name = 'dm_tc.dat'
     path = 'output_R'+str("%02d"%j)
@@ -74,8 +75,11 @@ stdPS = np.std(aPS, axis=0)
 stdDL = np.std(aDL, axis=0)
 
 data.append( np.vstack((meanDM, meanTC, meanTH1, meanTH2, meanBC, meanPS, meanDL, stdDM, stdTC, stdTH1, stdTH2, stdBC, stdPS, stdDL)) )
+datatrace= np.dstack([aDM,aTC,aTH1,aTH2,aBC,aPS,aDL])
 
 timedata = np.asarray(data)
 
 sio.savemat('timeReplicateDat.mat', {'timedata':timedata})
+sio.savemat('timeTracesDat.mat', {'tracedata':datatrace})
+
 

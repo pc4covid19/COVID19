@@ -15,6 +15,7 @@ from pyMCDS import pyMCDS
 # In[ ]:
 
 data = []
+datatrace = []
     
 temp2_CD8 = []  # 3
 temp2_mac = []  # 4
@@ -34,7 +35,7 @@ temp2_aI = []   # env
 temp2_col = []   # env
 temp2_epi = []  # 1
 
-for j in range(12): 
+for j in range(20): 
 
     temp1_CD8 = []  # 3
     temp1_mac = []  # 4
@@ -54,7 +55,7 @@ for j in range(12):
     temp1_col = []   # env
     temp1_epi = []  # 1
 
-    for k in range(145):
+    for k in range(181):
         str_name = 'output{:08d}.xml'.format(k)
         path = 'output_R'+str("%02d"%j)
         mcds = pyMCDS(str_name, path)  # /case1/run3/output
@@ -189,11 +190,11 @@ stdcol = np.std(acol, axis=0)
 stdepi = np.std(aepi, axis=0)
 
 data.append( np.vstack((meanCD8, meanmac, meanmacM2, meanmaci, meanmach, meanmacex, meanneut, meanDC, meanCD4, meanfib, meanvir, meanIFN, meanIg, meanpI, meanaI, meancol,meanepi, stdCD8, stdmac, stdmacM2, stdmaci,stdmach,stdmacex, stdneut, stdDC, stdCD4, stdfib, stdvir, stdIFN, stdIg,stdpI,stdaI,stdcol,stdepi)) )
-
+datatrace= np.dstack([aCD8, amac, amacM2, amaci, amach, amacex, aneut, aDC, aCD4, afib, avir, aIFN, aIg, apI, aaI, acol, aepi])
 
 # In[10]:
 
 timedata = np.asarray(data)
 
 sio.savemat('timeReplicate.mat', {'timedata':timedata})
-
+sio.savemat('timeTraces.mat', {'tracedata':datatrace})
