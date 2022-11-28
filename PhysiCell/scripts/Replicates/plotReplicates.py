@@ -11,14 +11,15 @@ a = sio.loadmat('timeReplicate.mat')
 cells = a['timedata']
 b = sio.loadmat('timeReplicateDat.mat')
 cellsb = b['timedata']
-
-cells.shape
-cellsb.shape
+c = sio.loadmat('timeTraces.mat') # rep,time,i
+cellsc = c['tracedata']
+d = sio.loadmat('timeTracesDat.mat') # rep,time,i
+cellsd = d['tracedata']
 
 mac = np.squeeze(np.sum([cells[:,1:5,:]], axis=2))
 mac_v = np.squeeze(np.sum([cells[:,1+17:5+17,:]], axis=2))
 
-t = np.linspace(0, 12, 145)
+t = np.linspace(0, 15, 181)
 
 
 immune_cells = ['CD8 T', 'Mac', 'M2Mac', 'Maci', 'Mach', 'Macexh', 'Neut', 'DC', 'CD4 T', 'Fib', 'virion', 'IFN', 'Ig', 'pro-I', 'anti-I', 'collagen', 'epi']
@@ -85,7 +86,7 @@ for i in range(1):
         ax.fill_between(t, innate_r[j,:]-innate_v[j,:], innate_r[j,:]+innate_v[j,:], 
                            label=innate[j], color= colorv[j], alpha=0.35)   
     
-    ax.legend(fontsize=12, loc=2, ncol=2)
+    ax.legend(fontsize=12, loc=1, ncol=2)
           
     ax.set_xlabel('Time (days)', fontsize=16)
 
@@ -106,20 +107,21 @@ plt.clf()
 fig, ax = plt.subplots(figsize=(6, 4))
 
 for i in range(1):
-    
-    for j in range( len(immun_r) ):
-        ax.plot(t, immun_r[j,:], color= colorv2[j], linewidth=2)
-        ax.fill_between(t, immun_r[j,:]-immun_v[j,:], immun_r[j,:]+immun_v[j,:], 
+    fig, ax1 = plt.subplots(figsize=(6, 4))
+    ax1.set_xlabel('Time (days)', fontsize=16) 
+    ax1.set_ylabel('immune', color = 'black', fontsize=16) 
+    for j in range( len(immun_r)-1 ):
+        ax1.plot(t, immun_r[j,:], color= colorv2[j], linewidth=2)
+        ax1.fill_between(t, immun_r[j,:]-immun_v[j,:], immun_r[j,:]+immun_v[j,:], 
                            label=set1[j], color= colorv2[j], alpha=0.35)   
+    # Adding Twin Axes to plot using dataset_2
+    ax2 = ax1.twinx() 
+    color = 'C1'
+    ax2.set_ylabel('Ig [#/micron]', color = colorv2[3], fontsize=16)                 
+    ax2.plot(t,  np.transpose(cellsc[:,:,12])/8000/1600, color = colorv2[3], linewidth=1, alpha=0.35)  
+    ax2.plot(t, immun_r[3,:]/8000/1600, color= colorv2[3], linewidth=2)
     
-    ax.legend(fontsize=12, loc=2, ncol=2)
-          
-    ax.set_xlabel('Time (days)', fontsize=16)
-
-    ax.set_ylabel('# of immune cells', fontsize=16)
-        
-    ax.set_ylim([-50, 400])
-    ax.tick_params(axis='both', which='major', labelsize=16)
+    ax1.legend(fontsize=12, loc='upper left', ncol=2)
 
     # Customize the major grid
     ax.grid(which='major', linestyle='solid', linewidth='2', color='w')
@@ -138,9 +140,8 @@ for i in range(1):
     ax1.set_xlabel('Time (days)', fontsize=16) 
     ax1.set_ylabel('virion', color = color, fontsize=16) 
     for j in range( len(counter1), len(counter1)+1, 1):
-        ax1.plot(t, cells[i,j,:], color = color, linewidth=2)
-        ax1.fill_between(t, cells[i,j,:]-cells[i,j+17,:], cells[i,j,:]+cells[i,j+17,:], 
-                           label=immune_cells[j], color='C0', alpha=0.35)  
+        ax1.plot(t,  np.transpose(cellsc[:,:,10]), color = color, linewidth=1, alpha=0.35)  
+        ax1.plot(t, cells[i,j,:], color = color, linewidth=3)
     ax1.tick_params(axis ='y', which='major', labelsize=16, labelcolor = color) 
     ax1.tick_params(axis ='x', which='major', labelsize=16, labelcolor = color) 
   
@@ -202,23 +203,26 @@ plt.clf()
 fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
     
-    for j in range(len(repair_r)):
-        ax.plot(t, repair_r[j,:], linewidth=2)
-        ax.fill_between(t, repair_r[j,:]-repair_v[j,:], repair_r[j,:]+repair_v[j,:], 
-                           label=repair[j], alpha=0.35)                          
+    fig, ax1 = plt.subplots(figsize=(6, 4))
+    color = 'C0'
+    ax1.set_xlabel('Time (days)', fontsize=16) 
+    ax1.set_ylabel('collagen [count]', color = color, fontsize=16)
     
-    ax.legend(fontsize=12, ncol=2)
-          
-    ax.set_xlabel('Time (days)', fontsize=16)
-
-    ax.set_ylabel('Collagen [Count]', fontsize=16)
-        
-    #ax.set_ylim([-50, 400])
-    ax.tick_params(axis='both', which='major', labelsize=16)
-
-    # Customize the major grid
-    ax.grid(which='major', linestyle='solid', linewidth='2', color='w')
-    ax.set_facecolor("#EEEEEE")  # #E6E6E6, #D3D3D3
+    ax1.plot(t, repair_r[0,:],color = color, linewidth=2)
+    ax1.fill_between(t, repair_r[0,:]-repair_v[0,:], repair_r[0,:]+repair_v[0,:], 
+                       label=repair[0],color = color, alpha=0.35)
+    ax1.tick_params(axis ='y', which='major', labelsize=16, labelcolor = color) 
+    ax1.tick_params(axis ='x', which='major', labelsize=16, labelcolor = color) 
+                       
+    # Adding Twin Axes to plot using dataset_2
+    ax2 = ax1.twinx() 
+    color = 'C1'
+    ax2.set_ylabel('fibroblast [count]', color = color, fontsize=16)
+    
+    ax2.plot(t, repair_r[1,:],color = color, linewidth=2)
+    ax2.fill_between(t, repair_r[1,:]-repair_v[1,:], repair_r[1,:]+repair_v[1,:], 
+                       label=repair[1],color = color, alpha=0.35)  
+    ax2.tick_params(axis ='y', which='major', labelsize=16, labelcolor = color)                        
 
 plt.tight_layout()
 fig.savefig('populationcol.png', dpi=600, pad_inches=0.1, bbox_inches='tight')  # dpi=600, 
@@ -228,11 +232,10 @@ fig, ax = plt.subplots(figsize=(6, 4))
 for i in range(1):
     
     for j in range( len(counter1)+len(set2)+len(set4)+len(repair), len(counter1)+len(set2)+len(set4)+len(repair)+len(set6) , 1):
-        ax.plot(t, cells[i,j,:], linewidth=2)
-        ax.fill_between(t, cells[i,j,:]-cells[i,j+17,:], cells[i,j,:]+cells[i,j+17,:], 
-                           label=immune_cells[j], alpha=0.35)   
+        ax.plot(t,  np.transpose(cellsc[:,:,16]), color = 'C0', linewidth=1, alpha=0.35)  
+        ax.plot(t, cells[i,j,:], color = 'C0', linewidth=3)
     
-    ax.legend(fontsize=12, ncol=2)
+    #ax.legend(fontsize=12, ncol=2)
           
     ax.set_xlabel('Time (days)', fontsize=16)
 
