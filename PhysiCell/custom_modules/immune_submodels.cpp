@@ -3,7 +3,7 @@
 
 using namespace PhysiCell; 
 
-std::string immune_submodels_version = "0.5.0"; 
+std::string immune_submodels_version = "0.6.0"; 
 // Submodel_Information Immune_submodels_info; // not needed for now 
 
 Submodel_Information CD8_submodel_info; 
@@ -1463,7 +1463,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_macrophage_recruitment_time )
 		{ first_macrophage_recruitment_time = PhysiCell_globals.current_time; }
 
-		std::cout << "\tRecruiting " << number_of_new_cells_int << " macrophages ... " << std::endl; 
+		// std::cout << "\tRecruiting " << number_of_new_cells_int << " macrophages ... " << std::endl; 
 		
 		for( int n = 0; n < number_of_new_cells_int ; n++ )
 		{ create_infiltrating_macrophage(); }
@@ -1516,7 +1516,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_neutrophil_recruitment_time )
 		{ first_neutrophil_recruitment_time = PhysiCell_globals.current_time; }
 
-		std::cout << "\tRecruiting " << number_of_new_cells_int << " neutrophils ... " << std::endl; 
+		// std::cout << "\tRecruiting " << number_of_new_cells_int << " neutrophils ... " << std::endl; 
 		
 		for( int n = 0; n < number_of_new_cells_int ; n++ )
 		{ create_infiltrating_neutrophil(); }
@@ -1553,7 +1553,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_CD8_T_cell_recruitment_time )
 		{ first_CD8_T_cell_recruitment_time = PhysiCell_globals.current_time; }
 		
-		std::cout << "\tRecruiting " << historyTc[td_l] << " CD8 T cells ... " << cd8report  << std::endl; 
+		// std::cout << "\tRecruiting " << historyTc[td_l] << " CD8 T cells ... " << cd8report  << std::endl; 
 
 		for( int n = 0; n < historyTc[td_l] ; n++ )
 		{ create_infiltrating_Tcell(); }
@@ -1576,7 +1576,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_CD4_T_cell_recruitment_time )
 		{ first_CD4_T_cell_recruitment_time = PhysiCell_globals.current_time; }
 		
-		std::cout << "\tRecruiting " << historyTh[td_l] << " CD4 T cells ... " << cd4report << std::endl; 
+		// std::cout << "\tRecruiting " << historyTh[td_l] << " CD4 T cells ... " << cd4report << std::endl; 
 
 		for( int n = 0; n < historyTh[td_l] ; n++ )
 		{ create_infiltrating_CD4Tcell(); }
@@ -1641,7 +1641,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_DC_recruitment_time )
 		{ first_DC_recruitment_time = PhysiCell_globals.current_time; }
 		
-		std::cout << "\tRecruiting " << number_of_new_cells_int << " DCs ... " << std::endl; 
+		// std::cout << "\tRecruiting " << number_of_new_cells_int << " DCs ... " << std::endl; 
 
 		for( int n = 0; n < number_of_new_cells_int ; n++ )
 		{ create_infiltrating_DC(); }
@@ -1693,7 +1693,7 @@ void immune_cell_recruitment( double dt )
 		if( PhysiCell_globals.current_time < first_fibroblast_cell_recruitment_time )
 		{ first_fibroblast_cell_recruitment_time = PhysiCell_globals.current_time; }
 
-		std::cout << "\tRecruiting " << number_of_new_cells_int << " fibroblast cells ... " << std::endl;
+		// std::cout << "\tRecruiting " << number_of_new_cells_int << " fibroblast cells ... " << std::endl;
 
 		for( int n = 0; n < number_of_new_cells_int ; n++ )
 		{ create_infiltrating_fibroblast(); }
@@ -1855,7 +1855,7 @@ void detach_all_dead_cells( void )
 		{
 			if( pC->state.neighbors.size() > 0 )
 			{
-				std::cout << "remove all attachments for " << pC << " " << pC->type_name << std::endl; 
+				// std::cout << "remove all attachments for " << pC << " " << pC->type_name << std::endl; 
 				pC->remove_all_attached_cells(); 
 			}
 		}	

@@ -2,7 +2,7 @@
 
 using namespace PhysiCell; 
 
-std::string epithelium_submodel_version = "0.5.0"; 
+std::string epithelium_submodel_version = "0.6.0"; 
 
 Submodel_Information epithelium_submodel_info; 
 
@@ -165,10 +165,10 @@ void TCell_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 		// detach all attached cells 
 		// remove_all_adhesions( pCell ); 
 		
-		#pragma omp critical
-		{
-		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
-		}
+		//#pragma omp critical
+		//{
+		//std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from T cell contact" << std::endl; 
+		//}
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 
@@ -199,15 +199,15 @@ void ROS_induced_apoptosis( Cell* pCell, Phenotype& phenotype, double dt )
 	
 	if( UniformRandom() < prob_apoptosis )
 	{
-		std::cout<<ROS_amount<<" "<<epsilon_ROS<<std::endl;
+		//std::cout<<ROS_amount<<" "<<epsilon_ROS<<std::endl;
 		// make sure to get rid of all adhesions! 
 		// detach all attached cells 
 		// remove_all_adhesions( pCell ); 
 		
-		#pragma omp critical
-		{
-		std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from ROS" << std::endl; 
-		}
+		//#pragma omp critical
+		//{
+		//std::cout << "\t\t\t\t" << pCell << " (of type " << pCell->type_name <<  ") died from ROS" << std::endl; 
+		//}
 		
 		// induce death 
 		pCell->start_death( apoptosis_index ); 
