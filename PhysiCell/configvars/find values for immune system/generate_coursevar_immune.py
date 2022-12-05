@@ -52,7 +52,7 @@ def generate_parSamples(parameters, default_value, variation, Samples_number,Rep
     DC_s=DCH*samples+(1-samples)*DCL
     DM_s=DMH*samples+(1-samples)*DML
     TC_s=TCH*samples+(1-samples)*TCL
-    TH1_s=TH2H*samples+(1-samples)*TH1L
+    TH1_s=TH1H*samples+(1-samples)*TH1L
     TH2_s=TH2H*samples+(1-samples)*TH2L
     Bc_s=BcH*samples+(1-samples)*BcL
     Ps_s=PsH*samples+(1-samples)*PsL
