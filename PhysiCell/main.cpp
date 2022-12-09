@@ -197,7 +197,16 @@ int main( int argc, char* argv[] )
 	/* PhysiCell setup */ 
  	
 	// set mechanics voxel size, and match the data structure to BioFVM
+	// If this is not provided in the .xml, it will return 0 which leads to a memory explosion and crash
 	double mechanics_voxel_size = parameters.doubles("mech_voxel_size"); 
+    if (mechanics_voxel_size < 1.e-6)
+    {
+        std::cout << "ERROR: mechanics_voxel_size (not a user_param in .xml?)= " << mechanics_voxel_size << std::endl;
+        std::cout << "* probably not provided as a user_param in .xml " << std::endl;
+        std::cout << "* setting = 30" << std::endl;
+        // exit(-1);
+	    mechanics_voxel_size = 30.0;
+    }
 	Cell_Container* cell_container = create_cell_container_for_microenvironment( microenvironment, mechanics_voxel_size );
 	
 	/* Users typically start modifying here. START USERMODS */ 
