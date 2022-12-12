@@ -400,7 +400,7 @@
 				<bound_internal_ACE2 type="double" units="receptors"
 					description="initial number of internalized bound ACE2 receptors">0</bound_internal_ACE2>
 	
-				<ACE2_binding_rate type="double" units="1/min" 
+				<ACE2_binding_rate type="double" units="micron^3/(# min)" 
 					description="ACE2 receptor-virus binding rate">0.002</ACE2_binding_rate> 
 				<ACE2_endocytosis_rate type="double" units="1/min" 
 					description="ACE2 receptor-virus endocytosis rate">0.01</ACE2_endocytosis_rate> 
@@ -1101,32 +1101,32 @@
 				description="Departure rate of activated DCs">0.001</departure_rate_of_DCs>
 		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
 			<virions_needed_for_DC_activation type="double" units="virions"
-				descriptions="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
-		<!-- (Adrianne) multiple of the radii of the two immune cells interacting to check they are close enough-->		
+				description="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
+		<!-- (Adrianne) multiple of the rawdii of the two immune cells interacting to check they are close enough-->		
 		<epsilon_distance type="double" units="dimensionless"
-				descriptions="Multiple of interaction distance for immune cells">1.75</epsilon_distance>
+				description="Multiple of interaction distance for immune cells">1.75</epsilon_distance>
 				
 			<perecentage_tissue_vascularized units="percentage" type="double"
 				description="percentage of tissue sitting above blood vessels">8.8</perecentage_tissue_vascularized>
 
 		<div_lymph type="divider" description="--Lymph Node Values--"/>
-			<DM_init type="double" units="cells" descriptions="Initial value of DC in the lymph">0</DM_init>
-			<DL_init type="double" units="cells" descriptions="Initial value of Licensed DC in the lymph">0</DL_init>
-			<TC_init type="double" units="cells" descriptions="Initial value of TC in the lymph">0</TC_init>
-			<TH1_init type="double" units="cells" descriptions="Initial value of TH1 in the lymph">0</TH1_init>
-			<TH2_init type="double" units="cells" descriptions="Initial value of TH2 in the lymph">0</TH2_init>
-			<TCt_init type="double" units="cells" descriptions="Initial value of TCt in the lymph (should be 0)">0</TCt_init>
-			<Tht_init type="double" units="cells" descriptions="Initial value of Tht in the lymph (should be 0)">0</Tht_init>
-			<Bc_init type="double" units="cells" descriptions="Initial value of B Cells in the lymph">0</Bc_init>
-			<Ps_init type="double" units="cells" descriptions="Initial value of Plasma Cells in the lymph">0</Ps_init>
-			<Ig_init type="double" units="cells" descriptions="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
-			<TCN_init type="double" units="cells" descriptions="Initial value of Naive Cytotoxic T Cells in the lymph">1000</TCN_init>
-			<THN_init type="double" units="cells" descriptions="Initial value of Naive Helper T Cells in the lymph">1000</THN_init>
-			<BN_init type="double" units="cells" descriptions="Initial value of Naive B Cells in the lymph">1000</BN_init>
+			<DM_init type="double" units="cells" description="Initial value of DC in the lymph">0</DM_init>
+			<DL_init type="double" units="cells" description="Initial value of Licensed DC in the lymph">0</DL_init>
+			<TC_init type="double" units="cells" description="Initial value of TC in the lymph">0</TC_init>
+			<TH1_init type="double" units="cells" description="Initial value of TH1 in the lymph">0</TH1_init>
+			<TH2_init type="double" units="cells" description="Initial value of TH2 in the lymph">0</TH2_init>
+			<TCt_init type="double" units="cells" description="Initial value of TCt in the lymph (should be 0)">0</TCt_init>
+			<Tht_init type="double" units="cells" description="Initial value of Tht in the lymph (should be 0)">0</Tht_init>
+			<Bc_init type="double" units="cells" description="Initial value of B Cells in the lymph">0</Bc_init>
+			<Ps_init type="double" units="cells" description="Initial value of Plasma Cells in the lymph">0</Ps_init>
+			<Ig_init type="double" units="cells" description="Initial value of Antibody in the lymph to transport (should be 0)">0</Ig_init>
+			<TCN_init type="double" units="cells" description="Initial value of Naive Cytotoxic T Cells in the lymph">1000</TCN_init>
+			<THN_init type="double" units="cells" description="Initial value of Naive Helper T Cells in the lymph">1000</THN_init>
+			<BN_init type="double" units="cells" description="Initial value of Naive B Cells in the lymph">1000</BN_init>
 
 		<div_Therapy type="divider" description="--options for late Ig addition--"/>
-			<therapy_dt type="double" units="min" descriptions="time of Ig injection">0</therapy_dt>
-			<Ig_dose type="double" units="mol/micron^3" descriptions="amount of Ig injection">0</Ig_dose>
+			<therapy_dt type="double" units="min" description="time of Ig injection">0</therapy_dt>
+			<Ig_dose type="double" units="mol/micron^3" description="amount of Ig injection">0</Ig_dose>
 			
 		<div_colors type="divider" description="---Cell Color Options--"/>
 			<color_variable type="string" description="color cells based on this variable">assembled_virion</color_variable>
