@@ -1171,9 +1171,6 @@
 				description="DC color">deeppink</activated_DC_color>
 			<fibroblast_color type="string"
 				description="fibroblast cell color">blueviolet</fibroblast_color>
-		<!-- (Adrianne V5)  Rate that neutrophils and macs uptake virus, needs to be determined from literature-->
-			<phagocytes_virus_uptake_rate type="double" units="none"
-				description="Rate that phagocytes uptake virus after activation">0.0001</phagocytes_virus_uptake_rate>
 		<!-- (Adrianne v5) Rate that neutrophils (activated) secrete ROS -->
 			<ROS_secretion_rate type="double" units="none"
 				description="Rate that neutrophils secrete ROS">0.01</ROS_secretion_rate>
