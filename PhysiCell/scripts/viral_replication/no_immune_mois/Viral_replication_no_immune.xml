@@ -885,9 +885,6 @@
 		<!-- (Adrianne) New attachment rate of CD8s after interaction with DCS-->	
 			<DC_induced_CD8_attachment type="double" units="cells/min/micron^3"
 				description="DC induced CD8 attachement rate">0.6</DC_induced_CD8_attachment><!-- currently an arbitrary choice -->
-		<!-- (Adrianne) departure rate of DCs ** need to put Tarun's model value here -->
-			<departure_rate_of_DCs type="double" units="cells/min/micron^3"
-				description="Departure rate of activated DCs">0.001</departure_rate_of_DCs>
 		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
 			<virions_needed_for_DC_activation type="int" units="virions"
 				descriptions="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
