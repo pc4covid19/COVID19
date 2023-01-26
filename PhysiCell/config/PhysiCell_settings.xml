@@ -536,9 +536,6 @@
 				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be M2 --> 
 				<M2_phase units="dimensionless" type="int"
 					description="Boolean for whether macrophages can phagocytose infected cells">0</M2_phase>
-				<!-- (adrianne) time (mins) after DC activation when it will leave tissue, assigned uniform random variable at activation--> 
-				<time_of_DC_departure units="min" type="double"
-					description="Time DC leaves tissue after activation">0</time_of_DC_departure>
 <!--
 				<relative_maximum_volume units="dimensionless" type="double"
 					description="max tolerated volume (relative to normal volume) before triggering apoptosis">1.8</relative_maximum_volume>

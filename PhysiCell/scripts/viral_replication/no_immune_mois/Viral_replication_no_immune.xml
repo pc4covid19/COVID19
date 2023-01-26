@@ -441,14 +441,11 @@
 				<threshold_neutrophil_volume units="micron" type="double" 
 					desription="Threshold volume for neutrophil exhaustion">1581</threshold_neutrophil_volume>
 				<!-- (adrianne) death rate of exhausted macrophages is 5x faster than death rate in activated macrophages, need a motivation for this death rate from the literature --> 
-				<exhausted_macrophage_death_rat units="1/min" type="double" 
-					desription="Threshold volume for neutrophil exhaustion">0.01</exhausted_macrophage_death_rat>
+				<exhausted_macrophage_death_rate units="1/min" type="double" 
+					desription="Threshold volume for neutrophil exhaustion">0.01</exhausted_macrophage_death_rate>
 				<!-- (adrianne) boolean parameter for whether macrophages has been activated by a T cell to be able to phagocytose infected cells --> 
 				<ability_to_phagocytose_infected_cell units="dimensionless" type="int"
 					description="Boolean for whether macrophages can phagocytose infected cells">0</ability_to_phagocytose_infected_cell>
-				<!-- (adrianne) time (mins) after DC activation when it will leave tissue, assigned uniform random variable at activation--> 
-				<time_of_DC_departure units="min" type="double"
-					description="Time DC leaves tissue after activation">0</time_of_DC_departure>
 <!--
 				<relative_maximum_volume units="dimensionless" type="double"
 					description="max tolerated volume (relative to normal volume) before triggering apoptosis">1.8</relative_maximum_volume>
