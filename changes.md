@@ -1,4 +1,92 @@
-# COVID19 tissue simulator 
+# COVID19 tissue simulator
+**Version:** 0.6.0
+
+**Release date:** 30 January 2023
+
+## Overview
+This model simulates replication dynamics of SARS-CoV-2 (coronavirus / COVID19) in a layer of epithelium with an initial immune reaction. It is being rapidly prototyped and refined with community support (see below).
+
+In this model, SARS-CoV-2 (coronavirus / COVID19) infects a single cell, or a solution of virions is administered to the extracellular space. The virus is uncoated to explose viral RNA, which synthesizes viral proteins that are assembled into a virion. Assembled virions are exported to the environment, where they can diffuse and infect other cells. In the extracellular space, virions adhere to ACE2 receptors and get internalized through endocytosis. Internalized ACE2 receptors release their virus cargo and are recycled back to the surface. 
+
+Resident macrophages ingest apototic cells and release a pro-inflammatory cytokine that recruits additional macrophages, neutrophils, and CD8+ T cells. CD8+ T cells chemotax towards cytokines released by infected cells and adhere. Cumulative CD8+ T cell contact time can induce apoptosis in infected cells. Activated macrophages and neutrophils chemotaxis chemotax along chemokine and debris gradients and continue to phagocytose dead cells. Neutrophils also absorb free (extracellular) virus. Immunoglobulin can bind and remove Virion in the external field and bind to infected Cells.
+
+The model includes a basic pharmacodynamic response (to assembled virions) to cause cell apoptosis. Apoptosed cells release some or all of their internal contents, notably including virions.
+
+### Caveats and disclaimers: 
+**This model is under active development**
+* It has not been peer reviewed. 
+* It is intended to drive basic scientific research and public education at this stage. 
+* **It cannot be used for public policy decisions.**
+* **It cannot be used for individual medical decisions.**
+
+### Key makefile rules:
+
+**make**               : compiles the project.
+ 
+**make clean**         : removes all .o files and the executable, so that the next "make" recompiles the entire project 
+
+**make data-cleanup**  : clears out all simulation data 
+
+**make reset**         : reset to default settings (restores config file)
+
+### More references 
+
+**Preprint:**      https://doi.org/10.1101/2020.04.02.019075 
+
+**Model details:** https://github.com/MathCancer/COVID19/wiki/About 
+
+**Homepage:**      http://covid19.PhysiCell.org
+
+**Support:**       https://sourceforge.net/p/physicell/tickets/
+
+**Latest info:**   follow [@PhysiCell](https://twitter.com/PhysiCell) and [@MathCancer](https://twitter.com/MathCancer) on Twitter (http://twitter.com/MathCancer)
+
+* * * 
+
+## Release summary: 
+### 0.6.0:
+This release incorporates major v4 model feedback and adds: 
++ 
+
+**NOTE:** OSX users must now define PHYSICELL_CPP system variable. See the documentation.
+
+### New features and changes:
+#### 0.6.0:
+
++ Removed multiple hard coded values to xml including lymph node values, the standard deviation of initial viral placement, and mechanics voxel size
+
++ Changed macrophage activation so it needs to find viral RNA in the dead cell to activate.
+
++ Fixed viral uptake to observed rates, removed cell volume from the calculation
+
++ Added function to pre dose the system with Ig in the xml including time delays
+
++ Moved immune_dt to the phenotype timescale
+
++ Updated to PhysiCell 1.10.2
+
+### Bugfixes 
+#### 0.6.0: 
+
++ fixed a division by 0 that can rarely occur when multithreading
+
++ multiple small fixes to xml
+
++ fix to rare crash when a out of bounds cell interacts
+
+### Notices for intended changes that may affect backwards compatibility:
+ 
++ added params that are needed for the proper functioning of the system 
+
++ removed unused params that are not in the current version
+
++ changed how ACE2 binding is calculated
+
+### Planned future improvements: 
+ 
++ Continue to vet model biology with collaborators.
+
+* * * 
 **Version:** 0.5.0
 
 **Release date:** 21 July 2021
