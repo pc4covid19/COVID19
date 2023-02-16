@@ -123,6 +123,7 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	static int pro_pyroptotic_cytokine = microenvironment.find_density_index("pro-pyroptosis cytokine"); 
 	double pyroptotic_cytokine_concentration = phenotype.molecular.internalized_total_substrates[pro_pyroptotic_cytokine]; 
 	double RNAlow=parameters.doubles("RNA_lower_bound");
+	double RNAmax = parameters.doubles("RNA_max_probability");
 
     // (Sara&Fiona) pyroptosis cascade in the cell is initiated if cell's viral_RNA is >1 (i.e. >=3). This is arbitraty to check things work.
 	
@@ -131,11 +132,10 @@ void internal_virus_response_model( Cell* pCell, Phenotype& phenotype, double dt
 	{
 		// set the probability (in 0,1) that a cell with a death-sentence pyroptoses (not apoptoses)
 		// FIONA THIS IS DIFFERENT FROM OURS AS WE SET THE PROBABILITY
-		double cell_death_pyroptosis_probability = (R-RNAlow)/(1000-RNAlow); 
-		if( cell_death_pyroptosis_probability > 1.0 )
-		{ cell_death_pyroptosis_probability = 1.0; } 
-		// FIONA FOR SOME REASON THEY DIVIDE BY 3
-		cell_death_pyroptosis_probability/=3; 
+		// IF RNA max is set lower than RNAlow, then probability will always be maximized
+		double cell_death_pyroptosis_probability = (R-RNAlow)/(RNAmax-RNAlow+1E-6);
+		if( cell_death_pyroptosis_probability > 1.0 || cell_death_pyroptosis_probability<0)
+		{ cell_death_pyroptosis_probability = 1.0; }
 		// randomise a number in 0,1 that determines the cell death mode (pyroptosis or apoptosis)
 		if(UniformRandom() < cell_death_pyroptosis_probability) 
 		{

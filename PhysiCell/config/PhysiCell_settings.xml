@@ -1051,7 +1051,9 @@
 			<Death_rates_of_old_Tcells type="double" units="cells/min"
 				description="value to kill T Cells post generation limit">100</Death_rates_of_old_Tcells>
 			<RNA_lower_bound type="double" units="cells/min"
-				description="lowest value to start probability draws for pyroptosis">125</RNA_lower_bound>
+				description="lowest value to start RNA triggered death event">125</RNA_lower_bound>
+			<RNA_max_probability type="double" units="cells/min"
+				description="Value needed for maximum probability of pyroptosis when RNA triggered death occurs">3000</RNA_max_probability>
 
 			<!-- added parameters for fibroblast-->
 			
