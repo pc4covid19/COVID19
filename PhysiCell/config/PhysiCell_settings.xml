@@ -1098,7 +1098,7 @@
 		<!-- (Adrianne) number of virions in voxel to activate DC, chosen arbitrarily for now -->
 			<virions_needed_for_DC_activation type="double" units="virions"
 				description="Number of virions needed to activate DC">10</virions_needed_for_DC_activation>
-		<!-- (Adrianne) multiple of the rawdii of the two immune cells interacting to check they are close enough-->		
+		<!-- (Adrianne) multiple of the radii of the two immune cells interacting to check they are close enough-->		
 		<epsilon_distance type="double" units="dimensionless"
 				description="Multiple of interaction distance for immune cells">1.75</epsilon_distance>
 				
