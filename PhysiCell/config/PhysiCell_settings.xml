@@ -1050,9 +1050,9 @@
 				description="rate of virion neutalization by Ig">3</Ig_neutralization_rate>
 			<Death_rates_of_old_Tcells type="double" units="cells/min"
 				description="value to kill T Cells post generation limit">100</Death_rates_of_old_Tcells>
-			<RNA_lower_bound type="double" units="cells/min"
+			<RNA_lower_bound type="double" units="RNA"
 				description="lowest value to start RNA triggered death event">125</RNA_lower_bound>
-			<RNA_max_probability type="double" units="cells/min"
+			<RNA_max_probability type="double" units="RNA"
 				description="Value needed for maximum probability of pyroptosis when RNA triggered death occurs">3000</RNA_max_probability>
 
 			<!-- added parameters for fibroblast-->
@@ -1121,7 +1121,7 @@
 			<BN_init type="double" units="cells" description="Initial value of Naive B Cells in the lymph">1000</BN_init>
 
 		<div_Therapy type="divider" description="--options for late Ig addition--"/>
-			<therapy_dt type="double" units="min" description="time of Ig injection">0</therapy_dt>
+			<therapy_dt type="double" units="days" description="time of Ig injection">0</therapy_dt>
 			<Ig_dose type="double" units="mol/micron^3" description="amount of Ig injection">0</Ig_dose>
 			
 		<div_colors type="divider" description="---Cell Color Options--"/>
