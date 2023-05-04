@@ -188,8 +188,8 @@
 				<diffusion_coefficient units="micron^2/min">3000</diffusion_coefficient>
 				<decay_rate units="1/min">1.04e-2</decay_rate>
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+			<initial_condition units="ng/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="ng/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 
 		<variable name="collagen" units="ug/micron^3" ID="7">
@@ -197,8 +197,8 @@
 				<diffusion_coefficient units="micron^2/min">0</diffusion_coefficient>  <!-- reduce the diffusion -->
 				<decay_rate units="1/min">0</decay_rate>
 			</physical_parameter_set>
-			<initial_condition units="mol/micron^3">0</initial_condition>
-			<Dirichlet_boundary_condition units="mol/micron^3" enabled="false">0</Dirichlet_boundary_condition>
+			<initial_condition units="ug/micron^3">0</initial_condition>
+			<Dirichlet_boundary_condition units="ug/micron^3" enabled="false">0</Dirichlet_boundary_condition>
 		</variable>
 		
 		<variable name="Ig" units="mol/micron^3" ID="8">
